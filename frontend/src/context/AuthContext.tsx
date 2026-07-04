@@ -12,6 +12,9 @@ interface AuthContextType {
   register: (data: RegisterInput) => Promise<void>;
   logout: () => Promise<void>;
   googleLogin: (token: string) => Promise<void>;
+  requestOtp: (data: RegisterInput) => Promise<void>;
+  verifyOtp: (email: string, otp: string) => Promise<void>;
+  resendOtp: (email: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -114,6 +117,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const requestOtp = async (data: RegisterInput) => {
+    try {
+      await authApi.requestOtp(data);
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || 'Failed to send verification code');
+    }
+  };
+
+  const verifyOtp = async (email: string, otp: string) => {
+    try {
+      const response = await authApi.verifyOtp(email, otp);
+      if (response.success && response.data) {
+        setAccessToken(response.data.accessToken);
+        setUser(response.data.user);
+      }
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || 'Verification failed');
+    }
+  };
+
+  const resendOtp = async (email: string) => {
+    try {
+      await authApi.resendOtp(email);
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || 'Failed to resend verification code');
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -124,6 +155,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         register,
         logout,
         googleLogin,
+        requestOtp,
+        verifyOtp,
+        resendOtp,
       }}
     >
       {children}

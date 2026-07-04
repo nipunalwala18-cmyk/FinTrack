@@ -111,5 +111,45 @@ export class AuthController {
       next(error);
     }
   }
+
+  public async requestOtp(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      await authService.requestOtp(req.body);
+      res.status(200).json({
+        success: true,
+        message: 'Verification code sent to your email',
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async verifyOtp(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { email, otp } = req.body;
+      const { data, rawRefreshToken } = await authService.verifyOtp(email, otp);
+      setRefreshTokenCookie(res, rawRefreshToken);
+      res.status(201).json({
+        success: true,
+        message: 'Email verified and registration complete',
+        data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async resendOtp(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { email } = req.body;
+      await authService.resendOtp(email);
+      res.status(200).json({
+        success: true,
+        message: 'New verification code sent to your email',
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 export default AuthController;

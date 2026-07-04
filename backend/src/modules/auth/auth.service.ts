@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import { prisma } from '../../config/prisma.js';
+import { sendVerificationEmail } from '../../utils/mailer.js';
 import { AppError } from '../../utils/AppError.js';
 import { hashPassword, comparePassword } from '../../utils/password.js';
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../../utils/jwt.js';
@@ -208,6 +209,128 @@ export class AuthService {
     }
 
     return user;
+  }
+
+  private generate6DigitOtp(): string {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+  }
+
+  private hashOtp(otp: string): string {
+    return crypto.createHash('sha256').update(otp).digest('hex');
+  }
+
+  public async requestOtp(payload: any): Promise<void> {
+    const existing = await prisma.user.findUnique({ where: { email: payload.email } });
+    if (existing) {
+      throw new AppError('A user with this email already exists', 400);
+    }
+
+    const hashedPassword = await hashPassword(payload.password);
+    const otp = this.generate6DigitOtp();
+    const otpHash = this.hashOtp(otp);
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
+
+    await prisma.emailVerification.upsert({
+      where: { email: payload.email },
+      create: {
+        email: payload.email,
+        fullName: payload.fullName,
+        password: hashedPassword,
+        otpHash,
+        expiresAt,
+      },
+      update: {
+        fullName: payload.fullName,
+        password: hashedPassword,
+        otpHash,
+        expiresAt,
+        attempts: 0,
+      },
+    });
+
+    await sendVerificationEmail(payload.email, otp);
+    console.log(`[Auth] OTP requested for email: ${payload.email}`);
+  }
+
+  public async verifyOtp(email: string, otp: string): Promise<{ data: AuthResponseDto; rawRefreshToken: string }> {
+    const record = await prisma.emailVerification.findUnique({ where: { email } });
+    if (!record) {
+      throw new AppError('Verification session not found or expired', 400);
+    }
+
+    if (record.attempts >= 5) {
+      await prisma.emailVerification.delete({ where: { email } }).catch(() => {});
+      throw new AppError('Too many failed attempts. Please request a new OTP.', 400);
+    }
+
+    if (record.expiresAt < new Date()) {
+      throw new AppError('Verification code has expired', 400);
+    }
+
+    const inputHash = this.hashOtp(otp);
+    if (record.otpHash !== inputHash) {
+      await prisma.emailVerification.update({
+        where: { email },
+        data: { attempts: { increment: 1 } },
+      });
+      throw new AppError('Invalid verification code', 400);
+    }
+
+    // OTP matches! Create the user record
+    const user = await prisma.user.create({
+      data: {
+        fullName: record.fullName,
+        email: record.email,
+        password: record.password,
+        provider: AuthProvider.LOCAL,
+        emailVerified: true,
+      },
+    });
+
+    // Delete verification record
+    await prisma.emailVerification.delete({ where: { email } }).catch(() => {});
+
+    // Generate tokens
+    const tokenPayload = { userId: user.id, email: user.email, role: user.role };
+    const accessToken = generateAccessToken(tokenPayload);
+    const rawRefreshToken = generateRefreshToken(tokenPayload);
+
+    // Save hashed refresh token
+    const hashedRefreshToken = this.hashToken(rawRefreshToken);
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { hashedRefreshToken },
+    });
+
+    console.log(`[Auth] User registered and email verified: ${user.email}`);
+
+    return {
+      data: this.formatAuthResponse(user, accessToken),
+      rawRefreshToken,
+    };
+  }
+
+  public async resendOtp(email: string): Promise<void> {
+    const record = await prisma.emailVerification.findUnique({ where: { email } });
+    if (!record) {
+      throw new AppError('Verification session not found or expired', 400);
+    }
+
+    const otp = this.generate6DigitOtp();
+    const otpHash = this.hashOtp(otp);
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
+
+    await prisma.emailVerification.update({
+      where: { email },
+      data: {
+        otpHash,
+        expiresAt,
+        attempts: 0,
+      },
+    });
+
+    await sendVerificationEmail(email, otp);
+    console.log(`[Auth] OTP resent to: ${email}`);
   }
 }
 export default AuthService;

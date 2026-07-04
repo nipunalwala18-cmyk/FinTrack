@@ -1,16 +1,20 @@
 import { Router } from 'express';
 import passport from 'passport';
 import { AuthController } from './auth.controller.js';
-import { registerSchema, loginSchema } from './auth.schema.js';
+import { registerSchema, loginSchema, requestOtpSchema, verifyOtpSchema, resendOtpSchema } from './auth.schema.js';
 import { validateMiddleware } from '../../middlewares/validate.middleware.js';
 import { authMiddleware } from '../../middlewares/auth.middleware.js';
-import { authRateLimiter } from '../../middlewares/rateLimiter.js';
+import { authRateLimiter, otpRequestLimiter, otpVerifyLimiter } from '../../middlewares/rateLimiter.js';
 
 const router = Router();
 const controller = new AuthController();
 
 // Apply auth rate limiting to all authentication routes
 router.use(authRateLimiter);
+
+router.post('/register/request-otp', otpRequestLimiter, validateMiddleware(requestOtpSchema), controller.requestOtp);
+router.post('/register/verify', otpVerifyLimiter, validateMiddleware(verifyOtpSchema), controller.verifyOtp);
+router.post('/register/resend-otp', otpRequestLimiter, validateMiddleware(resendOtpSchema), controller.resendOtp);
 
 router.post('/register', validateMiddleware(registerSchema), controller.register);
 router.post('/login', validateMiddleware(loginSchema), controller.login);

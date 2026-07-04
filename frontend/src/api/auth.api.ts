@@ -13,6 +13,21 @@ export const authApi = {
     return response.data;
   },
 
+  requestOtp: async (data: RegisterInput): Promise<ApiResponse<void>> => {
+    const response = await api.post<ApiResponse<void>>('/auth/register/request-otp', data);
+    return response.data;
+  },
+
+  verifyOtp: async (email: string, otp: string): Promise<ApiResponse<AuthData>> => {
+    const response = await api.post<ApiResponse<AuthData>>('/auth/register/verify', { email, otp });
+    return response.data;
+  },
+
+  resendOtp: async (email: string): Promise<ApiResponse<void>> => {
+    const response = await api.post<ApiResponse<void>>('/auth/register/resend-otp', { email });
+    return response.data;
+  },
+
   logout: async (): Promise<ApiResponse<void>> => {
     const response = await api.post<ApiResponse<void>>('/auth/logout');
     return response.data;

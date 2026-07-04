@@ -30,6 +30,102 @@ model User {
   hashedRefreshToken  String?
   createdAt           DateTime      @default(now())
   updatedAt           DateTime      @updatedAt
+  accounts            Account[]
+  transactions        Transaction[]
+  categories          Category[]
+}
+
+enum AccountType {
+  CASH
+  BANK
+  CREDIT_CARD
+  INVESTMENT
+  E_WALLET
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+  TRANSFER
+}
+
+model Account {
+  id                 String        @id @default(cuid())
+  name               String
+  balance            Float
+  currency           String        @default("INR")
+  type               AccountType
+  color              String?
+  icon               String?
+  isArchived         Boolean       @default(false)
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+  userId             String
+  user               User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions       Transaction[] @relation("FromAccount")
+  toTransactions     Transaction[] @relation("ToAccount")
+
+  // Extended fields for adaptive account types
+  accountNumber      String?
+  branch             String?
+
+  creditLimit        Float?
+  outstandingBalance Float?
+  billingDay         Int?
+  paymentDueDay      Int?
+
+  provider           String?
+
+  interestRate       Float?
+  investmentDuration Int?
+
+  notes              String?
+
+  includeInNetWorth  Boolean       @default(true)
+  displayOrder       Int?
+
+  @@index([userId])
+}
+
+model Category {
+  id           String          @id @default(cuid())
+  name         String
+  type         TransactionType
+  color        String?
+  icon         String?
+  userId       String?
+  user         User?           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  @@index([userId])
+}
+
+model Transaction {
+  id          String          @id @default(cuid())
+  amount      Float
+  description String?
+  notes       String?
+  date        DateTime
+  type        TransactionType
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  userId      String
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accountId   String
+  account     Account         @relation("FromAccount", fields: [accountId], references: [id], onDelete: Cascade)
+  toAccountId String?
+  toAccount   Account?        @relation("ToAccount", fields: [toAccountId], references: [id], onDelete: Cascade)
+  categoryId  String?
+  category    Category?       @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([accountId])
+  @@index([toAccountId])
+  @@index([categoryId])
+  @@index([date])
+  @@index([type])
 }
 
 model EmailVerification {

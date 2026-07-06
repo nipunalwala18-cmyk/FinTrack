@@ -31,6 +31,9 @@ export interface Transaction {
   toAccount?: AccountShort;
   categoryId?: string;
   category?: Category;
+  goalId?: string | null;
+  contributionType?: 'DEPOSIT' | 'WITHDRAWAL' | null;
+  goal?: { id: string; name: string } | null;
 }
 
 export interface GetTransactionsResponse {

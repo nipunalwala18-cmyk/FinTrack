@@ -19,6 +19,7 @@ const BudgetsPage = lazy(() => import('../pages/Budgets/BudgetsPage').then(m => 
 const GoalsPage = lazy(() => import('../pages/Goals/GoalsPage').then(m => ({ default: m.GoalsPage })));
 const ReportsPage = lazy(() => import('../pages/Reports/ReportsPage').then(m => ({ default: m.ReportsPage })));
 const SettingsPage = lazy(() => import('../pages/Settings/SettingsPage').then(m => ({ default: m.SettingsPage })));
+const AiAssistantPage = lazy(() => import('../pages/AiAssistant/AiAssistantPage').then(m => ({ default: m.AiAssistantPage })));
 
 export const AppRoutes: React.FC = () => {
   const { isAuthenticated } = useAuth();
@@ -57,6 +58,7 @@ export const AppRoutes: React.FC = () => {
             <Route path="/goals" element={<GoalsPage />} />
             <Route path="/reports" element={<ReportsPage />} />
             <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/ai-assistant" element={<AiAssistantPage />} />
           </Route>
         </Route>
 

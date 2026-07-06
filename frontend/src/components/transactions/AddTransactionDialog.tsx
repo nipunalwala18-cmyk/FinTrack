@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { createTransactionSchema } from '../../schemas/transaction.schema';
 import type { CreateTransactionInput } from '../../schemas/transaction.schema';
 import { useCreateTransaction } from '../../hooks/useCreateTransaction';
+import { useGoals } from '../../hooks/useGoals';
 import { AccountSelect } from './AccountSelect';
 import { CategorySelect } from './CategorySelect';
 import { X, Loader2 } from 'lucide-react';
@@ -36,10 +37,15 @@ export const AddTransactionDialog: React.FC<AddTransactionDialogProps> = ({ isOp
       accountId: '',
       toAccountId: '',
       categoryId: '',
+      goalId: '',
+      contributionType: 'DEPOSIT',
     },
   });
 
   const watchType = watch('type');
+  const watchGoalId = watch('goalId');
+  const { data: goals = [] } = useGoals();
+  const displayGoals = goals.filter(g => g.status === 'ACTIVE' || g.id === watchGoalId);
 
   useEffect(() => {
     if (isOpen) {
@@ -52,6 +58,8 @@ export const AddTransactionDialog: React.FC<AddTransactionDialogProps> = ({ isOp
         accountId: '',
         toAccountId: '',
         categoryId: '',
+        goalId: '',
+        contributionType: 'DEPOSIT',
       });
     }
   }, [isOpen, reset]);
@@ -79,6 +87,8 @@ export const AddTransactionDialog: React.FC<AddTransactionDialogProps> = ({ isOp
       ...data,
       categoryId: data.type === 'TRANSFER' ? null : data.categoryId,
       toAccountId: data.type === 'TRANSFER' ? data.toAccountId : null,
+      goalId: data.goalId || null,
+      contributionType: data.goalId ? (data.contributionType || 'DEPOSIT') : null,
     };
     createTransaction(payload);
   };
@@ -211,6 +221,58 @@ export const AddTransactionDialog: React.FC<AddTransactionDialogProps> = ({ isOp
                 disabled={isPending}
               />
             )}
+
+            {/* Goal Selector */}
+            <div className="space-y-1.5 text-left">
+              <label htmlFor="goalId" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                Link to Goal (Optional)
+              </label>
+              <select
+                id="goalId"
+                disabled={isPending}
+                {...register('goalId')}
+                className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20 dark:border-gray-800 dark:bg-gray-900 dark:text-white focus:border-purple-500 transition-all font-semibold"
+              >
+                <option value="">No Linked Goal</option>
+                {displayGoals.map((g) => (
+                  <option key={g.id} value={g.id}>
+                    {g.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Contribution Type (only if goal is selected) */}
+            {watchGoalId && (
+              <div className="space-y-1.5 text-left animate-fade-in">
+                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300 block">
+                  Contribution Type *
+                </label>
+                <div className="flex gap-4 p-3 rounded-xl border border-gray-150 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/30">
+                  <label className="flex items-center gap-2 text-sm text-gray-900 dark:text-white cursor-pointer font-semibold">
+                    <input
+                      type="radio"
+                      value="DEPOSIT"
+                      disabled={isPending}
+                      {...register('contributionType')}
+                      className="accent-purple-600 h-4 w-4"
+                    />
+                    <span>Deposit to Goal</span>
+                  </label>
+                  <label className="flex items-center gap-2 text-sm text-gray-900 dark:text-white cursor-pointer font-semibold">
+                    <input
+                      type="radio"
+                      value="WITHDRAWAL"
+                      disabled={isPending}
+                      {...register('contributionType')}
+                      className="accent-purple-600 h-4 w-4"
+                    />
+                    <span>Withdrawal from Goal</span>
+                  </label>
+                </div>
+              </div>
+            )}
+
 
             {/* Description */}
             <div className="space-y-1.5 text-left">

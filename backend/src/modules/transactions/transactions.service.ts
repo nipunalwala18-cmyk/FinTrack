@@ -1,6 +1,9 @@
 import { PrismaClient, TransactionType, Prisma } from '@prisma/client';
+import { GoalService } from '../goals/goal.service.js';
 
 const prisma = new PrismaClient();
+const goalService = new GoalService();
+
 
 interface GetTransactionsFilters {
   userId: string;
@@ -109,6 +112,7 @@ export class TransactionsService {
           account: { select: { id: true, name: true, color: true, type: true } },
           toAccount: { select: { id: true, name: true, color: true, type: true } },
           category: { select: { id: true, name: true, color: true, icon: true } },
+          goal: { select: { id: true, name: true } },
         },
       }),
       prisma.transaction.count({ where }),
@@ -132,6 +136,7 @@ export class TransactionsService {
         account: true,
         toAccount: true,
         category: true,
+        goal: true,
       },
     });
 
@@ -143,7 +148,7 @@ export class TransactionsService {
   }
 
   async createTransaction(userId: string, data: any) {
-    return prisma.$transaction(async (tx) => {
+    const transaction = await prisma.$transaction(async (tx) => {
       // 1. Create Transaction
       const transaction = await tx.transaction.create({
         data: {
@@ -156,6 +161,8 @@ export class TransactionsService {
           accountId: data.accountId,
           toAccountId: data.toAccountId,
           categoryId: data.categoryId,
+          goalId: data.goalId || null,
+          contributionType: data.contributionType || null,
         },
       });
 
@@ -185,10 +192,15 @@ export class TransactionsService {
 
       return transaction;
     });
+
+    // Recalculate goals for user
+    goalService.recalculateUserGoals(userId).catch(err => console.error("Error recalculating goals:", err));
+
+    return transaction;
   }
 
   async updateTransaction(id: string, userId: string, data: any) {
-    return prisma.$transaction(async (tx) => {
+    const updatedTransaction = await prisma.$transaction(async (tx) => {
       const oldTx = await tx.transaction.findFirst({
         where: { id, userId },
       });
@@ -233,6 +245,8 @@ export class TransactionsService {
           accountId: data.accountId !== undefined ? data.accountId : oldTx.accountId,
           toAccountId: data.toAccountId !== undefined ? data.toAccountId : oldTx.toAccountId,
           categoryId: data.categoryId !== undefined ? data.categoryId : oldTx.categoryId,
+          goalId: data.goalId !== undefined ? data.goalId : oldTx.goalId,
+          contributionType: data.contributionType !== undefined ? data.contributionType : oldTx.contributionType,
         },
       });
 
@@ -267,10 +281,15 @@ export class TransactionsService {
 
       return updatedTransaction;
     });
+
+    // Recalculate goals for user
+    goalService.recalculateUserGoals(userId).catch(err => console.error("Error recalculating goals:", err));
+
+    return updatedTransaction;
   }
 
   async deleteTransaction(id: string, userId: string) {
-    return prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx) => {
       const transaction = await tx.transaction.findFirst({
         where: { id, userId },
       });
@@ -310,5 +329,10 @@ export class TransactionsService {
 
       return { id };
     });
+
+    // Recalculate goals for user
+    goalService.recalculateUserGoals(userId).catch(err => console.error("Error recalculating goals:", err));
+
+    return result;
   }
 }

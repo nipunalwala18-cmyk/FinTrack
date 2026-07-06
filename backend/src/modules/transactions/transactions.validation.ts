@@ -10,6 +10,8 @@ const baseSchema = z.object({
   accountId: z.string().min(1, 'Source account is required'),
   toAccountId: z.string().optional().nullable(),
   categoryId: z.string().optional().nullable(),
+  goalId: z.string().optional().nullable(),
+  contributionType: z.enum(['DEPOSIT', 'WITHDRAWAL']).optional().nullable(),
 });
 
 export const createTransactionSchema = baseSchema

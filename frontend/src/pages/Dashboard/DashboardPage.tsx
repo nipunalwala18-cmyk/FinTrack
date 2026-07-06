@@ -5,9 +5,10 @@ import { WelcomeCard } from '../../components/dashboard/WelcomeCard';
 import { SummaryCards } from '../../components/dashboard/SummaryCards';
 import { MonthStatistics } from '../../components/dashboard/MonthStatistics';
 import { DashboardSkeleton } from '../../components/dashboard/DashboardSkeleton';
-import { AccountsList } from '../../components/dashboard/AccountsList';
+import { AccountsList, GoalsOverviewWidget } from '../../components/dashboard';
 import { AddAccountDialog } from '../../components/accounts/AddAccountDialog';
 import { RefreshCw, PlusCircle, AlertCircle } from 'lucide-react';
+
 
 export const DashboardPage: React.FC = () => {
   const { data, isLoading: isDashboardLoading, isError, error, refetch } = useDashboard();
@@ -102,8 +103,9 @@ export const DashboardPage: React.FC = () => {
                 <div className="lg:col-span-2">
                   <MonthStatistics stats={data.currentMonth} />
                 </div>
-                <div>
+                <div className="space-y-6">
                   <AccountsList accounts={accounts} onAddAccountClick={() => setIsAddAccountOpen(true)} />
+                  <GoalsOverviewWidget />
                 </div>
               </div>
             </>

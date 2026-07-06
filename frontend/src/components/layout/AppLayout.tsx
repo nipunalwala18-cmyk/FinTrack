@@ -4,6 +4,7 @@ import { Sidebar } from './Sidebar';
 import { MobileSidebar } from './MobileSidebar';
 import { Header } from './Header';
 import { Loader2 } from 'lucide-react';
+import { FloatingChatWidget } from '../ai/FloatingChatWidget';
 
 export const AppLayout: React.FC = () => {
   const [isCollapsed, setIsCollapsed] = useState(() => {
@@ -45,6 +46,9 @@ export const AppLayout: React.FC = () => {
           </div>
         </main>
       </div>
+
+      {/* Persistent Floating Chat Widget */}
+      <FloatingChatWidget />
     </div>
   );
 };

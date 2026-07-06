@@ -34,6 +34,10 @@ model User {
   transactions        Transaction[]
   categories          Category[]
   budgets             Budget[]
+  goals               Goal[]
+  aiConversations     AiConversation[]
+  aiInsights          AiInsight[]
+  aiRecommendations   AiRecommendation[]
 }
 
 enum AccountType {
@@ -127,13 +131,17 @@ model Transaction {
   account     Account         @relation("FromAccount", fields: [accountId], references: [id], onDelete: Cascade)
   toAccountId String?
   toAccount   Account?        @relation("ToAccount", fields: [toAccountId], references: [id], onDelete: Cascade)
-  categoryId  String?
-  category    Category?       @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  categoryId       String?
+  category         Category?         @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  goalId           String?
+  goal             Goal?             @relation(fields: [goalId], references: [id], onDelete: SetNull)
+  contributionType ContributionType?
 
   @@index([userId])
   @@index([accountId])
   @@index([toAccountId])
   @@index([categoryId])
+  @@index([goalId])
   @@index([date])
   @@index([type])
 }
@@ -178,3 +186,117 @@ model Budget {
   @@index([userId])
   @@index([categoryId])
 }
+
+enum GoalType {
+  SAVINGS
+  EXPENSE_LIMIT
+  INCOME_TARGET
+}
+
+enum GoalPeriod {
+  WEEKLY
+  MONTHLY
+  YEARLY
+}
+
+enum GoalStatus {
+  ACTIVE
+  COMPLETED
+  FAILED
+  CANCELLED
+  ARCHIVED
+}
+
+model Goal {
+  id            String        @id @default(uuid())
+  userId        String
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name          String
+  description   String?
+  goalType      GoalType?
+  period        GoalPeriod?
+  targetAmount  Float
+  currentAmount Float         @default(0)
+  startDate     DateTime?
+  endDate       DateTime?
+  targetDate    DateTime?
+  status        GoalStatus    @default(ACTIVE)
+  color         String?
+  icon          String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  transactions  Transaction[]
+
+  @@index([userId])
+}
+
+enum ContributionType {
+  DEPOSIT
+  WITHDRAWAL
+}
+
+model AiConversation {
+  id        String               @id @default(uuid())
+  userId    String
+  user      User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
+  messages  AiMessage[]
+  state     AiConversationState?
+
+  @@index([userId])
+}
+
+model AiMessage {
+  id             String         @id @default(uuid())
+  conversationId String
+  conversation   AiConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  role           String
+  content        String
+  toolExecuted   String?
+  toolSuccess    Boolean?
+  createdAt      DateTime       @default(now())
+
+  @@index([conversationId])
+}
+
+model AiConversationState {
+  id                  String         @id @default(uuid())
+  conversationId      String         @unique
+  conversation        AiConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  pendingIntent       String?
+  temporaryParameters Json?
+  lastTool            String?
+  expiresAt           DateTime?
+  updatedAt           DateTime       @updatedAt
+}
+
+model AiInsight {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type        String
+  title       String
+  description String
+  priority    Int      @default(1)
+  createdAt   DateTime @default(now())
+  dismissed   Boolean  @default(false)
+
+  @@index([userId])
+}
+
+model AiRecommendation {
+  id             String   @id @default(uuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category       String
+  recommendation String
+  confidence     Float
+  status         String   @default("ACTIVE")
+  createdAt      DateTime @default(now())
+
+  @@index([userId])
+}
+
+

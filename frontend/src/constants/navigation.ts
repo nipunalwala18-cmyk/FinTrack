@@ -7,6 +7,7 @@ import {
   Target,
   BarChart3,
   Settings,
+  Sparkles,
 } from 'lucide-react';
 
 export interface NavItemType {
@@ -50,6 +51,11 @@ export const NAVIGATION_ITEMS: NavItemType[] = [
     title: 'Reports',
     href: '/reports',
     icon: BarChart3,
+  },
+  {
+    title: 'AI Assistant',
+    href: '/ai-assistant',
+    icon: Sparkles,
   },
   {
     title: 'Settings',

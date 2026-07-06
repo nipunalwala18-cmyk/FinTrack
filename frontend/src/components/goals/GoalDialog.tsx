@@ -20,6 +20,10 @@ import {
 } from 'lucide-react';
 import { useCreateGoal, useUpdateGoal } from '../../hooks/useGoals';
 import type { Goal } from '../../types/goal';
+import {
+  LABEL_CLS, LABEL_STYLE, INPUT_BASE, INPUT_STYLE,
+  INPUT_FOCUS_STYLE, INPUT_BLUR_STYLE, INPUT_ERROR_STYLE
+} from '../accounts/fieldStyles';
 
 interface GoalDialogProps {
   isOpen: boolean;
@@ -81,7 +85,7 @@ export const GoalDialog: React.FC<GoalDialogProps> = ({ isOpen, onClose, goalIte
     handleSubmit,
     setValue,
     reset,
-    formState: { errors },
+    formState: { errors, isValid },
   } = useForm<GoalFormValues>({
     resolver: zodResolver(goalFormSchema),
     mode: 'onChange',
@@ -179,161 +183,225 @@ export const GoalDialog: React.FC<GoalDialogProps> = ({ isOpen, onClose, goalIte
   return (
     <div
       onClick={handleBackdropClick}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-xs p-4 transition-all duration-300 animate-fade-in"
       aria-modal="true"
       role="dialog"
     >
       <div
         ref={dialogRef}
-        className="w-[95vw] max-w-2xl max-h-[90vh] rounded-3xl bg-white shadow-2xl dark:bg-[#12131a] border border-gray-150 dark:border-gray-800 flex flex-col overflow-hidden animate-zoom-in"
+        className="w-[95vw] max-w-4xl max-h-[95vh] md:max-h-[90vh] flex flex-col overflow-hidden animate-zoom-in"
+        style={{
+          background: '#0a0a0a',
+          border: '0.5px solid rgba(255,255,255,0.14)',
+          borderRadius: 16,
+        }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4 dark:border-gray-800">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-            {goalItem ? 'Edit Goal' : 'Create Financial Goal'}
-          </h2>
+        <div
+          className="flex items-center justify-between px-6 py-5 shrink-0"
+          style={{ borderBottom: '0.5px solid rgba(255,255,255,0.1)' }}
+        >
+          <div className="space-y-1 text-left">
+            <h2 className="text-xl font-bold text-white">
+              {goalItem ? 'Edit Goal' : 'Create Financial Goal'}
+            </h2>
+            <p className="text-sm font-semibold text-white/50">Setup targeted benchmarks for saving allocations.</p>
+          </div>
           <button
             onClick={onClose}
-            className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            className="rounded-xl p-2 transition-all cursor-pointer"
+            style={{ color: 'rgba(255,255,255,0.6)' }}
+            onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+            onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.6)')}
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
         {/* Content */}
-        <form onSubmit={handleSubmit(onSubmit)} className="flex-1 overflow-y-auto p-6 space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex-grow overflow-y-auto p-6 space-y-6 scrollbar-hidden text-left">
           <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
-            {/* Goal Name */}
-            <div className="space-y-1.5 md:col-span-2 text-left">
-              <label className="text-sm font-bold text-gray-700 dark:text-gray-300">
-                Goal Name *
-              </label>
-              <input
-                type="text"
-                {...register('name')}
-                placeholder="e.g. Dream House Fund, Backup Cash"
-                className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-900 dark:bg-gray-900/50 dark:border-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all"
-              />
-              {errors.name && (
-                <p className="text-xs font-semibold text-rose-500">{errors.name.message}</p>
-              )}
-            </div>
+            {/* Left Column */}
+            <div className="space-y-4">
+              <h3 className="text-xs font-semibold uppercase tracking-wider pb-1" style={{ color: 'rgba(255,255,255,0.4)', borderBottom: '0.5px solid rgba(255,255,255,0.08)' }}>
+                Goal Information
+              </h3>
 
-            {/* Description */}
-            <div className="space-y-1.5 md:col-span-2 text-left">
-              <label className="text-sm font-bold text-gray-700 dark:text-gray-300">
-                Description
-              </label>
-              <textarea
-                {...register('description')}
-                placeholder="Details of the goal..."
-                rows={2}
-                className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-900 dark:bg-gray-900/50 dark:border-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all"
-              />
-            </div>
-
-            {/* Target Amount */}
-            <div className="space-y-1.5 text-left">
-              <label className="text-sm font-bold text-gray-700 dark:text-gray-300">
-                Target Amount *
-              </label>
-              <div className="relative">
-                <span className="absolute left-4 top-2.5 text-gray-400 font-bold text-sm">₹</span>
+              {/* Goal Name */}
+              <div className="space-y-1.5">
+                <label className={LABEL_CLS} style={LABEL_STYLE}>
+                  Goal Name *
+                </label>
                 <input
-                  type="number"
-                  step="any"
-                  {...register('targetAmount', { valueAsNumber: true })}
-                  placeholder="0.00"
-                  className="w-full rounded-xl border border-gray-200 bg-gray-50 pl-8 pr-4 py-2.5 text-sm text-gray-900 dark:bg-gray-900/50 dark:border-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all font-semibold"
+                  type="text"
+                  {...register('name')}
+                  placeholder="e.g. Dream House Fund, Backup Cash"
+                  className={INPUT_BASE}
+                  style={{ ...INPUT_STYLE, border: errors.name ? INPUT_ERROR_STYLE : INPUT_STYLE.border }}
+                  onFocus={e => (e.currentTarget.style.border = INPUT_FOCUS_STYLE)}
+                  onBlur={e => (e.currentTarget.style.border = errors.name ? INPUT_ERROR_STYLE : INPUT_BLUR_STYLE)}
+                />
+                {errors.name && (
+                  <p className="text-xs font-semibold" style={{ color: 'rgba(248,113,113,0.9)' }}>{errors.name.message}</p>
+                )}
+              </div>
+
+              {/* Description */}
+              <div className="space-y-1.5">
+                <label className={LABEL_CLS} style={LABEL_STYLE}>
+                  Description
+                </label>
+                <textarea
+                  {...register('description')}
+                  placeholder="Details of the goal..."
+                  rows={2}
+                  className={`${INPUT_BASE} resize-none`}
+                  style={INPUT_STYLE}
+                  onFocus={e => (e.currentTarget.style.border = INPUT_FOCUS_STYLE)}
+                  onBlur={e => (e.currentTarget.style.border = INPUT_BLUR_STYLE)}
                 />
               </div>
-              {errors.targetAmount && (
-                <p className="text-xs font-semibold text-rose-500">{errors.targetAmount.message}</p>
-              )}
-            </div>
 
-            {/* Target Date */}
-            <div className="space-y-1.5 text-left">
-              <label className="text-sm font-bold text-gray-700 dark:text-gray-300">
-                Target Date *
-              </label>
-              <input
-                type="date"
-                {...register('targetDate')}
-                className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-900 dark:bg-gray-900/50 dark:border-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all"
-              />
-              {errors.targetDate && (
-                <p className="text-xs font-semibold text-rose-500">{errors.targetDate.message}</p>
-              )}
-            </div>
+              {/* Target Amount */}
+              <div className="space-y-1.5">
+                <label className={LABEL_CLS} style={LABEL_STYLE}>
+                  Target Amount *
+                </label>
+                <div className="relative">
+                  <span className="absolute left-4 top-2.5 text-white/40 font-semibold text-sm">₹</span>
+                  <input
+                    type="number"
+                    step="any"
+                    {...register('targetAmount', { valueAsNumber: true })}
+                    placeholder="0.00"
+                    className={`${INPUT_BASE} pl-8`}
+                    style={{ ...INPUT_STYLE, border: errors.targetAmount ? INPUT_ERROR_STYLE : INPUT_STYLE.border }}
+                    onFocus={e => (e.currentTarget.style.border = INPUT_FOCUS_STYLE)}
+                    onBlur={e => (e.currentTarget.style.border = errors.targetAmount ? INPUT_ERROR_STYLE : INPUT_BLUR_STYLE)}
+                  />
+                </div>
+                {errors.targetAmount && (
+                  <p className="text-xs font-semibold" style={{ color: 'rgba(248,113,113,0.9)' }}>{errors.targetAmount.message}</p>
+                )}
+              </div>
 
-            {/* Icon Picker */}
-            <div className="space-y-1.5 md:col-span-2 text-left">
-              <label className="text-sm font-bold text-gray-700 dark:text-gray-300">
-                Select Icon
-              </label>
-              <div className="grid grid-cols-6 sm:grid-cols-12 gap-2.5 p-3 rounded-2xl border border-gray-150 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/20">
-                {AVAILABLE_ICONS.map((item) => {
-                  const IconComp = item.icon;
-                  const isSelected = selectedIcon === item.name;
-                  return (
-                    <button
-                      key={item.name}
-                      type="button"
-                      onClick={() => handleSelectIcon(item.name)}
-                      className={`flex h-10 w-10 items-center justify-center rounded-xl transition-all border ${
-                        isSelected
-                          ? 'bg-purple-600 border-purple-600 text-white shadow-md shadow-purple-500/20 scale-105'
-                          : 'bg-white dark:bg-gray-950 border-gray-150 dark:border-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-50 hover:text-gray-700 dark:hover:bg-gray-800'
-                      }`}
-                    >
-                      <IconComp className="h-5 w-5" />
-                    </button>
-                  );
-                })}
+              {/* Target Date */}
+              <div className="space-y-1.5">
+                <label className={LABEL_CLS} style={LABEL_STYLE}>
+                  Target Date *
+                </label>
+                <input
+                  type="date"
+                  {...register('targetDate')}
+                  className={INPUT_BASE}
+                  style={{ ...INPUT_STYLE, border: errors.targetDate ? INPUT_ERROR_STYLE : INPUT_STYLE.border }}
+                  onFocus={e => (e.currentTarget.style.border = INPUT_FOCUS_STYLE)}
+                  onBlur={e => (e.currentTarget.style.border = errors.targetDate ? INPUT_ERROR_STYLE : INPUT_BLUR_STYLE)}
+                />
+                {errors.targetDate && (
+                  <p className="text-xs font-semibold" style={{ color: 'rgba(248,113,113,0.9)' }}>{errors.targetDate.message}</p>
+                )}
               </div>
             </div>
 
-            {/* Color Picker */}
-            <div className="space-y-1.5 md:col-span-2 text-left">
-              <label className="text-sm font-bold text-gray-700 dark:text-gray-300">
-                Select Theme Color
-              </label>
-              <div className="flex flex-wrap gap-3 p-3 rounded-2xl border border-gray-150 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/20">
-                {AVAILABLE_COLORS.map((col) => {
-                  const isSelected = selectedColor === col;
-                  return (
-                    <button
-                      key={col}
-                      type="button"
-                      onClick={() => handleSelectColor(col)}
-                      className="relative flex h-8 w-8 items-center justify-center rounded-full transition-transform active:scale-95"
-                      style={{ backgroundColor: col }}
-                    >
-                      {isSelected && (
-                        <span className="absolute inset-0 rounded-full border-2 border-white dark:border-gray-900 scale-[0.6] bg-white dark:bg-[#12131a]" />
-                      )}
-                    </button>
-                  );
-                })}
+            {/* Right Column */}
+            <div className="space-y-4">
+              <h3 className="text-xs font-semibold uppercase tracking-wider pb-1" style={{ color: 'rgba(255,255,255,0.4)', borderBottom: '0.5px solid rgba(255,255,255,0.08)' }}>
+                Visual Customization
+              </h3>
+
+              {/* Icon Picker */}
+              <div className="space-y-1.5">
+                <label className={LABEL_CLS} style={LABEL_STYLE}>
+                  Select Icon
+                </label>
+                <div
+                  className="grid grid-cols-6 gap-2 p-3 rounded-2xl"
+                  style={{
+                    background: 'rgba(255,255,255,0.01)',
+                    border: '0.5px solid rgba(255,255,255,0.12)',
+                  }}
+                >
+                  {AVAILABLE_ICONS.map((item) => {
+                    const IconComp = item.icon;
+                    const isSelected = selectedIcon === item.name;
+                    return (
+                      <button
+                        key={item.name}
+                        type="button"
+                        onClick={() => handleSelectIcon(item.name)}
+                        className="flex h-10 w-10 items-center justify-center rounded-xl transition-all border cursor-pointer"
+                        style={{
+                          background: isSelected ? 'rgba(255,255,255,0.08)' : 'transparent',
+                          borderColor: isSelected ? '#fff' : 'rgba(255,255,255,0.12)',
+                          color: isSelected ? '#fff' : 'rgba(255,255,255,0.4)',
+                        }}
+                      >
+                        <IconComp className="h-5 w-5" />
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Color Picker */}
+              <div className="space-y-1.5">
+                <label className={LABEL_CLS} style={LABEL_STYLE}>
+                  Select Theme Color
+                </label>
+                <div
+                  className="flex flex-wrap gap-2.5 p-3 rounded-2xl"
+                  style={{
+                    background: 'rgba(255,255,255,0.01)',
+                    border: '0.5px solid rgba(255,255,255,0.12)',
+                  }}
+                >
+                  {AVAILABLE_COLORS.map((col) => {
+                    const isSelected = selectedColor === col;
+                    return (
+                      <button
+                        key={col}
+                        type="button"
+                        onClick={() => handleSelectColor(col)}
+                        className="relative flex h-8 w-8 items-center justify-center rounded-full transition-transform active:scale-95 cursor-pointer"
+                        style={{ backgroundColor: col }}
+                      >
+                        {isSelected && (
+                          <span className="absolute inset-0 rounded-full border-2 border-white dark:border-gray-900 scale-[0.6] bg-white dark:bg-[#12131a]" />
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             </div>
           </div>
 
           {/* Actions */}
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-800">
+          <div
+            className="flex items-center justify-end gap-3 pt-4 shrink-0"
+            style={{ borderTop: '0.5px solid rgba(255,255,255,0.1)' }}
+          >
             <button
               type="button"
               onClick={onClose}
               disabled={isPending}
-              className="rounded-xl border border-gray-250 dark:border-gray-800 px-4 py-2.5 text-sm font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors disabled:opacity-50"
+              className="rounded-xl px-5 py-2.5 text-sm font-semibold transition-all disabled:opacity-40"
+              style={{
+                background: 'transparent',
+                border: '0.5px solid rgba(255,255,255,0.18)',
+                color: '#fff',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.04)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
             >
               Cancel
             </button>
             <button
               type="submit"
-              disabled={isPending}
-              className="flex items-center gap-2 rounded-xl bg-purple-600 px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-purple-500/20 hover:bg-purple-700 active:scale-[0.98] transition-all disabled:opacity-50"
+              disabled={isPending || !isValid}
+              className="flex items-center justify-center gap-2 rounded-xl px-6 py-2.5 text-sm font-semibold transition-all active:scale-[0.98] disabled:opacity-50"
+              style={{ background: '#fff', color: '#000' }}
             >
               {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
               <span>{goalItem ? 'Update Goal' : 'Create Goal'}</span>

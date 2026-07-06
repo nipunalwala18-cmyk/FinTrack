@@ -19,7 +19,7 @@ export const AppLayout: React.FC = () => {
   }, [isCollapsed]);
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-gray-50 dark:bg-[#0b0c10] text-gray-900 dark:text-gray-100 transition-colors duration-200">
+    <div className="flex min-h-screen w-screen text-white bg-black">
       {/* 1. Desktop Sidebar */}
       <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
 
@@ -27,17 +27,17 @@ export const AppLayout: React.FC = () => {
       <MobileSidebar isOpen={isMobileOpen} onClose={() => setIsMobileOpen(false)} />
 
       {/* 3. Main content frame */}
-      <div className="flex flex-col flex-grow min-w-0 overflow-hidden">
+      <div className="flex flex-col flex-grow min-w-0">
         {/* Top Header */}
         <Header onMenuClick={() => setIsMobileOpen(true)} />
 
-        {/* Scrollable page body */}
-        <main className="flex-grow overflow-y-auto px-4 py-8 sm:px-6 lg:px-8">
+        {/* Scrollable page body container */}
+        <main className="flex-grow px-6 py-5 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-7xl w-full">
             <Suspense
               fallback={
                 <div className="flex h-64 items-center justify-center">
-                  <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
+                  <Loader2 className="h-8 w-8 animate-spin" style={{ color: 'rgba(255,255,255,0.5)' }} />
                 </div>
               }
             >

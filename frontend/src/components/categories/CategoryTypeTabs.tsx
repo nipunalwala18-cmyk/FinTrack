@@ -8,27 +8,36 @@ interface CategoryTypeTabsProps {
 
 export const CategoryTypeTabs: React.FC<CategoryTypeTabsProps> = ({ activeTab, onChange }) => {
   return (
-    <div className="flex rounded-2xl bg-gray-100 p-1 dark:bg-gray-900 w-full max-w-sm">
+    <div
+      className="flex p-1 w-full max-w-xs"
+      style={{
+        background: '#0a0a0a',
+        border: '0.5px solid rgba(255,255,255,0.12)',
+        borderRadius: 12,
+      }}
+    >
       <button
         onClick={() => onChange('EXPENSE')}
-        className={`flex flex-1 items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-bold transition-all duration-200 ${
-          activeTab === 'EXPENSE'
-            ? 'bg-white text-gray-900 shadow-xs dark:bg-[#1c1d24] dark:text-white'
-            : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
-        }`}
+        className="flex flex-1 items-center justify-center gap-1.5 py-2 text-xs font-semibold transition-all duration-200 cursor-pointer"
+        style={{
+          borderRadius: 8,
+          background: activeTab === 'EXPENSE' ? '#fff' : 'transparent',
+          color: activeTab === 'EXPENSE' ? '#000' : 'rgba(255,255,255,0.5)',
+        }}
       >
-        <ArrowDownLeft className="h-4 w-4 text-rose-500" />
+        <ArrowDownLeft className="h-3.5 w-3.5" style={{ color: activeTab === 'EXPENSE' ? '#000' : 'rgba(255,255,255,0.5)' }} />
         Expenses
       </button>
       <button
         onClick={() => onChange('INCOME')}
-        className={`flex flex-1 items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-bold transition-all duration-200 ${
-          activeTab === 'INCOME'
-            ? 'bg-white text-gray-900 shadow-xs dark:bg-[#1c1d24] dark:text-white'
-            : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
-        }`}
+        className="flex flex-1 items-center justify-center gap-1.5 py-2 text-xs font-semibold transition-all duration-200 cursor-pointer"
+        style={{
+          borderRadius: 8,
+          background: activeTab === 'INCOME' ? '#fff' : 'transparent',
+          color: activeTab === 'INCOME' ? '#000' : 'rgba(255,255,255,0.5)',
+        }}
       >
-        <ArrowUpRight className="h-4 w-4 text-emerald-500" />
+        <ArrowUpRight className="h-3.5 w-3.5" style={{ color: activeTab === 'INCOME' ? '#000' : 'rgba(255,255,255,0.5)' }} />
         Income
       </button>
     </div>

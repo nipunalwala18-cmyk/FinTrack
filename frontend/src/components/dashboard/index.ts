@@ -5,4 +5,6 @@ export { MonthStatistics } from './MonthStatistics';
 export { DashboardSkeleton } from './DashboardSkeleton';
 export { AccountsList } from './AccountsList';
 export { GoalsOverviewWidget } from './GoalsOverviewWidget';
+export { DashboardAIAssistantCard } from './DashboardAIAssistantCard';
+
 

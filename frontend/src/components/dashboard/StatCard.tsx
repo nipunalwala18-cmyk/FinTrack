@@ -5,8 +5,6 @@ interface StatCardProps {
   value: string;
   subtitle: string;
   icon: React.ReactNode;
-  iconBg: string;
-  valueColor?: string;
 }
 
 export const StatCard: React.FC<StatCardProps> = ({
@@ -14,20 +12,48 @@ export const StatCard: React.FC<StatCardProps> = ({
   value,
   subtitle,
   icon,
-  iconBg,
-  valueColor = 'text-gray-900 dark:text-white',
 }) => {
   return (
-    <div className="rounded-2xl bg-white p-6 shadow-sm border border-gray-100 dark:bg-[#12131a] dark:border-gray-800 flex flex-col justify-between space-y-4 hover:shadow-md transition-shadow duration-200">
-      <div className="flex items-center justify-between">
-        <span className="text-sm font-semibold text-gray-500 dark:text-gray-400">{title}</span>
-        <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${iconBg}`}>
+    <div
+      className="rounded-2xl p-5 flex flex-col justify-between h-full transition-all duration-200"
+      style={{
+        background: '#0a0a0a',
+        border: '0.5px solid rgba(255,255,255,0.12)',
+      }}
+      onMouseEnter={e => {
+        (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(255,255,255,0.22)';
+      }}
+      onMouseLeave={e => {
+        (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(255,255,255,0.12)';
+      }}
+    >
+      {/* Top row: label + muted icon */}
+      <div className="flex items-center justify-between mb-4">
+        <span
+          className="text-xs font-semibold uppercase tracking-wider"
+          style={{ color: 'rgba(255,255,255,0.55)' }}
+        >
+          {title}
+        </span>
+        <span style={{ color: 'rgba(255,255,255,0.3)' }}>
           {icon}
-        </div>
+        </span>
       </div>
+
+      {/* Value + caption */}
       <div className="space-y-1 text-left">
-        <h3 className={`text-2xl font-black tracking-tight ${valueColor}`}>{value}</h3>
-        <p className="text-xs text-gray-400 font-medium">{subtitle}</p>
+        <h3
+          className="text-xl font-medium tracking-tight"
+          style={{ color: '#fff', fontWeight: 500 }}
+        >
+          {value}
+        </h3>
+        <p
+          className="text-[11px] font-medium"
+          style={{ color: 'rgba(255,255,255,0.4)' }}
+        >
+          {subtitle}
+        </p>
       </div>
     </div>
   );

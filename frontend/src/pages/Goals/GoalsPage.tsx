@@ -26,7 +26,6 @@ import {
   ChevronDown,
   ChevronUp,
   History,
-  TrendingDown
 } from 'lucide-react';
 import { useGoals, useUpdateGoalStatus } from '../../hooks/useGoals';
 import { formatCurrency } from '../../utils/currency';
@@ -131,58 +130,74 @@ export const GoalsPage: React.FC = () => {
     switch (status) {
       case 'COMPLETED':
         return (
-          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-bold text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400 border border-emerald-200/30">
-            <CheckCircle className="h-3.5 w-3.5" />
+          <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            <CheckCircle className="h-3 w-3" />
             <span>Completed</span>
           </span>
         );
       case 'FAILED':
         return (
-          <span className="inline-flex items-center gap-1 rounded-full bg-rose-50 px-2.5 py-0.5 text-xs font-bold text-rose-700 dark:bg-rose-950/20 dark:text-rose-400 border border-rose-200/30">
-            <XCircle className="h-3.5 w-3.5" />
+          <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider bg-rose-500/10 text-rose-400 border border-rose-500/20">
+            <XCircle className="h-3 w-3" />
             <span>Failed</span>
           </span>
         );
       case 'CANCELLED':
         return (
-          <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-bold text-gray-700 dark:bg-gray-800 dark:text-gray-400 border border-gray-200/30">
-            <RotateCcw className="h-3.5 w-3.5" />
+          <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider bg-white/5 text-white/50 border border-white/10">
+            <RotateCcw className="h-3 w-3" />
             <span>Cancelled</span>
           </span>
         );
       case 'ARCHIVED':
         return (
-          <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-bold text-amber-700 dark:bg-amber-950/20 dark:text-amber-400 border border-amber-200/30">
-            <Archive className="h-3.5 w-3.5" />
+          <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider bg-amber-500/10 text-amber-400 border border-amber-500/20">
+            <Archive className="h-3 w-3" />
             <span>Archived</span>
           </span>
         );
       case 'ACTIVE':
       default:
         return (
-          <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-bold text-blue-700 dark:bg-blue-950/20 dark:text-blue-400 border border-blue-200/30">
-            <Play className="h-3.5 w-3.5 fill-blue-700 dark:fill-blue-400 scale-[0.7]" />
+          <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider bg-blue-500/10 text-blue-400 border border-blue-500/20">
+            <Play className="h-3 w-3 fill-blue-400 scale-[0.7]" />
             <span>Active</span>
           </span>
         );
     }
   };
 
+  const getProgressBarColor = (status: GoalStatus) => {
+    switch (status) {
+      case 'COMPLETED':
+        return '#10b981'; // Green
+      case 'FAILED':
+        return '#ef4444'; // Red
+      case 'CANCELLED':
+        return '#6b7280'; // Gray
+      case 'ARCHIVED':
+        return '#f59e0b'; // Orange/Amber
+      case 'ACTIVE':
+      default:
+        return '#3b82f6'; // Blue
+    }
+  };
+
   return (
-    <div className="space-y-6 w-full text-left animate-fade-in">
+    <div className="space-y-5 w-full text-left animate-fade-in">
       {/* Top Section */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div className="space-y-1">
-          <h1 className="text-3xl font-black tracking-tight text-gray-900 dark:text-white">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-5" style={{ borderBottom: '0.5px solid rgba(255,255,255,0.1)' }}>
+        <div className="space-y-0.5 text-left">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white">
             Goals Funding & Progress
           </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <p className="text-xs font-semibold" style={{ color: 'rgba(255,255,255,0.4)' }}>
             Track goal allocations and funding via explicit deposit and withdrawal transactions.
           </p>
         </div>
         <button
           onClick={handleCreateClick}
-          className="flex items-center justify-center gap-2 rounded-xl bg-purple-600 px-4 py-2.5 text-sm font-bold text-white shadow-md shadow-purple-500/10 hover:bg-purple-700 active:scale-[0.98] transition-all self-start sm:self-center"
+          className="flex items-center justify-center gap-2 rounded-xl bg-white hover:bg-white/90 active:scale-[0.98] px-5 py-2.5 text-sm font-semibold text-black transition-all cursor-pointer self-start sm:self-center focus:outline-none focus-visible:ring-2 focus-visible:ring-white shrink-0"
         >
           <PlusCircle className="h-4 w-4" />
           <span>Create Goal</span>
@@ -192,63 +207,106 @@ export const GoalsPage: React.FC = () => {
       {/* Summary Cards */}
       <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
         {/* Total Goals */}
-        <div className="rounded-2xl bg-white p-5 shadow-sm border border-gray-150 dark:bg-[#12131a] dark:border-gray-800 flex items-center justify-between">
-          <div className="space-y-0.5">
-            <span className="text-xs font-semibold text-gray-400 uppercase">Total Goals</span>
-            <p className="text-2xl font-black text-gray-900 dark:text-white">{totalGoals}</p>
+        <div
+          className="p-5 flex items-center justify-between"
+          style={{
+            background: '#0a0a0a',
+            border: '0.5px solid rgba(255,255,255,0.12)',
+            borderRadius: 16,
+          }}
+        >
+          <div className="space-y-0.5 text-left">
+            <span className="text-[10px] font-semibold text-white/40 uppercase tracking-wider block">Total Goals</span>
+            <p className="text-2xl font-semibold text-white">{totalGoals}</p>
           </div>
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-50 text-purple-600 dark:bg-purple-950/20 dark:text-purple-400">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 text-white border border-white/10">
             <Target className="h-5 w-5" />
           </div>
         </div>
 
         {/* Active Goals */}
-        <div className="rounded-2xl bg-white p-5 shadow-sm border border-gray-150 dark:bg-[#12131a] dark:border-gray-800 flex items-center justify-between">
-          <div className="space-y-0.5">
-            <span className="text-xs font-semibold text-gray-400 uppercase">Active</span>
-            <p className="text-2xl font-black text-blue-600 dark:text-blue-400">{activeGoals}</p>
+        <div
+          className="p-5 flex items-center justify-between"
+          style={{
+            background: '#0a0a0a',
+            border: '0.5px solid rgba(255,255,255,0.12)',
+            borderRadius: 16,
+          }}
+        >
+          <div className="space-y-0.5 text-left">
+            <span className="text-[10px] font-semibold text-white/40 uppercase tracking-wider block">Active</span>
+            <p className="text-2xl font-semibold text-blue-400">{activeGoals}</p>
           </div>
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/20 dark:text-blue-400">
-            <Play className="h-5 w-5 fill-blue-600 dark:fill-blue-400 scale-[0.8]" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20">
+            <Play className="h-5 w-5 fill-blue-400 scale-[0.8]" />
           </div>
         </div>
 
         {/* Completed Goals */}
-        <div className="rounded-2xl bg-white p-5 shadow-sm border border-gray-150 dark:bg-[#12131a] dark:border-gray-800 flex items-center justify-between">
-          <div className="space-y-0.5">
-            <span className="text-xs font-semibold text-gray-400 uppercase">Completed</span>
-            <p className="text-2xl font-black text-emerald-600 dark:text-emerald-400">
-              {completedGoals}
-            </p>
+        <div
+          className="p-5 flex items-center justify-between"
+          style={{
+            background: '#0a0a0a',
+            border: '0.5px solid rgba(255,255,255,0.12)',
+            borderRadius: 16,
+          }}
+        >
+          <div className="space-y-0.5 text-left">
+            <span className="text-[10px] font-semibold text-white/40 uppercase tracking-wider block">Completed</span>
+            <p className="text-2xl font-semibold text-emerald-400">{completedGoals}</p>
           </div>
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/20 dark:text-emerald-400">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
             <CheckCircle className="h-5 w-5" />
           </div>
         </div>
 
         {/* Failed Goals */}
-        <div className="rounded-2xl bg-white p-5 shadow-sm border border-gray-150 dark:bg-[#12131a] dark:border-gray-800 flex items-center justify-between">
-          <div className="space-y-0.5">
-            <span className="text-xs font-semibold text-gray-400 uppercase">Failed</span>
-            <p className="text-2xl font-black text-rose-600 dark:text-rose-400">{failedGoals}</p>
+        <div
+          className="p-5 flex items-center justify-between"
+          style={{
+            background: '#0a0a0a',
+            border: '0.5px solid rgba(255,255,255,0.12)',
+            borderRadius: 16,
+          }}
+        >
+          <div className="space-y-0.5 text-left">
+            <span className="text-[10px] font-semibold text-white/40 uppercase tracking-wider block">Failed</span>
+            <p className="text-2xl font-semibold text-rose-400">{failedGoals}</p>
           </div>
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-50 text-rose-600 dark:bg-rose-950/20 dark:text-rose-400">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/20">
             <XCircle className="h-5 w-5" />
           </div>
         </div>
       </div>
 
-      {/* Filters & Sorting */}
-      <div className="rounded-2xl bg-white p-4 shadow-sm border border-gray-150 dark:bg-[#12131a] dark:border-gray-800 flex flex-col sm:flex-row gap-3 items-center justify-between">
+      {/* Filters & Sorting Toolbar */}
+      <div
+        className="p-4 flex flex-col sm:flex-row gap-3 items-center justify-between"
+        style={{
+          background: '#0a0a0a',
+          border: '0.5px solid rgba(255,255,255,0.12)',
+          borderRadius: 16,
+        }}
+      >
         {/* Search */}
-        <div className="relative w-full sm:max-w-xs">
-          <Search className="absolute left-3.5 top-3 h-4 w-4 text-gray-400" />
+        <div className="relative w-full sm:max-w-xs text-left">
+          <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-white/40">
+            <Search className="h-4 w-4" />
+          </span>
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search goals by name..."
-            className="w-full rounded-xl border border-gray-200 bg-gray-50 pl-10 pr-4 py-2.5 text-sm text-gray-900 dark:bg-gray-900/50 dark:border-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all font-semibold"
+            placeholder="Search goals..."
+            className="w-full pl-9 pr-4 py-2 text-sm transition-all focus:outline-none"
+            style={{
+              background: '#141414',
+              border: '0.5px solid rgba(255,255,255,0.12)',
+              borderRadius: 8,
+              color: '#fff',
+            }}
+            onFocus={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.32)')}
+            onBlur={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)')}
           />
         </div>
 
@@ -258,38 +316,58 @@ export const GoalsPage: React.FC = () => {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-950 dark:bg-gray-900/50 dark:border-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all font-semibold"
+            className="px-3 py-2 text-xs transition-all focus:outline-none appearance-none cursor-pointer"
+            style={{
+              background: '#141414',
+              border: '0.5px solid rgba(255,255,255,0.12)',
+              borderRadius: 8,
+              color: '#fff',
+            }}
+            onFocus={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.32)')}
+            onBlur={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)')}
           >
-            <option value="ALL">All Statuses</option>
-            <option value="ACTIVE">Active</option>
-            <option value="COMPLETED">Completed</option>
-            <option value="FAILED">Failed</option>
-            <option value="CANCELLED">Cancelled</option>
-            <option value="ARCHIVED">Archived</option>
+            <option value="ALL" style={{ background: '#141414' }}>All Statuses</option>
+            <option value="ACTIVE" style={{ background: '#141414' }}>Active</option>
+            <option value="COMPLETED" style={{ background: '#141414' }}>Completed</option>
+            <option value="FAILED" style={{ background: '#141414' }}>Failed</option>
+            <option value="CANCELLED" style={{ background: '#141414' }}>Cancelled</option>
+            <option value="ARCHIVED" style={{ background: '#141414' }}>Archived</option>
           </select>
 
           {/* Sorting */}
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-950 dark:bg-gray-900/50 dark:border-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all font-semibold"
+            className="px-3 py-2 text-xs transition-all focus:outline-none appearance-none cursor-pointer"
+            style={{
+              background: '#141414',
+              border: '0.5px solid rgba(255,255,255,0.12)',
+              borderRadius: 8,
+              color: '#fff',
+            }}
+            onFocus={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.32)')}
+            onBlur={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)')}
           >
-            <option value="NEWEST">Newest</option>
-            <option value="OLDEST">Oldest</option>
-            <option value="HIGHEST_PROGRESS">Highest Progress</option>
-            <option value="LOWEST_PROGRESS">Lowest Progress</option>
-            <option value="TARGET_AMOUNT">Highest Target</option>
+            <option value="NEWEST" style={{ background: '#141414' }}>Newest</option>
+            <option value="OLDEST" style={{ background: '#141414' }}>Oldest</option>
+            <option value="HIGHEST_PROGRESS" style={{ background: '#141414' }}>Highest Progress</option>
+            <option value="LOWEST_PROGRESS" style={{ background: '#141414' }}>Lowest Progress</option>
+            <option value="TARGET_AMOUNT" style={{ background: '#141414' }}>Highest Target</option>
           </select>
         </div>
       </div>
 
       {/* Goal Cards List */}
       {isLoading ? (
-        <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-          {[1, 2, 3].map((n) => (
+        <div className="grid gap-4 grid-cols-1 lg:grid-cols-2">
+          {[1, 2, 3, 4].map((n) => (
             <div
               key={n}
-              className="h-64 rounded-2xl bg-white border border-gray-100 dark:bg-[#12131a] dark:border-gray-800 animate-pulse"
+              className="h-64 rounded-2xl animate-pulse"
+              style={{
+                background: '#0a0a0a',
+                border: '0.5px solid rgba(255,255,255,0.12)',
+              }}
             />
           ))}
         </div>
@@ -297,19 +375,29 @@ export const GoalsPage: React.FC = () => {
         <div className="flex h-64 items-center justify-center">
           <div className="text-center space-y-2">
             <AlertCircle className="mx-auto h-8 w-8 text-rose-500" />
-            <p className="text-sm font-semibold text-gray-500">
+            <p className="text-sm font-semibold text-white/50">
               {error?.message || 'Failed to fetch goals'}
             </p>
           </div>
         </div>
       ) : filteredGoals.length === 0 ? (
-        <div className="rounded-3xl bg-white p-12 text-center border border-gray-150 dark:bg-[#12131a] dark:border-gray-800 space-y-4 max-w-md mx-auto">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-purple-50 text-purple-600 dark:bg-purple-950/20 dark:text-purple-400">
-            <Target className="h-8 w-8" />
+        <div
+          className="p-12 text-center max-w-md mx-auto space-y-5"
+          style={{
+            background: '#0a0a0a',
+            border: '0.5px solid rgba(255,255,255,0.12)',
+            borderRadius: 16,
+          }}
+        >
+          <div
+            className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl"
+            style={{ background: 'rgba(255,255,255,0.06)' }}
+          >
+            <Target className="h-7 w-7 text-white/60" />
           </div>
-          <div className="space-y-1">
-            <h3 className="text-lg font-bold text-gray-900 dark:text-white">No goals found</h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+          <div className="space-y-1.5">
+            <h3 className="text-lg font-bold text-white">No goals found</h3>
+            <p className="text-xs" style={{ color: 'rgba(255,255,255,0.45)' }}>
               {goals.length === 0
                 ? 'Create a goal and allocate transactions to start saving!'
                 : 'Try adjusting your filter options.'}
@@ -318,14 +406,14 @@ export const GoalsPage: React.FC = () => {
           {goals.length === 0 && (
             <button
               onClick={handleCreateClick}
-              className="mx-auto flex items-center justify-center gap-2 rounded-xl bg-purple-600 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-purple-500/20 hover:bg-purple-700 active:scale-[0.98] transition-all"
+              className="w-full py-3 bg-white text-black rounded-xl text-sm font-semibold hover:bg-white/90 active:scale-[0.98] transition-all cursor-pointer"
             >
-              <span>Add Goal</span>
+              Add Goal
             </button>
           )}
         </div>
       ) : (
-        <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
+        <div className="grid gap-4 grid-cols-1 lg:grid-cols-2">
           {filteredGoals.map((goal) => {
             const IconComponent = ICON_MAP[goal.icon || 'Target'] || Target;
             const themeColor = goal.color || '#9333ea';
@@ -336,30 +424,35 @@ export const GoalsPage: React.FC = () => {
             return (
               <div
                 key={goal.id}
-                className="relative rounded-2xl bg-white border border-gray-150 dark:bg-[#12131a] dark:border-gray-800 p-6 flex flex-col justify-between hover:shadow-lg transition-all duration-300 group overflow-hidden"
+                className="relative p-6 flex flex-col justify-between hover:shadow-lg transition-all duration-300 group overflow-hidden"
+                style={{
+                  background: '#0a0a0a',
+                  border: '0.5px solid rgba(255,255,255,0.12)',
+                  borderRadius: 16,
+                }}
               >
-                {/* Visual Theme Line */}
+                {/* Visual Theme Bar */}
                 <div
-                  className="absolute left-0 top-0 bottom-0 w-1.5"
+                  className="absolute left-0 top-0 bottom-0 w-1"
                   style={{ backgroundColor: themeColor }}
                 />
 
                 {/* Card Top */}
                 <div className="space-y-4">
                   <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 min-w-0">
                       <div
-                        className="flex h-12 w-12 items-center justify-center rounded-2xl text-white shadow-sm"
+                        className="flex h-11 w-11 items-center justify-center rounded-xl text-white shadow-sm shrink-0"
                         style={{ backgroundColor: themeColor }}
                       >
-                        <IconComponent className="h-6 w-6" />
+                        <IconComponent className="h-5 w-5" />
                       </div>
-                      <div className="space-y-0.5 text-left">
-                        <h3 className="text-lg font-black text-gray-900 dark:text-white line-clamp-1">
+                      <div className="space-y-0.5 text-left min-w-0">
+                        <h3 className="text-base font-bold text-white truncate">
                           {goal.name}
                         </h3>
-                        <p className="text-xs text-gray-400 font-bold uppercase tracking-wider flex items-center gap-1">
-                          <Calendar className="h-3 w-3" />
+                        <p className="text-[10px] font-semibold uppercase tracking-wider flex items-center gap-1 text-white/40">
+                          <Calendar className="h-3.5 w-3.5" />
                           Target: {new Date(goal.targetDate || goal.endDate || '').toLocaleDateString(undefined, {
                             month: 'short',
                             day: 'numeric',
@@ -368,35 +461,37 @@ export const GoalsPage: React.FC = () => {
                         </p>
                       </div>
                     </div>
-                    {getStatusBadge(goal.status)}
+                    <div className="shrink-0">
+                      {getStatusBadge(goal.status)}
+                    </div>
                   </div>
 
                   {goal.description && (
-                    <p className="text-xs text-gray-500 dark:text-gray-400 text-left line-clamp-2">
+                    <p className="text-xs text-white/50 text-left line-clamp-2 leading-relaxed">
                       {goal.description}
                     </p>
                   )}
                 </div>
 
                 {/* Progress Details */}
-                <div className="space-y-4 pt-6">
+                <div className="space-y-3 pt-5">
                   <div className="flex items-end justify-between">
                     <div className="text-left space-y-0.5">
-                      <span className="text-[10px] font-bold text-gray-400 uppercase">
-                        Current Saved / Target
+                      <span className="text-[9px] font-semibold text-white/40 uppercase tracking-wider block">
+                        Saved / Target
                       </span>
-                      <p className="text-lg font-black text-gray-900 dark:text-white">
+                      <p className="text-base font-bold text-white">
                         {formatCurrency(goal.savedAmount)}{' '}
-                        <span className="text-xs font-bold text-gray-400">
+                        <span className="text-xs text-white/40">
                           / {formatCurrency(goal.targetAmount)}
                         </span>
                       </p>
                     </div>
                     <div className="text-right space-y-0.5">
-                      <span className="text-[10px] font-bold text-gray-400 uppercase">
+                      <span className="text-[9px] font-semibold text-white/40 uppercase tracking-wider block">
                         Completion
                       </span>
-                      <p className="text-lg font-black text-purple-600 dark:text-purple-400">
+                      <p className="text-base font-semibold" style={{ color: themeColor }}>
                         {Math.round(progress)}%
                       </p>
                     </div>
@@ -404,16 +499,16 @@ export const GoalsPage: React.FC = () => {
 
                   {/* Progress Bar */}
                   <div className="space-y-2">
-                    <div className="relative h-2.5 w-full rounded-full bg-gray-100 dark:bg-gray-800 overflow-hidden">
+                    <div className="relative h-2 w-full rounded-full bg-white/5 overflow-hidden">
                       <div
                         className="h-full rounded-full transition-all duration-500"
                         style={{
-                          width: `${progress}%`,
-                          backgroundColor: themeColor,
+                          width: `${Math.min(100, progress)}%`,
+                          backgroundColor: getProgressBarColor(goal.status),
                         }}
                       />
                     </div>
-                    <div className="flex items-center justify-between text-[11px] font-bold text-gray-400 uppercase">
+                    <div className="flex items-center justify-between text-[10px] font-semibold text-white/40 uppercase tracking-wider">
                       <span>{formatCurrency(remaining)} remaining</span>
                       {goal.lastContributionDate && (
                         <span>
@@ -429,10 +524,10 @@ export const GoalsPage: React.FC = () => {
                 </div>
 
                 {/* Contribution History Collapsible section */}
-                <div className="mt-4 pt-3 border-t border-gray-100 dark:border-gray-850/80">
+                <div className="mt-4 pt-3 border-t" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
                   <button
                     onClick={() => toggleHistory(goal.id)}
-                    className="flex items-center gap-1.5 text-xs font-bold text-gray-500 hover:text-purple-600 dark:text-gray-400 dark:hover:text-purple-400 transition-colors"
+                    className="flex items-center gap-1.5 text-xs font-semibold text-white/40 hover:text-white transition-colors cursor-pointer"
                   >
                     <History className="h-3.5 w-3.5" />
                     <span>Contribution History ({goal.transactions?.length || 0})</span>
@@ -442,32 +537,31 @@ export const GoalsPage: React.FC = () => {
                   {isExpanded && (
                     <div className="mt-2.5 space-y-2 max-h-40 overflow-y-auto pr-1">
                       {!goal.transactions || goal.transactions.length === 0 ? (
-                        <p className="text-[11px] text-gray-400 font-semibold py-1 text-left">
+                        <p className="text-[10px] text-white/40 font-medium py-1 text-left">
                           No contributions recorded yet. Link a transaction to get started.
                         </p>
                       ) : (
                         goal.transactions.map((t) => (
                           <div
                             key={t.id}
-                            className="flex items-center justify-between text-xs p-2 rounded-xl bg-gray-50 dark:bg-gray-900/40 border border-gray-100 dark:border-gray-850"
+                            className="flex items-center justify-between text-xs p-2 rounded-xl bg-white/[0.01] border"
+                            style={{ borderColor: 'rgba(255,255,255,0.08)' }}
                           >
                             <div className="min-w-0 text-left space-y-0.5">
-                              <p className="font-bold text-gray-700 dark:text-gray-300 truncate">
+                              <p className="font-semibold text-white/80 truncate">
                                 {t.description || 'Contribution'}
                               </p>
-                              <p className="text-[10px] text-gray-400 font-medium">
+                              <p className="text-[9px] text-white/40 font-semibold uppercase tracking-wider">
                                 {new Date(t.date).toLocaleDateString()} • {t.account?.name}
                               </p>
                             </div>
                             <div className="flex items-center gap-1.5 shrink-0">
                               {t.contributionType === 'DEPOSIT' ? (
-                                <span className="inline-flex items-center text-emerald-600 dark:text-emerald-400 font-black">
-                                  <ArrowRight className="h-3 w-3 rotate-45 mr-0.5" />
+                                <span className="inline-flex items-center text-emerald-400 font-semibold">
                                   +{formatCurrency(t.amount)}
                                 </span>
                               ) : (
-                                <span className="inline-flex items-center text-rose-600 dark:text-rose-400 font-black">
-                                  <ArrowRight className="h-3 w-3 -rotate-45 mr-0.5" />
+                                <span className="inline-flex items-center text-rose-450 font-semibold">
                                   -{formatCurrency(t.amount)}
                                 </span>
                               )}
@@ -480,12 +574,12 @@ export const GoalsPage: React.FC = () => {
                 </div>
 
                 {/* Actions Hover Controls */}
-                <div className="absolute right-4 top-4 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                <div className="absolute right-4 top-4 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                   {goal.status === 'ARCHIVED' ? (
                     <button
                       onClick={() => handleUnarchiveClick(goal)}
                       title="Activate goal"
-                      className="rounded-lg p-1.5 bg-white border border-gray-150 shadow-sm text-gray-500 hover:text-emerald-600 hover:bg-emerald-50 dark:bg-gray-900 dark:border-gray-850 dark:text-gray-400 dark:hover:text-emerald-400 dark:hover:bg-emerald-950/20 transition-all active:scale-95"
+                      className="rounded-lg p-1.5 text-white/45 hover:bg-white/5 hover:text-white transition-all active:scale-95 cursor-pointer"
                     >
                       <RotateCcw className="h-4 w-4" />
                     </button>
@@ -493,20 +587,20 @@ export const GoalsPage: React.FC = () => {
                     <button
                       onClick={() => handleArchiveClick(goal)}
                       title="Archive goal"
-                      className="rounded-lg p-1.5 bg-white border border-gray-150 shadow-sm text-gray-500 hover:text-amber-600 hover:bg-amber-50 dark:bg-gray-900 dark:border-gray-850 dark:text-gray-400 dark:hover:text-amber-400 dark:hover:bg-amber-950/20 transition-all active:scale-95"
+                      className="rounded-lg p-1.5 text-white/45 hover:bg-white/5 hover:text-white transition-all active:scale-95 cursor-pointer"
                     >
                       <Archive className="h-4 w-4" />
                     </button>
                   )}
                   <button
                     onClick={() => handleEdit(goal)}
-                    className="rounded-lg p-1.5 bg-white border border-gray-150 shadow-sm text-gray-500 hover:text-purple-600 hover:bg-purple-50 dark:bg-gray-900 dark:border-gray-850 dark:text-gray-400 dark:hover:text-purple-400 dark:hover:bg-purple-950/20 transition-all active:scale-95"
+                    className="rounded-lg p-1.5 text-white/45 hover:bg-white/5 hover:text-white transition-all active:scale-95 cursor-pointer"
                   >
                     <Edit2 className="h-4 w-4" />
                   </button>
                   <button
                     onClick={() => handleDeleteClick(goal)}
-                    className="rounded-lg p-1.5 bg-white border border-gray-150 shadow-sm text-gray-500 hover:text-rose-600 hover:bg-rose-50 dark:bg-gray-900 dark:border-gray-850 dark:text-gray-400 dark:hover:text-rose-400 dark:hover:bg-rose-950/20 transition-all active:scale-95"
+                    className="rounded-lg p-1.5 text-white/45 hover:bg-rose-500/10 hover:text-rose-455 transition-all active:scale-95 cursor-pointer"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
@@ -533,21 +627,5 @@ export const GoalsPage: React.FC = () => {
     </div>
   );
 };
-
-const ArrowRight: React.FC<{ className?: string }> = ({ className }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2.5"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={className}
-  >
-    <path d="M5 12h14" />
-    <path d="m12 5 7 7-7 7" />
-  </svg>
-);
 
 export default GoalsPage;

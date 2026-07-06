@@ -47,32 +47,47 @@ export const DeleteGoalDialog: React.FC<DeleteGoalDialogProps> = ({
   return (
     <div
       onClick={handleBackdropClick}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-xs p-4 transition-all duration-300 animate-fade-in"
       aria-modal="true"
       role="dialog"
     >
       <div
         ref={dialogRef}
-        className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl dark:bg-[#12131a] border border-gray-100 dark:border-gray-800 space-y-6 animate-zoom-in"
+        className="w-[95vw] max-w-md p-6 shadow-2xl text-center space-y-5 animate-zoom-in"
+        style={{
+          background: '#0a0a0a',
+          border: '0.5px solid rgba(255,255,255,0.14)',
+          borderRadius: 16,
+        }}
       >
-        <div className="flex items-center gap-4 text-left">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-rose-50 text-rose-500 dark:bg-rose-950/20">
-            <AlertTriangle className="h-6 w-6" />
-          </div>
-          <div className="space-y-1">
-            <h3 className="text-lg font-bold text-gray-900 dark:text-white">Delete Goal?</h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Are you sure you want to delete <span className="font-semibold text-gray-700 dark:text-gray-300">"{goalName}"</span>? This action cannot be undone.
-            </p>
-          </div>
+        {/* Header/Icon */}
+        <div
+          className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl"
+          style={{ background: 'rgba(248,113,113,0.08)' }}
+        >
+          <AlertTriangle className="h-6 w-6" style={{ color: 'rgba(248,113,113,0.8)' }} />
         </div>
 
-        <div className="flex items-center justify-end gap-3 border-t border-gray-100 dark:border-gray-800 pt-4">
+        <div className="space-y-2 text-center">
+          <h3 className="text-lg font-bold text-white">Delete Goal?</h3>
+          <p className="text-sm font-semibold leading-relaxed text-white/50">
+            Are you sure you want to delete <span className="font-bold text-white">"{goalName}"</span>? This action cannot be undone.
+          </p>
+        </div>
+
+        <div className="flex gap-3 pt-2">
           <button
             type="button"
             onClick={onClose}
             disabled={isPending}
-            className="rounded-xl border border-gray-200 dark:border-gray-800 px-4 py-2.5 text-sm font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors disabled:opacity-50"
+            className="flex-grow rounded-xl py-3 text-sm font-semibold transition-all disabled:opacity-40"
+            style={{
+              background: 'transparent',
+              border: '0.5px solid rgba(255,255,255,0.18)',
+              color: '#fff',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.04)')}
+            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
           >
             Cancel
           </button>
@@ -80,7 +95,7 @@ export const DeleteGoalDialog: React.FC<DeleteGoalDialogProps> = ({
             type="button"
             onClick={handleDelete}
             disabled={isPending}
-            className="flex items-center gap-2 rounded-xl bg-rose-600 px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-rose-500/20 hover:bg-rose-700 active:scale-[0.98] transition-all disabled:opacity-50"
+            className="flex-grow flex items-center justify-center gap-2 rounded-xl bg-rose-600 hover:bg-rose-700 py-3 text-sm font-bold text-white shadow-lg shadow-rose-500/20 transition-all active:scale-[0.98]"
           >
             {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
             <span>Delete</span>

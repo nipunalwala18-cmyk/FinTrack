@@ -12,7 +12,8 @@ import {
   Filter,
   Eye,
   CheckCircle,
-  Loader2
+  Loader2,
+  X
 } from 'lucide-react';
 import {
   useReports,
@@ -21,6 +22,11 @@ import {
   useEmailReport,
   useDeleteReport
 } from '../../hooks/useReports';
+import { ConfirmationDialog } from '../../components/layout/ConfirmationDialog';
+import {
+  LABEL_CLS, LABEL_STYLE, INPUT_BASE, INPUT_STYLE,
+  INPUT_FOCUS_STYLE, INPUT_BLUR_STYLE
+} from '../../components/accounts/fieldStyles';
 
 export const ReportsPage: React.FC = () => {
   const { data: reports = [], isLoading } = useReports();
@@ -42,6 +48,9 @@ export const ReportsPage: React.FC = () => {
   // Preview State
   const [previewContent, setPreviewContent] = useState<string | null>(null);
   const [previewTitle, setPreviewTitle] = useState<string>('');
+
+  // Confirmation dialog state
+  const [deleteReportId, setDeleteReportId] = useState<string | null>(null);
 
   const months = [
     { value: 1, label: 'January' },
@@ -77,7 +86,20 @@ export const ReportsPage: React.FC = () => {
     }
   };
 
-  // Filter logic
+  const handleDeleteClick = (id: string) => {
+    setDeleteReportId(id);
+  };
+
+  const handleConfirmDelete = () => {
+    if (deleteReportId) {
+      deleteReport.mutate(deleteReportId, {
+        onSuccess: () => {
+          setDeleteReportId(null);
+        },
+      });
+    }
+  };
+
   const filteredReports = reports.filter((r) => {
     if (filterMonth !== 'ALL' && r.month !== Number(filterMonth)) return false;
     if (filterYear !== 'ALL' && r.year !== Number(filterYear)) return false;
@@ -85,64 +107,159 @@ export const ReportsPage: React.FC = () => {
     return true;
   });
 
+  // Overview stats calculation
+  const totalReports = reports.length;
+  const monthlyReports = reports.filter((r) => r.type === 'MONTHLY').length;
+  const yearlyReports = reports.filter((r) => r.type === 'YEARLY').length;
+  const budgetReports = reports.filter((r) => r.type === 'BUDGET').length;
+
   return (
-    <div className="space-y-6 w-full text-left animate-fade-in font-sans pb-12">
+    <div className="space-y-5 w-full text-left animate-fade-in font-sans pb-12">
       {/* Page Title */}
-      <div className="space-y-1">
-        <h1 className="text-3xl font-black tracking-tight text-gray-900 dark:text-white">Financial reports</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400">
-          Generate, download, and email monthly or yearly financial reports with AI coaching summaries.
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-5" style={{ borderBottom: '0.5px solid rgba(255,255,255,0.1)' }}>
+        <div className="space-y-0.5 text-left">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white">Financial Reports</h1>
+          <p className="text-xs font-semibold" style={{ color: 'rgba(255,255,255,0.4)' }}>
+            Generate, download, and email monthly or yearly financial reports with AI coaching summaries.
+          </p>
+        </div>
       </div>
 
-      <div className="grid gap-6 grid-cols-1 lg:grid-cols-12">
+      {/* Summary Cards */}
+      <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
+        <div
+          className="p-5 flex items-center justify-between"
+          style={{
+            background: '#0a0a0a',
+            border: '0.5px solid rgba(255,255,255,0.12)',
+            borderRadius: 16,
+          }}
+        >
+          <div className="space-y-0.5 text-left">
+            <span className="text-[10px] font-semibold text-white/40 uppercase tracking-wider block">Total Reports</span>
+            <p className="text-2xl font-semibold text-white">{totalReports}</p>
+          </div>
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 text-white border border-white/10">
+            <FileText className="h-5 w-5" />
+          </div>
+        </div>
+
+        <div
+          className="p-5 flex items-center justify-between"
+          style={{
+            background: '#0a0a0a',
+            border: '0.5px solid rgba(255,255,255,0.12)',
+            borderRadius: 16,
+          }}
+        >
+          <div className="space-y-0.5 text-left">
+            <span className="text-[10px] font-semibold text-white/40 uppercase tracking-wider block">Monthly</span>
+            <p className="text-2xl font-semibold text-purple-400">{monthlyReports}</p>
+          </div>
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20">
+            <Calendar className="h-5 w-5" />
+          </div>
+        </div>
+
+        <div
+          className="p-5 flex items-center justify-between"
+          style={{
+            background: '#0a0a0a',
+            border: '0.5px solid rgba(255,255,255,0.12)',
+            borderRadius: 16,
+          }}
+        >
+          <div className="space-y-0.5 text-left">
+            <span className="text-[10px] font-semibold text-white/40 uppercase tracking-wider block">Yearly</span>
+            <p className="text-2xl font-semibold text-emerald-400">{yearlyReports}</p>
+          </div>
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            <Clock className="h-5 w-5" />
+          </div>
+        </div>
+
+        <div
+          className="p-5 flex items-center justify-between"
+          style={{
+            background: '#0a0a0a',
+            border: '0.5px solid rgba(255,255,255,0.12)',
+            borderRadius: 16,
+          }}
+        >
+          <div className="space-y-0.5 text-left">
+            <span className="text-[10px] font-semibold text-white/40 uppercase tracking-wider block">Budget Reports</span>
+            <p className="text-2xl font-semibold text-blue-400">{budgetReports}</p>
+          </div>
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20">
+            <Sparkles className="h-5 w-5" />
+          </div>
+        </div>
+      </div>
+
+      <div className="grid gap-6 grid-cols-1 lg:grid-cols-12 pt-2">
         {/* Left Side: Generator & Filters */}
         <div className="lg:col-span-4 space-y-6">
           {/* Generator Card */}
-          <div className="rounded-3xl border border-gray-150 bg-white p-6 dark:border-gray-800 dark:bg-[#12131a] space-y-4">
+          <div
+            className="p-6 space-y-5"
+            style={{
+              background: '#0a0a0a',
+              border: '0.5px solid rgba(255,255,255,0.12)',
+              borderRadius: 20,
+            }}
+          >
             <div className="flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-purple-600 dark:text-purple-400" />
-              <h3 className="font-extrabold text-gray-900 dark:text-white text-base">Generate Report</h3>
+              <Sparkles className="h-4.5 w-4.5 text-white" />
+              <h3 className="font-bold text-white text-sm uppercase tracking-wider">Generate Report</h3>
             </div>
-            
+
             <form onSubmit={handleGenerate} className="space-y-4">
-              <div className="space-y-1">
-                <label className="text-[10px] font-black uppercase text-gray-400 tracking-wider">Report Type</label>
+              <div className="space-y-1.5">
+                <label className={LABEL_CLS} style={LABEL_STYLE}>Report Type</label>
                 <select
                   value={genType}
                   onChange={(e) => setGenType(e.target.value)}
-                  className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-900 dark:bg-gray-900/50 dark:border-gray-800 dark:text-white focus:outline-none"
+                  className={`${INPUT_BASE} appearance-none cursor-pointer`}
+                  style={INPUT_STYLE}
+                  onFocus={e => (e.currentTarget.style.border = INPUT_FOCUS_STYLE)}
+                  onBlur={e => (e.currentTarget.style.border = INPUT_BLUR_STYLE)}
                 >
-                  <option value="MONTHLY">Monthly Financial Report</option>
-                  <option value="YEARLY">Yearly Financial Report</option>
-                  <option value="BUDGET">Budget Performance</option>
-                  <option value="GOAL">Goal Progress Report</option>
+                  <option value="MONTHLY" style={{ background: '#141414' }}>Monthly Financial Report</option>
+                  <option value="YEARLY" style={{ background: '#141414' }}>Yearly Financial Report</option>
+                  <option value="BUDGET" style={{ background: '#141414' }}>Budget Performance</option>
+                  <option value="GOAL" style={{ background: '#141414' }}>Goal Progress Report</option>
                 </select>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="text-[10px] font-black uppercase text-gray-400 tracking-wider">Month</label>
+                <div className="space-y-1.5">
+                  <label className={LABEL_CLS} style={LABEL_STYLE}>Month</label>
                   <select
                     value={genMonth}
                     onChange={(e) => setGenMonth(Number(e.target.value))}
-                    className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-900 dark:bg-gray-900/50 dark:border-gray-800 dark:text-white focus:outline-none"
+                    className={`${INPUT_BASE} appearance-none cursor-pointer`}
+                    style={INPUT_STYLE}
+                    onFocus={e => (e.currentTarget.style.border = INPUT_FOCUS_STYLE)}
+                    onBlur={e => (e.currentTarget.style.border = INPUT_BLUR_STYLE)}
                   >
                     {months.map((m) => (
-                      <option key={m.value} value={m.value}>{m.label}</option>
+                      <option key={m.value} value={m.value} style={{ background: '#141414' }}>{m.label}</option>
                     ))}
                   </select>
                 </div>
-                <div className="space-y-1">
-                  <label className="text-[10px] font-black uppercase text-gray-400 tracking-wider">Year</label>
+                <div className="space-y-1.5">
+                  <label className={LABEL_CLS} style={LABEL_STYLE}>Year</label>
                   <select
                     value={genYear}
                     onChange={(e) => setGenYear(Number(e.target.value))}
-                    className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-900 dark:bg-gray-900/50 dark:border-gray-800 dark:text-white focus:outline-none"
+                    className={`${INPUT_BASE} appearance-none cursor-pointer`}
+                    style={INPUT_STYLE}
+                    onFocus={e => (e.currentTarget.style.border = INPUT_FOCUS_STYLE)}
+                    onBlur={e => (e.currentTarget.style.border = INPUT_BLUR_STYLE)}
                   >
-                    <option value={2026}>2026</option>
-                    <option value={2027}>2027</option>
-                    <option value={2028}>2028</option>
+                    <option value={2026} style={{ background: '#141414' }}>2026</option>
+                    <option value={2027} style={{ background: '#141414' }}>2027</option>
+                    <option value={2028} style={{ background: '#141414' }}>2028</option>
                   </select>
                 </div>
               </div>
@@ -150,7 +267,7 @@ export const ReportsPage: React.FC = () => {
               <button
                 type="submit"
                 disabled={generateReport.isPending}
-                className="w-full rounded-xl bg-purple-600 py-3 text-sm font-bold text-white shadow-lg hover:bg-purple-700 transition-all flex items-center justify-center gap-2 active:scale-95 disabled:opacity-50"
+                className="w-full flex items-center justify-center gap-2 rounded-xl bg-white hover:bg-white/90 active:scale-[0.98] py-3 text-sm font-semibold text-black transition-all cursor-pointer disabled:opacity-50"
               >
                 {generateReport.isPending ? (
                   <>
@@ -168,38 +285,51 @@ export const ReportsPage: React.FC = () => {
           </div>
 
           {/* History Filters */}
-          <div className="rounded-3xl border border-gray-150 bg-white p-6 dark:border-gray-800 dark:bg-[#12131a] space-y-4">
+          <div
+            className="p-6 space-y-5"
+            style={{
+              background: '#0a0a0a',
+              border: '0.5px solid rgba(255,255,255,0.12)',
+              borderRadius: 20,
+            }}
+          >
             <div className="flex items-center gap-2">
-              <Filter className="h-5 w-5 text-gray-400" />
-              <h3 className="font-extrabold text-gray-900 dark:text-white text-base">Filter History</h3>
+              <Filter className="h-4.5 w-4.5 text-white/40" />
+              <h3 className="font-bold text-white text-sm uppercase tracking-wider">Filter History</h3>
             </div>
 
-            <div className="space-y-3">
-              <div className="space-y-1">
-                <label className="text-[10px] font-black uppercase text-gray-400 tracking-wider">Report Type</label>
+            <div className="space-y-4">
+              <div className="space-y-1.5">
+                <label className={LABEL_CLS} style={LABEL_STYLE}>Report Type</label>
                 <select
                   value={filterType}
                   onChange={(e) => setFilterType(e.target.value)}
-                  className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-900 dark:bg-gray-900/50 dark:border-gray-800 dark:text-white focus:outline-none"
+                  className={`${INPUT_BASE} appearance-none cursor-pointer`}
+                  style={INPUT_STYLE}
+                  onFocus={e => (e.currentTarget.style.border = INPUT_FOCUS_STYLE)}
+                  onBlur={e => (e.currentTarget.style.border = INPUT_BLUR_STYLE)}
                 >
-                  <option value="ALL">All Types</option>
-                  <option value="MONTHLY">Monthly Financial Report</option>
-                  <option value="YEARLY">Yearly Financial Report</option>
-                  <option value="BUDGET">Budget Performance</option>
-                  <option value="GOAL">Goal Progress Report</option>
+                  <option value="ALL" style={{ background: '#141414' }}>All Types</option>
+                  <option value="MONTHLY" style={{ background: '#141414' }}>Monthly Financial Report</option>
+                  <option value="YEARLY" style={{ background: '#141414' }}>Yearly Financial Report</option>
+                  <option value="BUDGET" style={{ background: '#141414' }}>Budget Performance</option>
+                  <option value="GOAL" style={{ background: '#141414' }}>Goal Progress Report</option>
                 </select>
               </div>
 
-              <div className="space-y-1">
-                <label className="text-[10px] font-black uppercase text-gray-400 tracking-wider">Month</label>
+              <div className="space-y-1.5">
+                <label className={LABEL_CLS} style={LABEL_STYLE}>Month</label>
                 <select
                   value={filterMonth}
                   onChange={(e) => setFilterMonth(e.target.value)}
-                  className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-900 dark:bg-gray-900/50 dark:border-gray-800 dark:text-white focus:outline-none"
+                  className={`${INPUT_BASE} appearance-none cursor-pointer`}
+                  style={INPUT_STYLE}
+                  onFocus={e => (e.currentTarget.style.border = INPUT_FOCUS_STYLE)}
+                  onBlur={e => (e.currentTarget.style.border = INPUT_BLUR_STYLE)}
                 >
-                  <option value="ALL">All Months</option>
+                  <option value="ALL" style={{ background: '#141414' }}>All Months</option>
                   {months.map((m) => (
-                    <option key={m.value} value={m.value}>{m.label}</option>
+                    <option key={m.value} value={m.value} style={{ background: '#141414' }}>{m.label}</option>
                   ))}
                 </select>
               </div>
@@ -208,55 +338,68 @@ export const ReportsPage: React.FC = () => {
         </div>
 
         {/* Right Side: Report History List */}
-        <div className="lg:col-span-8 space-y-6">
-          <div className="rounded-3xl border border-gray-150 bg-white p-6 dark:border-gray-800 dark:bg-[#12131a] space-y-4">
-            <h3 className="font-extrabold text-gray-900 dark:text-white text-base">Report History</h3>
+        <div className="lg:col-span-8">
+          <div
+            className="p-6 space-y-4"
+            style={{
+              background: '#0a0a0a',
+              border: '0.5px solid rgba(255,255,255,0.12)',
+              borderRadius: 24,
+            }}
+          >
+            <h3 className="text-base font-bold text-white uppercase tracking-wider">Report History</h3>
 
             {isLoading ? (
               <div className="flex py-12 justify-center">
-                <Loader2 className="h-6 w-6 animate-spin text-purple-600" />
+                <Loader2 className="h-6 w-6 animate-spin text-white/50" />
               </div>
             ) : filteredReports.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-12 text-center text-gray-400">
-                <FileText className="h-10 w-10 mb-2 stroke-1" />
-                <p className="text-xs">No reports compiled yet.</p>
+              <div className="flex flex-col items-center justify-center py-12 text-center text-white/40 space-y-3">
+                <div
+                  className="flex h-14 w-14 items-center justify-center rounded-2xl"
+                  style={{ background: 'rgba(255,255,255,0.06)' }}
+                >
+                  <FileText className="h-7 w-7 text-white/60" />
+                </div>
+                <p className="text-xs font-semibold uppercase tracking-wider">No reports compiled yet.</p>
               </div>
             ) : (
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto scrollbar-hidden">
                 <table className="w-full text-left text-sm border-collapse">
                   <thead>
-                    <tr className="border-b border-gray-100 dark:border-gray-800">
-                      <th className="py-3 px-4 font-bold text-gray-400 text-xs uppercase">Report Date</th>
-                      <th className="py-3 px-4 font-bold text-gray-400 text-xs uppercase">Type</th>
-                      <th className="py-3 px-4 font-bold text-gray-400 text-xs uppercase">Emailed</th>
-                      <th className="py-3 px-4 font-bold text-gray-400 text-xs uppercase text-right">Actions</th>
+                    <tr className="border-b" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
+                      <th className="py-3 px-4 font-semibold text-white/40 text-[10px] uppercase tracking-wider">Report Date</th>
+                      <th className="py-3 px-4 font-semibold text-white/40 text-[10px] uppercase tracking-wider">Type</th>
+                      <th className="py-3 px-4 font-semibold text-white/40 text-[10px] uppercase tracking-wider">Emailed</th>
+                      <th className="py-3 px-4 font-semibold text-white/40 text-[10px] uppercase tracking-wider text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     {filteredReports.map((report) => (
                       <tr
                         key={report.id}
-                        className="border-b border-gray-100 dark:border-gray-850 hover:bg-gray-50/50 dark:hover:bg-gray-900/10"
+                        className="border-b transition-colors"
+                        style={{ borderColor: 'rgba(255,255,255,0.06)' }}
                       >
-                        <td className="py-4 px-4 font-bold text-gray-850 dark:text-white">
+                        <td className="py-4 px-4 font-bold text-white">
                           {months.find((m) => m.value === report.month)?.label} {report.year}
                         </td>
-                        <td className="py-4 px-4 text-xs font-semibold text-gray-500">
+                        <td className="py-4 px-4 text-xs font-semibold text-white/60 uppercase tracking-wider">
                           {report.type}
                         </td>
                         <td className="py-4 px-4 text-xs">
                           {report.emailed ? (
-                            <span className="inline-flex items-center gap-1 font-bold text-emerald-600 dark:text-emerald-400">
-                              <CheckCircle className="h-3 w-3" /> Yes
+                            <span className="inline-flex items-center gap-1 font-semibold text-emerald-400">
+                              <CheckCircle className="h-3.5 w-3.5" /> Yes
                             </span>
                           ) : (
-                            <span className="text-gray-400">No</span>
+                            <span className="text-white/40 font-semibold">No</span>
                           )}
                         </td>
-                        <td className="py-4 px-4 text-right space-x-1">
+                        <td className="py-4 px-4 text-right space-x-1 shrink-0">
                           <button
                             onClick={() => handlePreview(report.id, `${report.type} - ${report.month}/${report.year}`)}
-                            className="p-2 rounded-lg text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+                            className="p-1.5 rounded-lg text-white/40 hover:bg-white/5 hover:text-white transition-all active:scale-95 cursor-pointer"
                             title="Preview Report"
                           >
                             <Eye className="h-4 w-4" />
@@ -264,7 +407,7 @@ export const ReportsPage: React.FC = () => {
                           <button
                             onClick={() => downloadReport.mutate(report.id)}
                             disabled={downloadReport.isPending}
-                            className="p-2 rounded-lg text-purple-600 hover:bg-purple-50 dark:text-purple-400 dark:hover:bg-purple-950/20"
+                            className="p-1.5 rounded-lg text-purple-400 hover:bg-purple-500/10 transition-all active:scale-95 cursor-pointer"
                             title="Download Report"
                           >
                             <Download className="h-4 w-4" />
@@ -272,15 +415,15 @@ export const ReportsPage: React.FC = () => {
                           <button
                             onClick={() => emailReport.mutate(report.id)}
                             disabled={emailReport.isPending}
-                            className="p-2 rounded-lg text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-950/20"
+                            className="p-1.5 rounded-lg text-blue-400 hover:bg-blue-500/10 transition-all active:scale-95 cursor-pointer"
                             title="Email Report"
                           >
                             <Mail className="h-4 w-4" />
                           </button>
                           <button
-                            onClick={() => deleteReport.mutate(report.id)}
+                            onClick={() => handleDeleteClick(report.id)}
                             disabled={deleteReport.isPending}
-                            className="p-2 rounded-lg text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/20"
+                            className="p-1.5 rounded-lg text-rose-450 hover:bg-rose-500/10 transition-all active:scale-95 cursor-pointer"
                             title="Delete Report"
                           >
                             <Trash2 className="h-4 w-4" />
@@ -298,24 +441,52 @@ export const ReportsPage: React.FC = () => {
 
       {/* Preview Modal */}
       {previewContent && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fade-in">
-          <div className="bg-white dark:bg-[#12131a] rounded-3xl border border-gray-150 dark:border-gray-800 max-w-2xl w-full p-6 space-y-4 max-h-[85vh] flex flex-col">
-            <div className="flex items-center justify-between border-b border-gray-100 pb-3 dark:border-gray-800">
-              <h3 className="font-extrabold text-gray-900 dark:text-white">{previewTitle}</h3>
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fade-in">
+          <div
+            className="max-w-4xl w-full p-6 space-y-4 max-h-[85vh] flex flex-col overflow-hidden animate-zoom-in"
+            style={{
+              background: '#0a0a0a',
+              border: '0.5px solid rgba(255,255,255,0.14)',
+              borderRadius: 20,
+            }}
+          >
+            <div className="flex items-center justify-between pb-3 shrink-0" style={{ borderBottom: '0.5px solid rgba(255,255,255,0.1)' }}>
+              <h3 className="font-bold text-white text-base">{previewTitle}</h3>
               <button
                 onClick={() => setPreviewContent(null)}
-                className="text-gray-400 hover:text-gray-600 text-sm font-bold"
+                className="rounded-xl p-2 transition-all cursor-pointer"
+                style={{ color: 'rgba(255,255,255,0.6)' }}
+                onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.6)')}
               >
-                Close
+                <X className="h-5 w-5" />
               </button>
             </div>
             
-            <div className="flex-1 overflow-y-auto bg-gray-50 p-4 rounded-2xl dark:bg-gray-950 border border-gray-100 dark:border-gray-900 text-xs font-mono whitespace-pre-wrap leading-relaxed text-gray-700 dark:text-gray-300">
+            <div
+              className="flex-1 overflow-y-auto p-4 rounded-xl text-xs font-mono whitespace-pre-wrap leading-relaxed text-white/70 scrollbar-hidden"
+              style={{
+                background: 'rgba(255,255,255,0.01)',
+                border: '0.5px solid rgba(255,255,255,0.08)',
+              }}
+            >
               {previewContent}
             </div>
           </div>
         </div>
       )}
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmationDialog
+        isOpen={!!deleteReportId}
+        title="Delete Report"
+        description="Are you sure you want to delete this report? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        isPending={deleteReport.isPending}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setDeleteReportId(null)}
+      />
     </div>
   );
 };

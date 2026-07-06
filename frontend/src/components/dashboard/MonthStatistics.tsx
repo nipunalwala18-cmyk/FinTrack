@@ -1,6 +1,14 @@
 import React from 'react';
 import { formatCurrency } from '../../utils/currency';
-import { CalendarDays, ArrowUpRight, ArrowDownRight, CircleDollarSign } from 'lucide-react';
+import {
+  CalendarDays,
+  ArrowUpRight,
+  ArrowDownRight,
+  CircleDollarSign,
+  Receipt,
+  TrendingDown,
+  TrendingUp
+} from 'lucide-react';
 import type { CurrentMonth } from '../../types/dashboard';
 
 interface MonthStatisticsProps {
@@ -13,58 +21,167 @@ export const MonthStatistics: React.FC<MonthStatisticsProps> = ({ stats }) => {
     year: 'numeric',
   });
 
+  // Calculate day-of-month for average spending
+  const currentDay = new Date().getDate();
+  const avgDailySpend = stats.expense > 0 ? Math.round(stats.expense / currentDay) : 0;
+
+  // Calculate net cash flow (Income - Expense)
+  const netCashFlow = stats.income - stats.expense;
+
   return (
-    <div className="w-full rounded-2xl bg-white p-6 shadow-sm border border-gray-100 dark:bg-[#12131a] dark:border-gray-800 space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-gray-100 dark:border-gray-800">
+    <div
+      className="w-full h-full rounded-2xl p-6 flex flex-col justify-between gap-6"
+      style={{
+        background: '#0a0a0a',
+        border: '0.5px solid rgba(255,255,255,0.12)',
+      }}
+    >
+      {/* Card Header */}
+      <div
+        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 shrink-0"
+        style={{ borderBottom: '0.5px solid rgba(255,255,255,0.1)' }}
+      >
         <div className="flex items-center gap-2 text-left">
-          <CalendarDays className="h-5 w-5 text-purple-600 dark:text-purple-400" />
-          <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+          <CalendarDays className="h-4 w-4" style={{ color: 'rgba(255,255,255,0.45)' }} />
+          <h3 className="text-sm font-semibold" style={{ color: '#fff' }}>
             Current Month Statistics
           </h3>
-          <span className="text-xs text-gray-400 font-medium">({currentMonthName})</span>
+          <span className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>
+            ({currentMonthName})
+          </span>
         </div>
-        <div className="flex items-center self-start sm:self-center gap-2 rounded-full bg-purple-50 px-3 py-1 text-xs font-semibold text-purple-700 dark:bg-purple-950/40 dark:text-purple-400 border border-purple-100 dark:border-purple-900/50">
+        {/* Transaction count pill */}
+        <div
+          className="flex items-center self-start sm:self-center rounded-full px-3 py-1 text-xs font-semibold"
+          style={{
+            background: 'rgba(255,255,255,0.06)',
+            border: '0.5px solid rgba(255,255,255,0.12)',
+            color: 'rgba(255,255,255,0.6)',
+          }}
+        >
           <span>{stats.transactionCount} Transactions</span>
         </div>
       </div>
 
-      <div className="grid gap-6 grid-cols-1 md:grid-cols-3">
-        {/* Month Income */}
-        <div className="flex items-center gap-4 p-4 rounded-xl bg-emerald-500/[0.03] border border-emerald-500/10 text-left">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-            <ArrowUpRight className="h-5 w-5" />
+      {/* Flat stat tiles container */}
+      <div className="flex-1 flex flex-col justify-between gap-4">
+        {/* Row 1: Income, Expense, Savings */}
+        <div className="grid gap-4 grid-cols-1 md:grid-cols-3">
+          {/* Month Income */}
+          <div
+            className="flex items-center gap-4 p-4 rounded-xl text-left"
+            style={{ background: '#141414' }}
+          >
+            <ArrowUpRight className="h-5 w-5 shrink-0" style={{ color: 'rgba(255,255,255,0.4)' }} />
+            <div className="space-y-0.5">
+              <span
+                className="text-[10px] font-semibold uppercase tracking-wider block"
+                style={{ color: 'rgba(255,255,255,0.4)' }}
+              >
+                Income
+              </span>
+              <p className="text-lg font-semibold" style={{ color: '#fff' }}>
+                {formatCurrency(stats.income)}
+              </p>
+            </div>
           </div>
-          <div className="space-y-0.5">
-            <span className="text-xs font-semibold text-gray-400 uppercase">Income</span>
-            <p className="text-xl font-black text-emerald-600 dark:text-emerald-400">
-              {formatCurrency(stats.income)}
-            </p>
+
+          {/* Month Expense */}
+          <div
+            className="flex items-center gap-4 p-4 rounded-xl text-left"
+            style={{ background: '#141414' }}
+          >
+            <ArrowDownRight className="h-5 w-5 shrink-0" style={{ color: 'rgba(255,255,255,0.4)' }} />
+            <div className="space-y-0.5">
+              <span
+                className="text-[10px] font-semibold uppercase tracking-wider block"
+                style={{ color: 'rgba(255,255,255,0.4)' }}
+              >
+                Expense
+              </span>
+              <p className="text-lg font-semibold" style={{ color: '#fff' }}>
+                {formatCurrency(stats.expense)}
+              </p>
+            </div>
+          </div>
+
+          {/* Month Savings */}
+          <div
+            className="flex items-center gap-4 p-4 rounded-xl text-left"
+            style={{ background: '#141414' }}
+          >
+            <CircleDollarSign className="h-5 w-5 shrink-0" style={{ color: 'rgba(255,255,255,0.4)' }} />
+            <div className="space-y-0.5">
+              <span
+                className="text-[10px] font-semibold uppercase tracking-wider block"
+                style={{ color: 'rgba(255,255,255,0.4)' }}
+              >
+                Savings
+              </span>
+              <p className="text-lg font-semibold" style={{ color: '#fff' }}>
+                {formatCurrency(stats.savings)}
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* Month Expense */}
-        <div className="flex items-center gap-4 p-4 rounded-xl bg-rose-500/[0.03] border border-rose-500/10 text-left">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400">
-            <ArrowDownRight className="h-5 w-5" />
+        {/* Row 2: Transactions, Avg Spend, Net Cash Flow */}
+        <div className="grid gap-4 grid-cols-1 md:grid-cols-3">
+          {/* Total Transactions */}
+          <div
+            className="flex items-center gap-4 p-4 rounded-xl text-left"
+            style={{ background: '#141414' }}
+          >
+            <Receipt className="h-5 w-5 shrink-0" style={{ color: 'rgba(255,255,255,0.4)' }} />
+            <div className="space-y-0.5">
+              <span
+                className="text-[10px] font-semibold uppercase tracking-wider block"
+                style={{ color: 'rgba(255,255,255,0.4)' }}
+              >
+                Transactions
+              </span>
+              <p className="text-lg font-semibold" style={{ color: '#fff' }}>
+                {stats.transactionCount}
+              </p>
+            </div>
           </div>
-          <div className="space-y-0.5">
-            <span className="text-xs font-semibold text-gray-400 uppercase">Expense</span>
-            <p className="text-xl font-black text-rose-600 dark:text-rose-400">
-              {formatCurrency(stats.expense)}
-            </p>
-          </div>
-        </div>
 
-        {/* Month Savings */}
-        <div className="flex items-center gap-4 p-4 rounded-xl bg-purple-500/[0.03] border border-purple-500/10 text-left">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400">
-            <CircleDollarSign className="h-5 w-5" />
+          {/* Avg Daily Spend */}
+          <div
+            className="flex items-center gap-4 p-4 rounded-xl text-left"
+            style={{ background: '#141414' }}
+          >
+            <TrendingDown className="h-5 w-5 shrink-0" style={{ color: 'rgba(255,255,255,0.4)' }} />
+            <div className="space-y-0.5">
+              <span
+                className="text-[10px] font-semibold uppercase tracking-wider block"
+                style={{ color: 'rgba(255,255,255,0.4)' }}
+              >
+                Avg Daily Spend
+              </span>
+              <p className="text-lg font-semibold" style={{ color: '#fff' }}>
+                {formatCurrency(avgDailySpend)}
+              </p>
+            </div>
           </div>
-          <div className="space-y-0.5">
-            <span className="text-xs font-semibold text-gray-400 uppercase">Savings</span>
-            <p className="text-xl font-black text-purple-600 dark:text-purple-400">
-              {formatCurrency(stats.savings)}
-            </p>
+
+          {/* Net Cash Flow */}
+          <div
+            className="flex items-center gap-4 p-4 rounded-xl text-left"
+            style={{ background: '#141414' }}
+          >
+            <TrendingUp className="h-5 w-5 shrink-0" style={{ color: 'rgba(255,255,255,0.4)' }} />
+            <div className="space-y-0.5">
+              <span
+                className="text-[10px] font-semibold uppercase tracking-wider block"
+                style={{ color: 'rgba(255,255,255,0.4)' }}
+              >
+                Net Cash Flow
+              </span>
+              <p className="text-lg font-semibold" style={{ color: '#fff' }}>
+                {formatCurrency(netCashFlow)}
+              </p>
+            </div>
           </div>
         </div>
       </div>

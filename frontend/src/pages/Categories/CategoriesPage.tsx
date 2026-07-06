@@ -35,24 +35,23 @@ export const CategoriesPage: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-full space-y-6">
+    <div className="flex flex-col space-y-5 text-left w-full animate-fade-in">
       {/* 1. Header Area */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-gray-100 dark:border-gray-800 pb-5">
-        <div className="space-y-1 text-left">
-          <h1 className="text-3xl font-black text-gray-900 dark:text-white tracking-tight flex items-center gap-2.5">
-            <Tags className="h-8 w-8 text-purple-600 dark:text-purple-400" />
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-5" style={{ borderBottom: '0.5px solid rgba(255,255,255,0.1)' }}>
+        <div className="space-y-0.5 text-left">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white">
             Categories
           </h1>
-          <p className="text-sm font-semibold text-gray-450 dark:text-gray-400">
+          <p className="text-xs font-semibold" style={{ color: 'rgba(255,255,255,0.4)' }}>
             Manage your budget and income structure with drag-and-drop hierarchy.
           </p>
         </div>
 
         <button
           onClick={handleCreateClick}
-          className="flex items-center justify-center gap-2 rounded-2xl bg-purple-600 hover:bg-purple-700 active:bg-purple-800 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-purple-500/15 transition-all transform hover:-translate-y-0.5 active:translate-y-0 duration-150 cursor-pointer self-start sm:self-center"
+          className="flex items-center justify-center gap-2 rounded-xl bg-white hover:bg-white/90 active:scale-[0.98] px-5 py-2.5 text-sm font-semibold text-black transition-all cursor-pointer self-start sm:self-center focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
         >
-          <Plus className="h-4.5 w-4.5" />
+          <Plus className="h-4 w-4" />
           Add Category
         </button>
       </div>
@@ -63,53 +62,69 @@ export const CategoriesPage: React.FC = () => {
       </div>
 
       {/* 3. Categories Content Tree */}
-      <div className="flex-grow">
+      <div className="w-full">
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
-            <Loader2 className="h-8 w-8 animate-spin text-purple-600 dark:text-purple-400" />
-            <p className="text-sm font-bold text-gray-500 dark:text-gray-400">Loading your categories...</p>
+            <Loader2 className="h-8 w-8 animate-spin text-white/50" />
           </div>
         ) : error ? (
-          <div className="rounded-3xl border border-red-100 bg-red-50/30 p-8 text-center dark:border-red-950/20 dark:bg-red-950/5 space-y-4 max-w-md mx-auto">
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-red-50 text-red-650 dark:bg-red-950/30 dark:text-red-400">
-              <AlertCircle className="h-6 w-6" />
+          <div
+            className="p-8 text-center space-y-4 max-w-md mx-auto"
+            style={{
+              background: '#0a0a0a',
+              border: '0.5px solid rgba(248,113,113,0.25)',
+              borderRadius: 16,
+            }}
+          >
+            <div
+              className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl"
+              style={{ background: 'rgba(248,113,113,0.08)' }}
+            >
+              <AlertCircle className="h-6 w-6 text-rose-450" />
             </div>
             <div className="space-y-1">
-              <h4 className="text-lg font-black text-gray-900 dark:text-white">Failed to load categories</h4>
-              <p className="text-xs font-semibold text-gray-450 dark:text-gray-400">
-                An error occurred while communicating with the server. Please check your connection and try again.
+              <h4 className="text-lg font-bold text-white">Failed to load categories</h4>
+              <p className="text-xs font-semibold" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                An error occurred while communicating with the server. Please try again.
               </p>
             </div>
             <button
               onClick={() => refetch()}
-              className="px-5 py-2.5 bg-red-650 hover:bg-red-700 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer"
+              className="px-5 py-2 bg-white text-black hover:bg-white/90 active:scale-[0.98] rounded-xl text-xs font-semibold transition-all cursor-pointer"
             >
               Retry
             </button>
           </div>
         ) : filteredCategories.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 text-center">
-            <div className="rounded-3xl border border-gray-150 bg-white p-12 dark:border-gray-800 dark:bg-[#12131a] max-w-md w-full space-y-6">
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-purple-55/10 text-purple-600 dark:bg-purple-950/20 dark:text-purple-400">
-                <Tags className="h-8 w-8" />
-              </div>
-              <div className="space-y-2">
-                <h3 className="text-xl font-extrabold text-gray-900 dark:text-white">No {activeTab.toLowerCase()} categories found</h3>
-                <p className="text-sm text-gray-400 pt-2 leading-relaxed">
-                  Start structuring your finances by creating your first category. You can drag and drop them to organize later!
-                </p>
-              </div>
-              <button
-                onClick={handleCreateClick}
-                className="mx-auto flex items-center justify-center gap-2 rounded-xl bg-purple-600 hover:bg-purple-700 active:bg-purple-800 px-5 py-2.5 text-xs font-bold text-white transition-colors cursor-pointer"
-              >
-                <Plus className="h-4 w-4" />
-                Create Category
-              </button>
+          <div
+            className="p-12 text-center max-w-md mx-auto space-y-5"
+            style={{
+              background: '#0a0a0a',
+              border: '0.5px solid rgba(255,255,255,0.12)',
+              borderRadius: 16,
+            }}
+          >
+            <div
+              className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl"
+              style={{ background: 'rgba(255,255,255,0.06)' }}
+            >
+              <Tags className="h-7 w-7 text-white/60" />
             </div>
+            <div className="space-y-1.5">
+              <h3 className="text-lg font-bold text-white">No {activeTab.toLowerCase()} categories found</h3>
+              <p className="text-xs font-semibold pt-1 leading-relaxed" style={{ color: 'rgba(255,255,255,0.45)' }}>
+                Start structuring your finances by creating your first category. You can drag and drop them to organize later!
+              </p>
+            </div>
+            <button
+              onClick={handleCreateClick}
+              className="w-full py-3 bg-white text-black rounded-xl text-sm font-semibold hover:bg-white/90 active:scale-[0.98] transition-all cursor-pointer"
+            >
+              Create Category
+            </button>
           </div>
         ) : (
-          <div className="rounded-3xl border border-gray-150 bg-white p-6 dark:border-gray-800 dark:bg-[#12131a] max-w-4xl">
+          <div className="max-w-4xl">
             <CategoryTree
               categories={filteredCategories}
               onEdit={handleEditClick}

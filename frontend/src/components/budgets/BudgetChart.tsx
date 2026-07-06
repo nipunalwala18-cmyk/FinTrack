@@ -16,22 +16,31 @@ export const BudgetChart: React.FC<BudgetChartProps> = ({ data }) => {
   const circ = 2 * Math.PI * r;
   const strokeDashoffset = circ - (Math.min(overallPercentage, 100) / 100) * circ;
 
-  let gaugeColor = 'stroke-emerald-500';
+  let strokeColor = '#10b981'; // Green
   if (overallPercentage >= 100) {
-    gaugeColor = 'stroke-rose-500';
-  } else if (overallPercentage >= 80) {
-    gaugeColor = 'stroke-amber-500';
+    strokeColor = '#ef4444'; // Red
+  } else if (overallPercentage >= 85) {
+    strokeColor = '#f97316'; // Orange
+  } else if (overallPercentage >= 60) {
+    strokeColor = '#f59e0b'; // Yellow/Amber
   }
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full">
       {/* 1. Overall Budget Utilization Gauge */}
-      <div className="rounded-3xl bg-white p-6 shadow-sm border border-gray-100 dark:bg-[#12131a] dark:border-gray-800 flex flex-col justify-between items-center text-center space-y-4">
+      <div
+        className="p-6 flex flex-col justify-between items-center text-center space-y-4"
+        style={{
+          background: '#0a0a0a',
+          border: '0.5px solid rgba(255,255,255,0.12)',
+          borderRadius: 24,
+        }}
+      >
         <div className="w-full text-left">
-          <span className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block">
+          <span className="text-[10px] font-semibold text-white/40 uppercase tracking-wider block">
             Overall Utilization
           </span>
-          <h3 className="text-lg font-black text-gray-900 dark:text-white mt-1">Status Dial</h3>
+          <h3 className="text-base font-bold text-white mt-1">Status Dial</h3>
         </div>
 
         {/* Circular SVG Gauge */}
@@ -42,8 +51,8 @@ export const BudgetChart: React.FC<BudgetChartProps> = ({ data }) => {
               cx="60"
               cy="60"
               r={r}
-              className="stroke-gray-100 dark:stroke-gray-800"
-              strokeWidth="10"
+              className="stroke-white/5"
+              strokeWidth="8"
               fill="transparent"
             />
             {/* Foreground progress circle */}
@@ -51,35 +60,38 @@ export const BudgetChart: React.FC<BudgetChartProps> = ({ data }) => {
               cx="60"
               cy="60"
               r={r}
-              className={`transition-all duration-700 ease-out ${gaugeColor}`}
-              strokeWidth="10"
+              strokeWidth="8"
               fill="transparent"
               strokeDasharray={circ}
               strokeDashoffset={strokeDashoffset}
               strokeLinecap="round"
+              style={{
+                transition: 'stroke-dashoffset 0.7s ease-out',
+                stroke: strokeColor,
+              }}
             />
           </svg>
           <div className="absolute flex flex-col items-center justify-center text-center">
-            <span className="text-3xl font-black text-gray-900 dark:text-white tracking-tight">
+            <span className="text-3xl font-semibold text-white tracking-tight">
               {overallPercentage}%
             </span>
-            <span className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mt-0.5">
+            <span className="text-[9px] font-semibold text-white/40 uppercase tracking-wider mt-0.5">
               Utilized
             </span>
           </div>
         </div>
 
-        <div className="w-full border-t border-gray-50 dark:border-gray-800/80 pt-3 flex justify-around text-xs">
-          <div>
-            <span className="text-gray-400 block mb-0.5">Total Allocated</span>
-            <span className="font-extrabold text-gray-900 dark:text-white">
+        <div className="w-full border-t pt-3 flex justify-around text-xs" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
+          <div className="text-center">
+            <span className="text-white/40 block mb-0.5 text-[9px] font-semibold uppercase tracking-wider">Total Allocated</span>
+            <span className="font-semibold text-white">
               {formatCurrency(totalBudget)}
             </span>
           </div>
-          <div className="border-l border-gray-100 dark:border-gray-800" />
-          <div>
-            <span className="text-gray-400 block mb-0.5">Total Spending</span>
-            <span className="font-extrabold text-gray-900 dark:text-white">
+          <div className="border-l" style={{ borderColor: 'rgba(255,255,255,0.08)' }} />
+          <div className="text-center">
+            <span className="text-white/40 block mb-0.5 text-[9px] font-semibold uppercase tracking-wider">Total Spending</span>
+            <span className="font-semibold text-white">
               {formatCurrency(totalSpent)}
             </span>
           </div>
@@ -87,19 +99,26 @@ export const BudgetChart: React.FC<BudgetChartProps> = ({ data }) => {
       </div>
 
       {/* 2. Budget vs Actual Comparison */}
-      <div className="rounded-3xl bg-white p-6 shadow-sm border border-gray-100 dark:bg-[#12131a] dark:border-gray-800 flex flex-col justify-between lg:col-span-2 space-y-4 text-left">
+      <div
+        className="p-6 flex flex-col justify-between lg:col-span-2 space-y-4 text-left"
+        style={{
+          background: '#0a0a0a',
+          border: '0.5px solid rgba(255,255,255,0.12)',
+          borderRadius: 24,
+        }}
+      >
         <div>
-          <span className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider block">
+          <span className="text-[10px] font-semibold text-white/40 uppercase tracking-wider block">
             Comparison
           </span>
-          <h3 className="text-lg font-black text-gray-900 dark:text-white mt-1">Budget vs Actual Spent</h3>
+          <h3 className="text-base font-bold text-white mt-1">Budget vs Actual Spent</h3>
         </div>
 
         {/* Categories Grouped Comparison bars */}
-        <div className="space-y-4 overflow-y-auto max-h-56 pr-1">
+        <div className="space-y-4 overflow-y-auto max-h-56 pr-1 scrollbar-hidden">
           {data.length === 0 ? (
-            <div className="flex items-center justify-center h-32 text-sm text-gray-400">
-              No budget comparison data available.
+            <div className="flex items-center justify-center h-32 text-xs text-white/40 font-semibold uppercase tracking-wider">
+              No comparison metrics.
             </div>
           ) : (
             data.map((item) => {
@@ -109,36 +128,43 @@ export const BudgetChart: React.FC<BudgetChartProps> = ({ data }) => {
 
               return (
                 <div key={item.id} className="space-y-1">
-                  <div className="flex items-center justify-between text-xs font-bold">
-                    <span className="text-gray-800 dark:text-gray-200 truncate max-w-[200px]">
+                  <div className="flex items-center justify-between text-xs font-semibold">
+                    <span className="text-white/80 truncate max-w-[200px]">
                       {item.category}
                     </span>
-                    <span className="text-gray-400 font-medium">
+                    <span className="text-white/40 font-medium text-[11px]">
                       {formatCurrency(item.actual)} / {formatCurrency(item.budget)}
                     </span>
                   </div>
 
-                  <div className="space-y-1 bg-gray-50 dark:bg-gray-900/40 p-1.5 rounded-xl border border-gray-100/50 dark:border-gray-850">
-                    {/* Budget limit Bar (Purple) */}
+                  <div
+                    className="space-y-1.5 p-3 rounded-xl"
+                    style={{
+                      background: 'rgba(255,255,255,0.01)',
+                      border: '0.5px solid rgba(255,255,255,0.08)',
+                    }}
+                  >
+                    {/* Budget limit Bar (White opacity overlay) */}
                     <div className="flex items-center gap-2">
-                      <span className="text-[9px] font-bold text-gray-400 w-10 shrink-0">Budget</span>
-                      <div className="h-2 w-full rounded-full bg-gray-100 dark:bg-gray-800 overflow-hidden">
+                      <span className="text-[9px] font-semibold text-white/40 w-10 shrink-0 uppercase tracking-wider">Budget</span>
+                      <div className="h-1.5 w-full rounded-full bg-white/5 overflow-hidden">
                         <div
-                          className="h-full rounded-full bg-purple-500/80 dark:bg-purple-500/70 transition-all duration-500"
+                          className="h-full rounded-full bg-white/35 transition-all duration-500"
                           style={{ width: `${budgetWidth}%` }}
                         />
                       </div>
                     </div>
 
-                    {/* Actual spent Bar (Green/Red) */}
+                    {/* Actual spent Bar */}
                     <div className="flex items-center gap-2">
-                      <span className="text-[9px] font-bold text-gray-400 w-10 shrink-0">Actual</span>
-                      <div className="h-2 w-full rounded-full bg-gray-100 dark:bg-gray-800 overflow-hidden">
+                      <span className="text-[9px] font-semibold text-white/40 w-10 shrink-0 uppercase tracking-wider">Actual</span>
+                      <div className="h-1.5 w-full rounded-full bg-white/5 overflow-hidden">
                         <div
-                          className={`h-full rounded-full transition-all duration-500 ${
-                            item.actual >= item.budget ? 'bg-rose-500' : 'bg-emerald-500'
-                          }`}
-                          style={{ width: `${actualWidth}%` }}
+                          className="h-full rounded-full transition-all duration-500"
+                          style={{
+                            width: `${actualWidth}%`,
+                            backgroundColor: item.actual >= item.budget ? '#ef4444' : '#10b981',
+                          }}
                         />
                       </div>
                     </div>

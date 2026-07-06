@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import type { UseFormRegister } from 'react-hook-form';
 import { ChevronDown, ChevronUp } from 'lucide-react';
+import {
+  LABEL_CLS, LABEL_STYLE, INPUT_BASE, INPUT_STYLE,
+  INPUT_FOCUS_STYLE, INPUT_BLUR_STYLE,
+} from './fieldStyles';
 
 interface AdvancedSettingsProps {
   register: UseFormRegister<any>;
@@ -11,27 +15,37 @@ export const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({ register, is
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="border border-gray-100 rounded-2xl dark:border-gray-800 text-left overflow-hidden">
+    <div
+      className="rounded-xl text-left overflow-hidden"
+      style={{ border: '0.5px solid rgba(255,255,255,0.08)' }}
+    >
+      {/* Toggle header */}
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between px-5 py-4 bg-gray-50/50 hover:bg-gray-50 dark:bg-gray-900/10 dark:hover:bg-gray-900/30 transition-all focus:outline-none"
+        className="w-full flex items-center justify-between px-5 py-4 transition-all focus:outline-none focus-visible:ring-1 focus-visible:ring-white"
+        style={{ background: 'rgba(255,255,255,0.03)' }}
+        onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.06)')}
+        onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.03)')}
       >
-        <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+        <span className="text-sm font-semibold" style={{ color: 'rgba(255,255,255,0.7)' }}>
           Advanced Settings
         </span>
         {isOpen ? (
-          <ChevronUp className="h-4 w-4 text-gray-400" />
+          <ChevronUp className="h-4 w-4" style={{ color: 'rgba(255,255,255,0.4)' }} />
         ) : (
-          <ChevronDown className="h-4 w-4 text-gray-400" />
+          <ChevronDown className="h-4 w-4" style={{ color: 'rgba(255,255,255,0.4)' }} />
         )}
       </button>
 
       {isOpen && (
-        <div className="p-5 border-t border-gray-100 dark:border-gray-800 space-y-4 bg-white dark:bg-transparent">
+        <div
+          className="p-5 space-y-4"
+          style={{ borderTop: '0.5px solid rgba(255,255,255,0.08)' }}
+        >
           {/* Notes */}
           <div className="space-y-1.5">
-            <label htmlFor="notes" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+            <label htmlFor="notes" className={LABEL_CLS} style={LABEL_STYLE}>
               Notes
             </label>
             <textarea
@@ -40,7 +54,10 @@ export const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({ register, is
               placeholder="Include details about the account purpose..."
               disabled={isPending}
               {...register('notes')}
-              className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 transition-all focus:outline-none focus:ring-2 focus:ring-purple-500/20 dark:border-gray-800 dark:bg-gray-900 dark:text-white focus:border-purple-500"
+              className={`${INPUT_BASE} resize-none`}
+              style={INPUT_STYLE}
+              onFocus={e => (e.currentTarget.style.border = INPUT_FOCUS_STYLE)}
+              onBlur={e => (e.currentTarget.style.border = INPUT_BLUR_STYLE)}
             />
           </div>
 
@@ -53,9 +70,14 @@ export const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({ register, is
                 type="checkbox"
                 disabled={isPending}
                 {...register('includeInNetWorth')}
-                className="h-4.5 w-4.5 rounded border-gray-300 text-purple-600 focus:ring-purple-500 dark:border-gray-800 dark:bg-gray-950 dark:focus:ring-offset-gray-900"
+                className="h-4 w-4 rounded cursor-pointer focus:ring-1 focus:ring-white focus:ring-offset-0"
+                style={{ accentColor: '#fff' }}
               />
-              <label htmlFor="includeInNetWorth" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+              <label
+                htmlFor="includeInNetWorth"
+                className="text-sm font-semibold cursor-pointer"
+                style={{ color: 'rgba(255,255,255,0.7)' }}
+              >
                 Include In Net Worth
               </label>
             </div>
@@ -67,9 +89,14 @@ export const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({ register, is
                 type="checkbox"
                 disabled={isPending}
                 {...register('isArchived')}
-                className="h-4.5 w-4.5 rounded border-gray-300 text-purple-600 focus:ring-purple-500 dark:border-gray-800 dark:bg-gray-950 dark:focus:ring-offset-gray-900"
+                className="h-4 w-4 rounded cursor-pointer focus:ring-1 focus:ring-white focus:ring-offset-0"
+                style={{ accentColor: '#fff' }}
               />
-              <label htmlFor="isArchived" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+              <label
+                htmlFor="isArchived"
+                className="text-sm font-semibold cursor-pointer"
+                style={{ color: 'rgba(255,255,255,0.7)' }}
+              >
                 Archive Account
               </label>
             </div>
@@ -77,7 +104,7 @@ export const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({ register, is
 
           {/* Display Order */}
           <div className="space-y-1.5">
-            <label htmlFor="displayOrder" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+            <label htmlFor="displayOrder" className={LABEL_CLS} style={LABEL_STYLE}>
               Display Order
             </label>
             <input
@@ -86,7 +113,10 @@ export const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({ register, is
               placeholder="e.g. 1"
               disabled={isPending}
               {...register('displayOrder', { valueAsNumber: true })}
-              className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 transition-all focus:outline-none focus:ring-2 focus:ring-purple-500/20 dark:border-gray-800 dark:bg-gray-900 dark:text-white focus:border-purple-500"
+              className={INPUT_BASE}
+              style={INPUT_STYLE}
+              onFocus={e => (e.currentTarget.style.border = INPUT_FOCUS_STYLE)}
+              onBlur={e => (e.currentTarget.style.border = INPUT_BLUR_STYLE)}
             />
           </div>
         </div>

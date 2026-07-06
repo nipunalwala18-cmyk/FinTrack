@@ -9,10 +9,12 @@ export const Breadcrumb: React.FC = () => {
   if (paths.length === 0) return null;
 
   return (
-    <nav className="flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-gray-500 dark:text-gray-400">
+    <nav className="flex items-center gap-1.5 text-xs sm:text-sm font-semibold" style={{ color: 'rgba(255,255,255,0.5)' }}>
       <Link
         to="/dashboard"
-        className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+        className="transition-colors"
+        onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+        onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.5)')}
       >
         Dashboard
       </Link>
@@ -27,13 +29,15 @@ export const Breadcrumb: React.FC = () => {
 
         return (
           <React.Fragment key={href}>
-            <ChevronRight className="h-3.5 w-3.5 text-gray-300 dark:text-gray-700" />
+            <ChevronRight className="h-3.5 w-3.5" style={{ color: 'rgba(255,255,255,0.2)' }} />
             {isLast ? (
-              <span className="text-gray-800 dark:text-white capitalize">{displayName}</span>
+              <span className="capitalize" style={{ color: '#fff' }}>{displayName}</span>
             ) : (
               <Link
                 to={href}
-                className="hover:text-purple-600 dark:hover:text-purple-400 transition-colors capitalize"
+                className="transition-colors capitalize"
+                onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.5)')}
               >
                 {displayName}
               </Link>

@@ -21,27 +21,37 @@ export const NavItem: React.FC<NavItemProps> = ({
       to={href}
       onClick={onClick}
       className={({ isActive }) =>
-        `relative flex items-center gap-3.5 px-4 py-3 text-sm font-semibold rounded-xl transition-all duration-200 group focus:outline-none ${
+        [
+          // Base layout — single interactive element
+          'relative flex items-center justify-start h-11 px-3.5 text-sm font-semibold rounded-xl',
+          'transition-all duration-200 ease-out group cursor-pointer focus:outline-none',
           isActive
-            ? 'bg-purple-50/70 text-purple-600 dark:bg-purple-950/25 dark:text-purple-400'
-            : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-900/40 dark:hover:text-white'
-        }`
+            // ── Active: solid white pill, black text/icon, soft shadow
+            ? 'bg-white text-black shadow-md'
+            // ── Inactive: muted with subtle hover transition
+            : 'text-white/55 hover:bg-white/[0.08] hover:text-white focus-visible:bg-white/[0.08] focus-visible:text-white',
+        ].join(' ')
       }
     >
       {({ isActive }) => (
         <>
-          {/* Active Left Indicator Bar */}
-          {isActive && (
-            <div className="absolute left-0 top-3 bottom-3 w-1 bg-purple-600 dark:bg-purple-500 rounded-r-md" />
-          )}
+          {/* Centered or left aligned icon */}
+          <div className={`flex items-center justify-center shrink-0 ${isCollapsed ? 'w-full' : ''}`}>
+            <Icon className="h-5 w-5" />
+          </div>
 
-          <Icon className={`h-5 w-5 shrink-0 ${isActive ? 'text-purple-600 dark:text-purple-400' : 'text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white transition-colors'}`} />
+          {/* Label — only in expanded mode */}
+          {!isCollapsed && <span className="truncate ml-3">{title}</span>}
 
-          {!isCollapsed && <span className="truncate">{title}</span>}
-
-          {/* Simple CSS Tooltip when collapsed */}
-          {isCollapsed && (
-            <span className="absolute left-16 scale-0 rounded-lg bg-gray-900 px-3 py-1.5 text-xs text-white group-hover:scale-100 transition-all dark:bg-gray-800 pointer-events-none z-50 shadow-md">
+          {/* Collapsed-mode tooltip */}
+          {isCollapsed && !isActive && (
+            <span
+              className="absolute left-[calc(100%+8px)] pointer-events-none z-50 whitespace-nowrap px-2.5 py-1.5 text-[11.5px] text-white rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-100 delay-200"
+              style={{
+                background: '#141414',
+                border: '0.5px solid rgba(255,255,255,0.12)',
+              }}
+            >
               {title}
             </span>
           )}

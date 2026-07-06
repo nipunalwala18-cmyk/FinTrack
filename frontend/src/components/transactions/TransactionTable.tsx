@@ -20,137 +20,159 @@ export const TransactionTable: React.FC<TransactionTableProps> = ({
   const getAmountDisplay = (tx: Transaction) => {
     const formatted = formatCurrency(tx.amount);
     if (tx.type === 'INCOME') {
-      return <span className="font-bold text-emerald-600 dark:text-emerald-400">+{formatted}</span>;
+      return <span className="font-semibold text-emerald-400">+{formatted}</span>;
     }
     if (tx.type === 'EXPENSE') {
-      return <span className="font-bold text-rose-600 dark:text-rose-400">-{formatted}</span>;
+      return <span className="font-semibold text-rose-400">-{formatted}</span>;
     }
-    return <span className="font-bold text-purple-600 dark:text-purple-400">{formatted}</span>;
+    return <span className="font-semibold text-white/70">{formatted}</span>;
+  };
+
+  // Maps core categories to specific colored dots for dashboard-style alignment
+  const getCategoryDotColor = (name: string) => {
+    const norm = name.toLowerCase();
+    if (norm.includes('invest')) return '#3b82f6'; // Blue
+    if (norm.includes('food') || norm.includes('dining')) return '#f97316'; // Orange
+    if (norm.includes('shop')) return '#ec4899'; // Pink
+    if (norm.includes('bill') || norm.includes('utility')) return '#a855f7'; // Purple
+    if (norm.includes('salary') || norm.includes('income')) return '#22c55e'; // Green
+    return '#6b7280'; // Muted Gray
   };
 
   return (
-    <div className="hidden md:block w-full overflow-x-auto rounded-2xl border border-gray-150 bg-white dark:border-gray-800 dark:bg-[#12131a]">
-      <table className="w-full border-collapse text-left text-sm">
-        <thead>
-          <tr className="border-b border-gray-100 bg-gray-50/50 text-xs font-bold uppercase tracking-wider text-gray-400 dark:border-gray-800 dark:bg-gray-900/40">
-            <th className="px-6 py-4">Date</th>
-            <th className="px-6 py-4">Description</th>
-            <th className="px-6 py-4">Category</th>
-            <th className="px-6 py-4">Account</th>
-            <th className="px-6 py-4">Type</th>
-            <th className="px-6 py-4 text-right">Amount</th>
-            <th className="px-6 py-4 text-center">Actions</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-gray-100 dark:divide-gray-800/80">
-          {transactions.map((tx) => (
+    <div
+      className="hidden md:block w-full overflow-hidden"
+      style={{
+        background: '#0a0a0a',
+        border: '0.5px solid rgba(255,255,255,0.12)',
+        borderRadius: 16,
+      }}
+    >
+      <div className="w-full overflow-x-auto">
+        <table className="w-full border-collapse text-left text-sm">
+          <thead>
             <tr
-              key={tx.id}
-              className="hover:bg-gray-50/40 dark:hover:bg-gray-950/20 transition-colors"
+              className="text-xs font-semibold uppercase tracking-wider"
+              style={{
+                borderBottom: '0.5px solid rgba(255,255,255,0.12)',
+                background: 'rgba(255,255,255,0.02)',
+              }}
             >
-              {/* Date */}
-              <td className="px-6 py-4.5 font-medium whitespace-nowrap">
-                {new Date(tx.date).toLocaleDateString(undefined, {
-                  month: 'short',
-                  day: 'numeric',
-                  year: 'numeric',
-                })}
-              </td>
-
-              {/* Description & Notes */}
-              <td className="px-6 py-4.5 max-w-[200px] truncate">
-                <p className="font-bold text-gray-900 dark:text-white truncate">
-                  {tx.description || (tx.type === 'TRANSFER' ? 'Transfer' : 'Uncategorized')}
-                </p>
-                {tx.notes && (
-                  <p className="text-[10px] text-gray-400 truncate mt-0.5">{tx.notes}</p>
-                )}
-              </td>
-
-              {/* Category */}
-              <td className="px-6 py-4.5 font-semibold">
-                {tx.type === 'TRANSFER' ? (
-                  <span className="text-xs text-gray-400 font-medium italic">Not Applicable</span>
-                ) : (
-                  <div className="flex items-center gap-1.5">
-                    {tx.category?.color && (
-                      <div
-                        className="h-2 w-2 rounded-full"
-                        style={{ backgroundColor: tx.category.color }}
-                      />
-                    )}
-                    <span className="text-gray-700 dark:text-gray-300">
-                      {tx.category?.name || 'Uncategorized'}
-                    </span>
-                  </div>
-                )}
-              </td>
-
-              {/* Account Path */}
-              <td className="px-6 py-4.5 font-semibold">
-                {tx.type === 'TRANSFER' && tx.toAccount ? (
-                  <div className="flex items-center gap-1.5 text-xs text-gray-700 dark:text-gray-300">
-                    <span className="truncate max-w-[80px]">{tx.account.name}</span>
-                    <ArrowRight className="h-3 w-3 text-purple-400 shrink-0" />
-                    <span className="truncate max-w-[80px] text-purple-600 dark:text-purple-400 font-bold">
-                      {tx.toAccount.name}
-                    </span>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-1.5">
-                    {tx.account.color && (
-                      <div
-                        className="h-2 w-2 rounded-full"
-                        style={{ backgroundColor: tx.account.color }}
-                      />
-                    )}
-                    <span className="text-gray-750 dark:text-gray-300 truncate max-w-[120px]">
-                      {tx.account.name}
-                    </span>
-                  </div>
-                )}
-              </td>
-
-              {/* Type Badge */}
-              <td className="px-6 py-4.5">
-                <TransactionTypeBadge type={tx.type} />
-              </td>
-
-              {/* Amount */}
-              <td className="px-6 py-4.5 text-right whitespace-nowrap">
-                {getAmountDisplay(tx)}
-              </td>
-
-              {/* Actions dropdown/buttons */}
-              <td className="px-6 py-4.5">
-                <div className="flex items-center justify-center gap-2">
-                  <button
-                    onClick={() => onView(tx)}
-                    className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-50 hover:text-gray-700 dark:hover:bg-gray-900 dark:hover:text-white transition-all"
-                    title="View details"
-                  >
-                    <Eye className="h-4.5 w-4.5" />
-                  </button>
-                  <button
-                    onClick={() => onEdit(tx)}
-                    className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-50 hover:text-purple-600 dark:hover:bg-gray-900 dark:hover:text-purple-400 transition-all"
-                    title="Edit transaction"
-                  >
-                    <Edit className="h-4.5 w-4.5" />
-                  </button>
-                  <button
-                    onClick={() => onDelete(tx)}
-                    className="rounded-lg p-1.5 text-gray-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/30 dark:hover:text-rose-400 transition-all"
-                    title="Delete transaction"
-                  >
-                    <Trash2 className="h-4.5 w-4.5" />
-                  </button>
-                </div>
-              </td>
+              <th className="px-6 py-4.5 font-semibold text-white/50">Date</th>
+              <th className="px-6 py-4.5 font-semibold text-white/50">Description</th>
+              <th className="px-6 py-4.5 font-semibold text-white/50">Category</th>
+              <th className="px-6 py-4.5 font-semibold text-white/50">Account</th>
+              <th className="px-6 py-4.5 font-semibold text-white/50">Type</th>
+              <th className="px-6 py-4.5 font-semibold text-white/50 text-right">Amount</th>
+              <th className="px-6 py-4.5 font-semibold text-white/50 text-center">Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="divide-y divide-white/5">
+            {transactions.map((tx) => (
+              <tr
+                key={tx.id}
+                className="hover:bg-white/[0.02] transition-colors"
+              >
+                {/* Date */}
+                <td className="px-6 py-4 font-normal text-white/90 whitespace-nowrap">
+                  {new Date(tx.date).toLocaleDateString(undefined, {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                  })}
+                </td>
+
+                {/* Description & Notes */}
+                <td className="px-6 py-4 max-w-[200px] truncate">
+                  <p className="font-semibold text-white truncate">
+                    {tx.description || (tx.type === 'TRANSFER' ? 'Transfer' : 'Uncategorized')}
+                  </p>
+                  {tx.notes && (
+                    <p className="text-[11px] truncate mt-0.5" style={{ color: 'rgba(255,255,255,0.4)' }}>{tx.notes}</p>
+                  )}
+                </td>
+
+                {/* Category */}
+                <td className="px-6 py-4 font-normal text-white/80">
+                  {tx.type === 'TRANSFER' ? (
+                    <span className="text-xs font-normal italic" style={{ color: 'rgba(255,255,255,0.4)' }}>Not Applicable</span>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <div
+                        className="h-2 w-2 rounded-full shrink-0"
+                        style={{ backgroundColor: getCategoryDotColor(tx.category?.name || '') }}
+                      />
+                      <span>
+                        {tx.category?.name || 'Uncategorized'}
+                      </span>
+                    </div>
+                  )}
+                </td>
+
+                {/* Account Path */}
+                <td className="px-6 py-4 font-normal text-white/85">
+                  {tx.type === 'TRANSFER' && tx.toAccount ? (
+                    <div className="flex items-center gap-1.5 text-xs">
+                      <span className="truncate max-w-[80px]">{tx.account.name}</span>
+                      <ArrowRight className="h-3.5 w-3.5 text-white/40 shrink-0" />
+                      <span className="truncate max-w-[80px] font-semibold text-white">
+                        {tx.toAccount.name}
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-1.5">
+                      <div
+                        className="h-1.5 w-1.5 rounded-full"
+                        style={{ backgroundColor: '#fff' }}
+                      />
+                      <span className="truncate max-w-[120px]">
+                        {tx.account.name}
+                      </span>
+                    </div>
+                  )}
+                </td>
+
+                {/* Type Badge */}
+                <td className="px-6 py-4">
+                  <TransactionTypeBadge type={tx.type} />
+                </td>
+
+                {/* Amount */}
+                <td className="px-6 py-4 text-right whitespace-nowrap">
+                  {getAmountDisplay(tx)}
+                </td>
+
+                {/* Actions */}
+                <td className="px-6 py-4">
+                  <div className="flex items-center justify-center gap-1.5">
+                    <button
+                      onClick={() => onView(tx)}
+                      className="rounded-lg p-1.5 text-white/45 hover:bg-white/5 hover:text-white transition-all active:scale-95 cursor-pointer"
+                      title="View details"
+                    >
+                      <Eye className="h-4.5 w-4.5" />
+                    </button>
+                    <button
+                      onClick={() => onEdit(tx)}
+                      className="rounded-lg p-1.5 text-white/45 hover:bg-white/5 hover:text-white transition-all active:scale-95 cursor-pointer"
+                      title="Edit transaction"
+                    >
+                      <Edit className="h-4.5 w-4.5" />
+                    </button>
+                    <button
+                      onClick={() => onDelete(tx)}
+                      className="rounded-lg p-1.5 text-white/45 hover:bg-rose-500/10 hover:text-rose-450 transition-all active:scale-95 cursor-pointer"
+                      title="Delete transaction"
+                    >
+                      <Trash2 className="h-4.5 w-4.5" />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

@@ -15,54 +15,86 @@ export const AccountPreview: React.FC<AccountPreviewProps> = ({
   name,
   type,
   balance,
-  color,
-  currency,
 }) => {
   const getIcon = () => {
     switch (type) {
       case 'BANK':
-        return <Landmark className="h-6 w-6 text-white" />;
+        return <Landmark className="h-6 w-6" style={{ color: '#000' }} />;
       case 'CASH':
-        return <Wallet className="h-6 w-6 text-white" />;
+        return <Wallet className="h-6 w-6" style={{ color: '#000' }} />;
       case 'CREDIT_CARD':
-        return <CreditCard className="h-6 w-6 text-white" />;
+        return <CreditCard className="h-6 w-6" style={{ color: '#000' }} />;
       case 'INVESTMENT':
-        return <PiggyBank className="h-6 w-6 text-white" />;
+        return <PiggyBank className="h-6 w-6" style={{ color: '#000' }} />;
       case 'E_WALLET':
-        return <Smartphone className="h-6 w-6 text-white" />;
+        return <Smartphone className="h-6 w-6" style={{ color: '#000' }} />;
       default:
-        return <AlertCircle className="h-6 w-6 text-white" />;
+        return <AlertCircle className="h-6 w-6" style={{ color: '#000' }} />;
     }
   };
 
   return (
-    <div className="hidden lg:flex flex-col items-center justify-center bg-gray-50/50 dark:bg-[#12131a]/40 border border-gray-100 dark:border-gray-800 rounded-3xl p-8 w-64 text-center shrink-0 space-y-6 self-stretch">
-      <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Live Preview</span>
-      
+    <div
+      className="hidden lg:flex flex-col items-center justify-center p-8 w-64 text-center shrink-0 space-y-6 self-stretch"
+      style={{
+        background: '#0d0d0d',
+        border: '0.5px solid rgba(255,255,255,0.1)',
+        borderRadius: 12,
+      }}
+    >
+      {/* Panel label */}
+      <span
+        className="text-[10px] font-bold uppercase tracking-widest"
+        style={{ color: 'rgba(255,255,255,0.4)' }}
+      >
+        Live Preview
+      </span>
+
       <div className="space-y-4 flex flex-col items-center w-full">
-        {/* Color Filled Icon Container */}
+        {/*
+         * Icon badge: solid white square (10px radius), black icon inside.
+         * Monochrome — differentiating by icon shape rather than color,
+         * matching StatCard icon treatment and sidebar active state.
+         * The account-type icon map (Landmark / Wallet / CreditCard /
+         * PiggyBank / Smartphone) provides adequate visual differentiation
+         * without needing per-type colors.
+         */}
         <div
-          className="h-14 w-14 rounded-2xl flex items-center justify-center shadow-lg transition-colors duration-300"
-          style={{ backgroundColor: color }}
+          className="h-14 w-14 flex items-center justify-center transition-all duration-300"
+          style={{ background: '#fff', borderRadius: 10 }}
         >
           {getIcon()}
         </div>
 
-        {/* Text Details */}
-        <div className="space-y-1 w-full truncate">
-          <h4 className="text-lg font-black text-gray-900 dark:text-white truncate">
+        {/* Name & type badge */}
+        <div className="space-y-2 w-full">
+          <h4 className="text-base font-medium truncate" style={{ color: '#fff' }}>
             {name || 'HDFC Savings'}
           </h4>
-          <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400 uppercase tracking-wider">
+          <span
+            className="inline-block px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider rounded-full"
+            style={{
+              background: 'rgba(255,255,255,0.1)',
+              color: '#fff',
+            }}
+          >
             {type.replace('_', ' ')}
           </span>
         </div>
       </div>
 
-      {/* Balance display */}
-      <div className="space-y-0.5 border-t border-gray-100 dark:border-gray-800 w-full pt-4">
-        <span className="text-[10px] font-semibold text-gray-400 uppercase">Balance</span>
-        <p className="text-2xl font-black text-gray-900 dark:text-white tracking-tight truncate">
+      {/* Balance section — separated by hairline */}
+      <div
+        className="space-y-1 w-full pt-4 text-center"
+        style={{ borderTop: '0.5px solid rgba(255,255,255,0.1)' }}
+      >
+        <span
+          className="block text-[10px] font-semibold uppercase tracking-wider"
+          style={{ color: 'rgba(255,255,255,0.4)' }}
+        >
+          Balance
+        </span>
+        <p className="text-2xl font-medium tracking-tight truncate" style={{ color: '#fff' }}>
           {formatCurrency(balance || 0)}
         </p>
       </div>

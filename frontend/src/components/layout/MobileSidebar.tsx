@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { NAVIGATION_ITEMS } from '../../constants/navigation';
 import { NavItem } from './NavItem';
-import { Shield, X, LogOut } from 'lucide-react';
+import { X, LogOut } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -42,22 +42,52 @@ export const MobileSidebar: React.FC<MobileSidebarProps> = ({ isOpen, onClose })
       {/* Backdrop overlay */}
       <div
         onClick={onClose}
-        className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity duration-300 animate-fade-in"
+        className="fixed inset-0 bg-black/70 backdrop-blur-xs transition-opacity duration-300 animate-fade-in"
       />
 
       {/* Drawer content */}
-      <div className="relative flex w-[280px] max-w-xs flex-col bg-white h-full shadow-2xl border-r border-gray-150 dark:border-gray-800 dark:bg-[#12131a] p-4 text-left z-50 animate-slide-right-in">
+      <div
+        className="relative flex w-[280px] max-w-xs flex-col h-full shadow-2xl p-4 text-left z-50 animate-slide-right-in"
+        style={{
+          background: '#0a0a0a',
+          borderRight: '0.5px solid rgba(255,255,255,0.12)',
+        }}
+      >
         {/* Header brand logo */}
-        <div className="flex h-14 items-center justify-between border-b border-gray-100 dark:border-gray-800 pb-3 mb-4">
+        <div
+          className="flex h-14 items-center justify-between pb-3 mb-4"
+          style={{ borderBottom: '0.5px solid rgba(255,255,255,0.12)' }}
+        >
           <div className="flex items-center gap-2.5">
-            <Shield className="h-7 w-7 text-purple-600 dark:text-purple-400 shrink-0" />
-            <span className="text-lg font-black tracking-tight text-gray-900 dark:text-white">
-              FINANCE<span className="text-purple-600">FLOW</span>
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="white"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polyline points="3,18 9,12 13,16 21,8" />
+            </svg>
+            <span
+              style={{
+                fontSize: 15,
+                fontWeight: 500,
+                letterSpacing: '0.15em',
+                color: '#fff',
+              }}
+            >
+              FINTRACK
             </span>
           </div>
           <button
             onClick={onClose}
-            className="rounded-xl p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-900 transition-all dark:hover:bg-gray-900 dark:hover:text-white"
+            className="rounded-xl p-2 transition-all"
+            style={{ color: 'rgba(255,255,255,0.45)' }}
+            onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+            onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.45)')}
           >
             <X className="h-5 w-5" />
           </button>
@@ -78,31 +108,41 @@ export const MobileSidebar: React.FC<MobileSidebarProps> = ({ isOpen, onClose })
 
         {/* Footer profile & logout */}
         {user && (
-          <div className="border-t border-gray-100 dark:border-gray-800/80 pt-4 flex items-center justify-between gap-3 overflow-hidden shrink-0 mt-4">
+          <div
+            className="pt-4 flex items-center justify-between gap-3 overflow-hidden shrink-0 mt-4"
+            style={{ borderTop: '0.5px solid rgba(255,255,255,0.12)' }}
+          >
             <div className="flex items-center gap-2.5 overflow-hidden">
               {user.profileImage ? (
                 <img
                   src={user.profileImage}
                   alt={user.fullName}
-                  className="h-9 w-9 rounded-full object-cover shrink-0 border border-purple-500/15"
+                  className="h-9 w-9 rounded-full object-cover shrink-0"
+                  style={{ border: '1px solid rgba(255,255,255,0.18)' }}
                 />
               ) : (
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-purple-50 text-purple-600 dark:bg-purple-950/40 dark:text-purple-400 shrink-0 font-bold uppercase border border-purple-100 dark:border-purple-900/40 text-sm">
+                <div
+                  className="flex h-9 w-9 items-center justify-center rounded-full shrink-0 font-bold uppercase text-sm"
+                  style={{ background: '#fff', color: '#000' }}
+                >
                   {user.fullName.charAt(0)}
                 </div>
               )}
               <div className="text-left overflow-hidden min-w-0">
-                <p className="text-sm font-bold text-gray-900 dark:text-white truncate">
+                <p className="text-sm font-bold truncate" style={{ color: '#fff' }}>
                   {user.fullName}
                 </p>
-                <p className="text-[10px] font-medium text-gray-400 truncate">
+                <p className="text-[10px] font-medium truncate" style={{ color: 'rgba(255,255,255,0.4)' }}>
                   {user.email}
                 </p>
               </div>
             </div>
             <button
               onClick={handleLogout}
-              className="rounded-lg p-2 text-gray-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/30 dark:hover:text-rose-400 transition-colors"
+              className="rounded-lg p-2 transition-colors"
+              style={{ color: 'rgba(255,255,255,0.35)' }}
+              onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.35)')}
               title="Log Out"
             >
               <LogOut className="h-4 w-4" />

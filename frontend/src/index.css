@@ -1,6 +1,108 @@
 @import "tailwindcss";
 
 /* ─────────────────────────────────────────────────────────────
+   Tailwind v4 Theme Tokens Customization
+   ───────────────────────────────────────────────────────────── */
+@theme {
+  --color-background: #000000;
+  --color-surface: #0a0a0a;
+  --color-surface-muted: #141414;
+  --color-border: rgba(255, 255, 255, 0.12);
+  --color-border-strong: rgba(255, 255, 255, 0.18);
+  --color-text-primary: #ffffff;
+  --color-text-secondary: rgba(255, 255, 255, 0.6);
+  --color-text-muted: rgba(255, 255, 255, 0.4);
+  --color-accent-fill: #ffffff;
+  --color-accent-text: #000000;
+
+  --font-sans: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Shared Components Styles (B&W Design System)
+   ───────────────────────────────────────────────────────────── */
+@utility card {
+  background-color: var(--color-surface);
+  border: 0.5px solid var(--color-border);
+  border-radius: 12px;
+  padding: 16px;
+  transition: all 150ms ease-out;
+}
+
+@utility input {
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 400;
+  background-color: var(--color-surface-muted);
+  border: 0.5px solid var(--color-border);
+  border-radius: 8px;
+  color: var(--color-text-primary);
+  transition: all 150ms ease-out;
+  outline: none;
+}
+
+@utility input-focus {
+  border-color: var(--color-border-strong);
+}
+
+@utility btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 8px;
+  background-color: var(--color-accent-fill);
+  color: var(--color-accent-text);
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 150ms ease-out;
+  cursor: pointer;
+}
+@utility btn-primary-hover {
+  opacity: 0.9;
+}
+@utility btn-primary-active {
+  transform: scale(0.98);
+}
+
+@utility btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 8px;
+  background-color: transparent;
+  border: 0.5px solid var(--color-border-strong);
+  color: var(--color-text-primary);
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 150ms ease-out;
+  cursor: pointer;
+}
+@utility btn-secondary-hover {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+@utility btn-secondary-active {
+  transform: scale(0.98);
+}
+
+@utility label {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: block;
+}
+
+@utility divider {
+  border-bottom: 0.5px solid var(--color-border);
+}
+
+/* ─────────────────────────────────────────────────────────────
    Auth background — glow blobs & floating particles
    ───────────────────────────────────────────────────────────── */
 
@@ -55,5 +157,35 @@
 .auth-particle-4 { top: 61%; left: 13%; animation: auth-float 8.0s ease-in-out infinite 0.8s; }
 .auth-particle-5 { top: 69%; left: 69%; animation: auth-float 6.5s ease-in-out infinite 0.4s; }
 .auth-particle-6 { top: 83%; left: 31%; animation: auth-float 7.0s ease-in-out infinite 0.6s; }
-.auth-particle-7 { top: 45%; left: 89%; animation: auth-float 5.8s ease-in-out infinite 0.3s; }
+
+
+/* ─────────────────────────────────────────────────────────────
+   Global Black-and-White Theme Overrides
+   ───────────────────────────────────────────────────────────── */
+/* ─────────────────────────────────────────────────────────────
+   Global Black-and-White Theme Overrides
+   ───────────────────────────────────────────────────────────── */
+html,
+body,
+#root {
+  min-height: 100vh;
+  background-color: var(--color-background) !important;
+  color: var(--color-text-primary);
+}
+
+/* Hide Scrollbars Globally but Preserve Scroll Functionality */
+* {
+  scrollbar-width: none !important;       /* Firefox */
+  -ms-overflow-style: none !important;    /* IE/Edge */
+}
+
+::-webkit-scrollbar {
+  width: 0px !important;                  /* Chrome, Safari, Edge (Chromium) */
+  height: 0px !important;
+  display: none !important;
+}
+
+
+
+
 

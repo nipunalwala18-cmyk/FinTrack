@@ -5,19 +5,19 @@ interface BudgetStatusBadgeProps {
 }
 
 export const BudgetStatusBadge: React.FC<BudgetStatusBadgeProps> = ({ status }) => {
-  let badgeStyles = 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/30';
+  let badgeStyles = 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
   let statusText = 'On Track';
 
   if (status === 'OVER_BUDGET') {
-    badgeStyles = 'bg-rose-50 text-rose-700 dark:bg-rose-950/20 dark:text-rose-400 border border-rose-100 dark:border-rose-900/30';
+    badgeStyles = 'bg-rose-500/10 text-rose-455 border border-rose-500/20';
     statusText = 'Over Budget';
   } else if (status === 'NEAR_LIMIT') {
-    badgeStyles = 'bg-amber-50 text-amber-700 dark:bg-amber-950/20 dark:text-amber-400 border border-amber-100 dark:border-amber-900/30';
+    badgeStyles = 'bg-amber-500/10 text-amber-400 border border-amber-500/20';
     statusText = 'Near Limit';
   }
 
   return (
-    <span className={`inline-flex items-center rounded-lg px-2.5 py-0.5 text-xs font-bold ${badgeStyles}`}>
+    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${badgeStyles}`}>
       {statusText}
     </span>
   );

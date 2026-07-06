@@ -1,5 +1,9 @@
 import React from 'react';
 import type { UseFormRegister, FieldErrors } from 'react-hook-form';
+import {
+  LABEL_CLS, LABEL_STYLE, INPUT_BASE, INPUT_STYLE,
+  INPUT_ERROR_STYLE, INPUT_FOCUS_STYLE, INPUT_BLUR_STYLE,
+} from '../fieldStyles';
 
 interface CreditCardFieldsProps {
   register: UseFormRegister<any>;
@@ -12,7 +16,7 @@ export const CreditCardFields: React.FC<CreditCardFieldsProps> = ({ register, er
     <div className="space-y-4 text-left">
       {/* Card Name */}
       <div className="space-y-1.5">
-        <label htmlFor="name" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+        <label htmlFor="name" className={LABEL_CLS} style={LABEL_STYLE}>
           Card Name *
         </label>
         <input
@@ -21,17 +25,18 @@ export const CreditCardFields: React.FC<CreditCardFieldsProps> = ({ register, er
           placeholder="e.g. My Credit Card"
           disabled={isPending}
           {...register('name')}
-          className={`w-full rounded-xl border bg-white px-4 py-3 text-sm text-gray-900 transition-all focus:outline-none focus:ring-2 focus:ring-purple-500/20 dark:bg-gray-900 dark:text-white ${
-            errors.name ? 'border-red-300 focus:border-red-500 dark:border-red-900/50' : 'border-gray-200 focus:border-purple-500 dark:border-gray-800'
-          }`}
+          className={INPUT_BASE}
+          style={{ ...INPUT_STYLE, border: errors.name ? INPUT_ERROR_STYLE : INPUT_STYLE.border }}
+          onFocus={e => (e.currentTarget.style.border = INPUT_FOCUS_STYLE)}
+          onBlur={e => (e.currentTarget.style.border = errors.name ? INPUT_ERROR_STYLE : INPUT_BLUR_STYLE)}
         />
-        {errors.name && <p className="text-xs font-semibold text-red-500">{(errors.name as any).message}</p>}
+        {errors.name && <p className="text-xs font-semibold" style={{ color: 'rgba(248,113,113,0.9)' }}>{(errors.name as any).message}</p>}
       </div>
 
       {/* Grid Outstanding & Limit */}
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-1.5">
-          <label htmlFor="outstandingBalance" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+          <label htmlFor="outstandingBalance" className={LABEL_CLS} style={LABEL_STYLE}>
             Current Outstanding *
           </label>
           <input
@@ -41,17 +46,18 @@ export const CreditCardFields: React.FC<CreditCardFieldsProps> = ({ register, er
             placeholder="0"
             disabled={isPending}
             {...register('outstandingBalance', { valueAsNumber: true })}
-            className={`w-full rounded-xl border bg-white px-4 py-3 text-sm text-gray-900 transition-all focus:outline-none focus:ring-2 focus:ring-purple-500/20 dark:bg-gray-900 dark:text-white ${
-              errors.outstandingBalance ? 'border-red-300 focus:border-red-500 dark:border-red-900/50' : 'border-gray-200 focus:border-purple-500 dark:border-gray-800'
-            }`}
+            className={INPUT_BASE}
+            style={{ ...INPUT_STYLE, border: errors.outstandingBalance ? INPUT_ERROR_STYLE : INPUT_STYLE.border }}
+            onFocus={e => (e.currentTarget.style.border = INPUT_FOCUS_STYLE)}
+            onBlur={e => (e.currentTarget.style.border = errors.outstandingBalance ? INPUT_ERROR_STYLE : INPUT_BLUR_STYLE)}
           />
           {errors.outstandingBalance && (
-            <p className="text-xs font-semibold text-red-500">{(errors.outstandingBalance as any).message}</p>
+            <p className="text-xs font-semibold" style={{ color: 'rgba(248,113,113,0.9)' }}>{(errors.outstandingBalance as any).message}</p>
           )}
         </div>
 
         <div className="space-y-1.5">
-          <label htmlFor="creditLimit" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+          <label htmlFor="creditLimit" className={LABEL_CLS} style={LABEL_STYLE}>
             Credit Limit *
           </label>
           <input
@@ -61,12 +67,13 @@ export const CreditCardFields: React.FC<CreditCardFieldsProps> = ({ register, er
             placeholder="50000"
             disabled={isPending}
             {...register('creditLimit', { valueAsNumber: true })}
-            className={`w-full rounded-xl border bg-white px-4 py-3 text-sm text-gray-900 transition-all focus:outline-none focus:ring-2 focus:ring-purple-500/20 dark:bg-gray-900 dark:text-white ${
-              errors.creditLimit ? 'border-red-300 focus:border-red-500 dark:border-red-900/50' : 'border-gray-200 focus:border-purple-500 dark:border-gray-800'
-            }`}
+            className={INPUT_BASE}
+            style={{ ...INPUT_STYLE, border: errors.creditLimit ? INPUT_ERROR_STYLE : INPUT_STYLE.border }}
+            onFocus={e => (e.currentTarget.style.border = INPUT_FOCUS_STYLE)}
+            onBlur={e => (e.currentTarget.style.border = errors.creditLimit ? INPUT_ERROR_STYLE : INPUT_BLUR_STYLE)}
           />
           {errors.creditLimit && (
-            <p className="text-xs font-semibold text-red-500">{(errors.creditLimit as any).message}</p>
+            <p className="text-xs font-semibold" style={{ color: 'rgba(248,113,113,0.9)' }}>{(errors.creditLimit as any).message}</p>
           )}
         </div>
       </div>
@@ -74,7 +81,7 @@ export const CreditCardFields: React.FC<CreditCardFieldsProps> = ({ register, er
       {/* Grid Billing Day & Payment Due Day */}
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-1.5">
-          <label htmlFor="billingDay" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+          <label htmlFor="billingDay" className={LABEL_CLS} style={LABEL_STYLE}>
             Billing Day (1-31)
           </label>
           <input
@@ -85,17 +92,18 @@ export const CreditCardFields: React.FC<CreditCardFieldsProps> = ({ register, er
             placeholder="15"
             disabled={isPending}
             {...register('billingDay', { valueAsNumber: true })}
-            className={`w-full rounded-xl border bg-white px-4 py-3 text-sm text-gray-900 transition-all focus:outline-none focus:ring-2 focus:ring-purple-500/20 dark:bg-gray-900 dark:text-white ${
-              errors.billingDay ? 'border-red-300 focus:border-red-500 dark:border-red-900/50' : 'border-gray-200 focus:border-purple-500 dark:border-gray-800'
-            }`}
+            className={INPUT_BASE}
+            style={{ ...INPUT_STYLE, border: errors.billingDay ? INPUT_ERROR_STYLE : INPUT_STYLE.border }}
+            onFocus={e => (e.currentTarget.style.border = INPUT_FOCUS_STYLE)}
+            onBlur={e => (e.currentTarget.style.border = errors.billingDay ? INPUT_ERROR_STYLE : INPUT_BLUR_STYLE)}
           />
           {errors.billingDay && (
-            <p className="text-xs font-semibold text-red-500">{(errors.billingDay as any).message}</p>
+            <p className="text-xs font-semibold" style={{ color: 'rgba(248,113,113,0.9)' }}>{(errors.billingDay as any).message}</p>
           )}
         </div>
 
         <div className="space-y-1.5">
-          <label htmlFor="paymentDueDay" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+          <label htmlFor="paymentDueDay" className={LABEL_CLS} style={LABEL_STYLE}>
             Payment Due Day (1-31)
           </label>
           <input
@@ -106,19 +114,20 @@ export const CreditCardFields: React.FC<CreditCardFieldsProps> = ({ register, er
             placeholder="5"
             disabled={isPending}
             {...register('paymentDueDay', { valueAsNumber: true })}
-            className={`w-full rounded-xl border bg-white px-4 py-3 text-sm text-gray-900 transition-all focus:outline-none focus:ring-2 focus:ring-purple-500/20 dark:bg-gray-900 dark:text-white ${
-              errors.paymentDueDay ? 'border-red-300 focus:border-red-500 dark:border-red-900/50' : 'border-gray-200 focus:border-purple-500 dark:border-gray-800'
-            }`}
+            className={INPUT_BASE}
+            style={{ ...INPUT_STYLE, border: errors.paymentDueDay ? INPUT_ERROR_STYLE : INPUT_STYLE.border }}
+            onFocus={e => (e.currentTarget.style.border = INPUT_FOCUS_STYLE)}
+            onBlur={e => (e.currentTarget.style.border = errors.paymentDueDay ? INPUT_ERROR_STYLE : INPUT_BLUR_STYLE)}
           />
           {errors.paymentDueDay && (
-            <p className="text-xs font-semibold text-red-500">{(errors.paymentDueDay as any).message}</p>
+            <p className="text-xs font-semibold" style={{ color: 'rgba(248,113,113,0.9)' }}>{(errors.paymentDueDay as any).message}</p>
           )}
         </div>
       </div>
 
       {/* Last 4 Digits */}
       <div className="space-y-1.5">
-        <label htmlFor="accountNumber" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+        <label htmlFor="accountNumber" className={LABEL_CLS} style={LABEL_STYLE}>
           Last 4 Digits (Optional)
         </label>
         <input
@@ -128,7 +137,10 @@ export const CreditCardFields: React.FC<CreditCardFieldsProps> = ({ register, er
           placeholder="e.g. 4321"
           disabled={isPending}
           {...register('accountNumber')}
-          className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 transition-all focus:outline-none focus:ring-2 focus:ring-purple-500/20 dark:border-gray-800 dark:bg-gray-900 dark:text-white focus:border-purple-500"
+          className={INPUT_BASE}
+          style={INPUT_STYLE}
+          onFocus={e => (e.currentTarget.style.border = INPUT_FOCUS_STYLE)}
+          onBlur={e => (e.currentTarget.style.border = INPUT_BLUR_STYLE)}
         />
       </div>
     </div>

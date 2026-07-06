@@ -1,5 +1,9 @@
 import React from 'react';
 import type { UseFormRegister, FieldErrors } from 'react-hook-form';
+import {
+  LABEL_CLS, LABEL_STYLE, INPUT_BASE, INPUT_STYLE,
+  INPUT_ERROR_STYLE, INPUT_FOCUS_STYLE, INPUT_BLUR_STYLE,
+} from '../fieldStyles';
 
 interface CashFieldsProps {
   register: UseFormRegister<any>;
@@ -12,7 +16,7 @@ export const CashFields: React.FC<CashFieldsProps> = ({ register, errors, isPend
     <div className="space-y-4">
       {/* Wallet Name */}
       <div className="space-y-1.5 text-left">
-        <label htmlFor="name" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+        <label htmlFor="name" className={LABEL_CLS} style={LABEL_STYLE}>
           Wallet Name *
         </label>
         <input
@@ -21,16 +25,17 @@ export const CashFields: React.FC<CashFieldsProps> = ({ register, errors, isPend
           placeholder="e.g. Cash Wallet"
           disabled={isPending}
           {...register('name')}
-          className={`w-full rounded-xl border bg-white px-4 py-3 text-sm text-gray-900 transition-all focus:outline-none focus:ring-2 focus:ring-purple-500/20 dark:bg-gray-900 dark:text-white ${
-            errors.name ? 'border-red-300 focus:border-red-500 dark:border-red-900/50' : 'border-gray-200 focus:border-purple-500 dark:border-gray-800'
-          }`}
+          className={INPUT_BASE}
+          style={{ ...INPUT_STYLE, border: errors.name ? INPUT_ERROR_STYLE : INPUT_STYLE.border }}
+          onFocus={e => (e.currentTarget.style.border = INPUT_FOCUS_STYLE)}
+          onBlur={e => (e.currentTarget.style.border = errors.name ? INPUT_ERROR_STYLE : INPUT_BLUR_STYLE)}
         />
-        {errors.name && <p className="text-xs font-semibold text-red-500">{(errors.name as any).message}</p>}
+        {errors.name && <p className="text-xs font-semibold" style={{ color: 'rgba(248,113,113,0.9)' }}>{(errors.name as any).message}</p>}
       </div>
 
       {/* Cash Balance */}
       <div className="space-y-1.5 text-left">
-        <label htmlFor="balance" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+        <label htmlFor="balance" className={LABEL_CLS} style={LABEL_STYLE}>
           Cash Balance *
         </label>
         <input
@@ -40,11 +45,12 @@ export const CashFields: React.FC<CashFieldsProps> = ({ register, errors, isPend
           placeholder="0"
           disabled={isPending}
           {...register('balance', { valueAsNumber: true })}
-          className={`w-full rounded-xl border bg-white px-4 py-3 text-sm text-gray-900 transition-all focus:outline-none focus:ring-2 focus:ring-purple-500/20 dark:bg-gray-900 dark:text-white ${
-            errors.balance ? 'border-red-300 focus:border-red-500 dark:border-red-900/50' : 'border-gray-200 focus:border-purple-500 dark:border-gray-800'
-          }`}
+          className={INPUT_BASE}
+          style={{ ...INPUT_STYLE, border: errors.balance ? INPUT_ERROR_STYLE : INPUT_STYLE.border }}
+          onFocus={e => (e.currentTarget.style.border = INPUT_FOCUS_STYLE)}
+          onBlur={e => (e.currentTarget.style.border = errors.balance ? INPUT_ERROR_STYLE : INPUT_BLUR_STYLE)}
         />
-        {errors.balance && <p className="text-xs font-semibold text-red-500">{(errors.balance as any).message}</p>}
+        {errors.balance && <p className="text-xs font-semibold" style={{ color: 'rgba(248,113,113,0.9)' }}>{(errors.balance as any).message}</p>}
       </div>
     </div>
   );

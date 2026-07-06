@@ -12,27 +12,42 @@ export const AccountsList: React.FC<AccountsListProps> = ({ accounts, onAddAccou
   const getIcon = (type: string) => {
     switch (type) {
       case 'BANK':
-        return <Landmark className="h-5 w-5" />;
+        return <Landmark className="h-4 w-4" />;
       case 'CASH':
-        return <Wallet className="h-5 w-5" />;
+        return <Wallet className="h-4 w-4" />;
       case 'CREDIT_CARD':
-        return <CreditCard className="h-5 w-5" />;
+        return <CreditCard className="h-4 w-4" />;
       case 'INVESTMENT':
-        return <PiggyBank className="h-5 w-5" />;
+        return <PiggyBank className="h-4 w-4" />;
       case 'E_WALLET':
-        return <Smartphone className="h-5 w-5" />;
+        return <Smartphone className="h-4 w-4" />;
       default:
-        return <AlertCircle className="h-5 w-5" />;
+        return <AlertCircle className="h-4 w-4" />;
     }
   };
 
   return (
-    <div className="w-full rounded-2xl bg-white p-6 shadow-sm border border-gray-100 dark:bg-[#12131a] dark:border-gray-800 space-y-4">
-      <div className="flex items-center justify-between border-b border-gray-100 dark:border-gray-800 pb-3">
-        <h3 className="text-lg font-bold text-gray-900 dark:text-white">My Accounts</h3>
+    <div
+      className="w-full h-full rounded-2xl p-5 space-y-4"
+      style={{
+        background: '#0a0a0a',
+        border: '0.5px solid rgba(255,255,255,0.12)',
+      }}
+    >
+      {/* Header row */}
+      <div
+        className="flex items-center justify-between pb-3"
+        style={{ borderBottom: '0.5px solid rgba(255,255,255,0.1)' }}
+      >
+        <h3 className="text-sm font-semibold" style={{ color: '#fff' }}>
+          My Accounts
+        </h3>
         <button
           onClick={onAddAccountClick}
-          className="flex items-center gap-1 text-xs font-bold text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300"
+          className="flex items-center gap-1 text-xs font-semibold transition-colors focus:outline-none focus-visible:ring-1 focus-visible:ring-white rounded"
+          style={{ color: 'rgba(255,255,255,0.5)' }}
+          onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+          onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.5)')}
         >
           <Plus className="h-3.5 w-3.5" />
           <span>New</span>
@@ -40,33 +55,53 @@ export const AccountsList: React.FC<AccountsListProps> = ({ accounts, onAddAccou
       </div>
 
       {accounts.length === 0 ? (
-        <p className="text-sm text-gray-400 py-4 text-center">No accounts created yet.</p>
+        <p className="text-xs py-4 text-center" style={{ color: 'rgba(255,255,255,0.35)' }}>
+          No accounts created yet.
+        </p>
       ) : (
-        <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1">
+        /* max-h limits to ~4 items before internal scroll kicks in */
+        <div className="space-y-2 max-h-[220px] overflow-y-auto pr-0.5">
           {accounts.map((account) => (
             <div
               key={account.id}
-              className="flex items-center justify-between p-3.5 rounded-xl border border-gray-50 bg-gray-50/20 dark:border-gray-800 dark:bg-gray-950/20 hover:bg-gray-50/50 dark:hover:bg-gray-950/40 transition-colors"
+              className="flex items-center justify-between p-3 rounded-xl transition-colors"
+              style={{
+                background: 'rgba(255,255,255,0.03)',
+                border: '0.5px solid rgba(255,255,255,0.08)',
+              }}
+              onMouseEnter={e => {
+                (e.currentTarget as HTMLDivElement).style.background = 'rgba(255,255,255,0.06)';
+              }}
+              onMouseLeave={e => {
+                (e.currentTarget as HTMLDivElement).style.background = 'rgba(255,255,255,0.03)';
+              }}
             >
               <div className="flex items-center gap-3 min-w-0">
+                {/* Account icon tile — solid white background, black icon inside */}
                 <div
-                  className="h-10 w-10 rounded-xl flex items-center justify-center text-white shrink-0 shadow-sm"
-                  style={{ backgroundColor: account.color || '#2563EB' }}
+                  className="h-8 w-8 flex items-center justify-center shrink-0"
+                  style={{ background: '#fff', borderRadius: 8, color: '#000' }}
                 >
                   {getIcon(account.type)}
                 </div>
                 <div className="text-left min-w-0">
-                  <p className="text-sm font-bold text-gray-900 dark:text-white truncate">
+                  <p className="text-sm font-semibold truncate" style={{ color: '#fff' }}>
                     {account.name}
                   </p>
-                  <p className="text-[10px] text-gray-400 capitalize font-medium">
+                  <p
+                    className="text-[10px] capitalize font-medium"
+                    style={{ color: 'rgba(255,255,255,0.4)' }}
+                  >
                     {account.type.toLowerCase().replace('_', ' ')}
                   </p>
                 </div>
               </div>
 
               <div className="text-right pl-3 shrink-0">
-                <p className={`text-sm font-black ${account.balance < 0 ? 'text-rose-600 dark:text-rose-400' : 'text-gray-900 dark:text-white'}`}>
+                <p
+                  className="text-sm font-semibold"
+                  style={{ color: account.balance < 0 ? 'rgba(248,113,113,0.85)' : '#fff' }}
+                >
                   {formatCurrency(account.balance)}
                 </p>
               </div>

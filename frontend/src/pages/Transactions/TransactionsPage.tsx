@@ -80,16 +80,16 @@ export const TransactionsPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 text-left">
+    <div className="space-y-5 w-full text-left animate-fade-in">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h2 className="text-2xl font-black text-gray-900 dark:text-white">Transactions</h2>
-          <p className="text-sm text-gray-400 font-medium">Record and track your incomes, expenses, and transfers</p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-5" style={{ borderBottom: '0.5px solid rgba(255,255,255,0.1)' }}>
+        <div className="space-y-0.5 text-left">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white">Transactions</h1>
+          <p className="text-xs font-semibold" style={{ color: 'rgba(255,255,255,0.4)' }}>Record and track your incomes, expenses, and transfers</p>
         </div>
         <button
           onClick={() => setIsAddOpen(true)}
-          className="flex items-center justify-center gap-2 rounded-xl bg-purple-600 px-4 py-2.5 text-sm font-bold text-white shadow-md shadow-purple-500/10 hover:bg-purple-700 active:scale-[0.98] transition-all self-start sm:self-center"
+          className="flex items-center justify-center gap-2 rounded-xl bg-white hover:bg-white/90 active:scale-[0.98] px-5 py-2.5 text-sm font-semibold text-black transition-all cursor-pointer self-start sm:self-center focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
         >
           <PlusCircle className="h-4 w-4" />
           <span>Add Transaction</span>
@@ -113,31 +113,48 @@ export const TransactionsPage: React.FC = () => {
       {/* Main Content Area */}
       {isLoading ? (
         <div className="flex h-64 items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
+          <Loader2 className="h-8 w-8 animate-spin text-white/50" />
         </div>
       ) : isError ? (
-        <div className="rounded-2xl border border-red-105 bg-red-50/20 p-8 text-center dark:border-red-950/25">
-          <p className="text-sm text-red-500 font-bold">Failed to load transactions. Please try again.</p>
+        <div
+          className="p-8 text-center space-y-4 max-w-md mx-auto"
+          style={{
+            background: '#0a0a0a',
+            border: '0.5px solid rgba(248,113,113,0.25)',
+            borderRadius: 16,
+          }}
+        >
+          <p className="text-sm font-semibold text-rose-400">Failed to load transactions. Please try again.</p>
           <button
             onClick={() => refetch()}
-            className="mt-4 px-4 py-2 bg-purple-600 text-white rounded-xl text-xs font-bold"
+            className="px-4 py-2 bg-white text-black rounded-xl text-xs font-semibold hover:bg-white/90 active:scale-[0.98] transition-all cursor-pointer"
           >
             Retry
           </button>
         </div>
       ) : !data || data.transactions.length === 0 ? (
         /* Empty State */
-        <div className="rounded-3xl border border-gray-150 bg-white p-12 text-center dark:border-gray-800 dark:bg-[#12131a] max-w-md mx-auto space-y-5">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-purple-50 text-purple-600 dark:bg-purple-950/20 dark:text-purple-400">
-            <Receipt className="h-8 w-8" />
+        <div
+          className="p-12 text-center max-w-md mx-auto space-y-5"
+          style={{
+            background: '#0a0a0a',
+            border: '0.5px solid rgba(255,255,255,0.12)',
+            borderRadius: 16,
+          }}
+        >
+          <div
+            className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl"
+            style={{ background: 'rgba(255,255,255,0.06)' }}
+          >
+            <Receipt className="h-7 w-7 text-white/60" />
           </div>
-          <div className="space-y-2">
-            <h3 className="text-lg font-black text-gray-900 dark:text-white">No transactions found</h3>
-            <p className="text-sm text-gray-400">Add your first transaction to start tracking your finances.</p>
+          <div className="space-y-1.5">
+            <h3 className="text-lg font-bold text-white">No transactions found</h3>
+            <p className="text-xs" style={{ color: 'rgba(255,255,255,0.45)' }}>Add your first transaction to start tracking your finances.</p>
           </div>
           <button
             onClick={() => setIsAddOpen(true)}
-            className="w-full py-3 bg-purple-600 text-white rounded-xl text-sm font-bold shadow-md shadow-purple-500/15"
+            className="w-full py-3 bg-white text-black rounded-xl text-sm font-semibold hover:bg-white/90 active:scale-[0.98] transition-all cursor-pointer"
           >
             Add Transaction
           </button>

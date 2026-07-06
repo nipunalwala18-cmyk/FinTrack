@@ -39,38 +39,55 @@ export const TransactionDetails: React.FC<TransactionDetailsProps> = ({
   return (
     <div
       onClick={handleBackdropClick}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 transition-all duration-300 animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-xs p-4 transition-all duration-300 animate-fade-in"
       aria-modal="true"
       role="dialog"
     >
       <div
         ref={dialogRef}
-        className="w-[95vw] max-w-md rounded-3xl bg-white p-6 shadow-2xl dark:bg-[#12131a] border border-gray-100 dark:border-gray-800 space-y-6 text-left animate-zoom-in"
+        className="w-[95vw] max-w-md p-6 shadow-2xl text-left space-y-6 animate-zoom-in"
+        style={{
+          background: '#0a0a0a',
+          border: '0.5px solid rgba(255,255,255,0.14)',
+          borderRadius: 16,
+        }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-gray-100 dark:border-gray-800 pb-4">
-          <div className="space-y-1">
-            <h3 className="text-lg font-black text-gray-900 dark:text-white">Transaction Details</h3>
-            <span className="text-[10px] text-gray-400 font-mono tracking-tight">{tx.id}</span>
+        <div
+          className="flex items-center justify-between pb-4"
+          style={{ borderBottom: '0.5px solid rgba(255,255,255,0.1)' }}
+        >
+          <div className="space-y-0.5">
+            <h3 className="text-lg font-bold text-white">Transaction Details</h3>
+            <span className="text-[10px] tracking-tight" style={{ color: 'rgba(255,255,255,0.35)' }}>{tx.id}</span>
           </div>
           <button
             onClick={onClose}
-            className="rounded-xl p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-900 transition-all dark:hover:bg-gray-900 dark:hover:text-white"
+            className="rounded-xl p-2 transition-all focus:outline-none focus-visible:ring-1 focus-visible:ring-white"
+            style={{ color: 'rgba(255,255,255,0.6)' }}
+            onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+            onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.6)')}
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
         {/* Amount Section */}
-        <div className="text-center py-4 space-y-1.5 bg-gray-50/50 dark:bg-gray-900/20 rounded-2xl border border-gray-100 dark:border-gray-800">
-          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Amount</span>
+        <div
+          className="text-center py-4 space-y-1.5 rounded-2xl"
+          style={{
+            background: 'rgba(255,255,255,0.03)',
+            border: '0.5px solid rgba(255,255,255,0.08)',
+          }}
+        >
+          <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.4)' }}>Amount</span>
           <p
-            className={`text-3xl font-black ${
+            className={`text-3xl font-semibold tracking-tight ${
               tx.type === 'INCOME'
-                ? 'text-emerald-600 dark:text-emerald-400'
+                ? 'text-emerald-400'
                 : tx.type === 'EXPENSE'
-                ? 'text-rose-600 dark:text-rose-400'
-                : 'text-purple-600 dark:text-purple-400'
+                ? 'text-rose-400'
+                : 'text-white'
             }`}
           >
             {tx.type === 'INCOME' ? '+' : tx.type === 'EXPENSE' ? '-' : ''}
@@ -85,10 +102,10 @@ export const TransactionDetails: React.FC<TransactionDetailsProps> = ({
         <div className="space-y-4">
           {/* Date */}
           <div className="flex gap-3 text-sm">
-            <Calendar className="h-5 w-5 text-gray-400 shrink-0" />
+            <Calendar className="h-5 w-5 shrink-0" style={{ color: 'rgba(255,255,255,0.4)' }} />
             <div className="space-y-0.5">
-              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Date</p>
-              <p className="font-bold text-gray-800 dark:text-gray-250">
+              <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.4)' }}>Date</p>
+              <p className="font-semibold text-white/90">
                 {new Date(tx.date).toLocaleDateString(undefined, {
                   weekday: 'long',
                   year: 'numeric',
@@ -101,19 +118,19 @@ export const TransactionDetails: React.FC<TransactionDetailsProps> = ({
 
           {/* Account */}
           <div className="flex gap-3 text-sm">
-            <Landmark className="h-5 w-5 text-gray-400 shrink-0" />
+            <Landmark className="h-5 w-5 shrink-0" style={{ color: 'rgba(255,255,255,0.4)' }} />
             <div className="space-y-0.5">
-              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">
+              <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.4)' }}>
                 {tx.type === 'TRANSFER' ? 'Account Path' : 'Account'}
               </p>
               {tx.type === 'TRANSFER' && tx.toAccount ? (
-                <div className="flex items-center gap-1.5 font-bold text-gray-800 dark:text-gray-250">
+                <div className="flex items-center gap-1.5 font-semibold text-white/90">
                   <span>{tx.account.name}</span>
-                  <ArrowRight className="h-3.5 w-3.5 text-purple-500 shrink-0" />
-                  <span className="text-purple-600 dark:text-purple-400">{tx.toAccount.name}</span>
+                  <ArrowRight className="h-3.5 w-3.5 text-white/40 shrink-0" />
+                  <span className="text-white">{tx.toAccount.name}</span>
                 </div>
               ) : (
-                <p className="font-bold text-gray-800 dark:text-gray-250">{tx.account.name}</p>
+                <p className="font-semibold text-white/90">{tx.account.name}</p>
               )}
             </div>
           </div>
@@ -121,10 +138,10 @@ export const TransactionDetails: React.FC<TransactionDetailsProps> = ({
           {/* Category */}
           {tx.type !== 'TRANSFER' && (
             <div className="flex gap-3 text-sm">
-              <Tag className="h-5 w-5 text-gray-400 shrink-0" />
+              <Tag className="h-5 w-5 shrink-0" style={{ color: 'rgba(255,255,255,0.4)' }} />
               <div className="space-y-0.5">
-                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Category</p>
-                <p className="font-bold text-gray-800 dark:text-gray-250">
+                <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.4)' }}>Category</p>
+                <p className="font-semibold text-white/90">
                   {tx.category?.name || 'Uncategorized'}
                 </p>
               </div>
@@ -133,10 +150,10 @@ export const TransactionDetails: React.FC<TransactionDetailsProps> = ({
 
           {/* Description */}
           <div className="flex gap-3 text-sm">
-            <AlignLeft className="h-5 w-5 text-gray-400 shrink-0" />
+            <AlignLeft className="h-5 w-5 shrink-0" style={{ color: 'rgba(255,255,255,0.4)' }} />
             <div className="space-y-0.5">
-              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Description</p>
-              <p className="font-bold text-gray-800 dark:text-gray-250">
+              <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.4)' }}>Description</p>
+              <p className="font-semibold text-white/90">
                 {tx.description || 'No Description'}
               </p>
             </div>
@@ -145,10 +162,10 @@ export const TransactionDetails: React.FC<TransactionDetailsProps> = ({
           {/* Notes */}
           {tx.notes && (
             <div className="flex gap-3 text-sm">
-              <FileText className="h-5 w-5 text-gray-400 shrink-0" />
+              <FileText className="h-5 w-5 shrink-0" style={{ color: 'rgba(255,255,255,0.4)' }} />
               <div className="space-y-0.5">
-                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Notes</p>
-                <p className="font-semibold text-gray-600 dark:text-gray-400 leading-relaxed">
+                <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.4)' }}>Notes</p>
+                <p className="font-normal leading-relaxed" style={{ color: 'rgba(255,255,255,0.6)' }}>
                   {tx.notes}
                 </p>
               </div>
@@ -159,7 +176,7 @@ export const TransactionDetails: React.FC<TransactionDetailsProps> = ({
         {/* Footer */}
         <button
           onClick={onClose}
-          className="w-full py-3 bg-purple-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-purple-500/10 hover:bg-purple-700 transition-all active:scale-[0.98]"
+          className="w-full py-3 bg-white text-black rounded-xl text-sm font-semibold active:scale-[0.98] transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-black"
         >
           Close Detail
         </button>

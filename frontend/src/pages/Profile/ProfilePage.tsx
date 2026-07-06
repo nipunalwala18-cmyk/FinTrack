@@ -1,28 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import {
   User as UserIcon,
-  Settings,
   Shield,
   Bell,
   BarChart,
-  FileText,
-  Trash2,
   Share2,
   Clock,
   Sparkles,
   DollarSign,
-  Briefcase,
-  Globe,
-  MapPin,
   Camera,
-  Activity,
   Heart,
   PiggyBank,
   CheckCircle,
-  PlusCircle,
-  HelpCircle,
-  Lock,
-  Download,
   AlertCircle,
   Wallet
 } from 'lucide-react';
@@ -41,6 +30,10 @@ import { useGoals } from '../../hooks/useGoals';
 import { useAccounts } from '../../hooks/useAccounts';
 import { formatCurrency } from '../../utils/currency';
 import { toast } from 'react-hot-toast';
+import {
+  LABEL_CLS, LABEL_STYLE, INPUT_BASE, INPUT_STYLE,
+  INPUT_FOCUS_STYLE, INPUT_BLUR_STYLE
+} from '../../components/accounts/fieldStyles';
 
 export const ProfilePage: React.FC = () => {
   const { user } = useAuth();
@@ -188,78 +181,103 @@ export const ProfilePage: React.FC = () => {
     }
   };
 
-  // Mock download exports
-  const triggerExport = (format: string) => {
-    toast.success(`Exporting transactions report as ${format.toUpperCase()}...`);
-  };
-
   return (
-    <div className="space-y-6 w-full text-left animate-fade-in font-sans pb-12">
+    <div className="space-y-5 w-full text-left animate-fade-in font-sans pb-12">
       {/* Title Header */}
-      <div className="space-y-1">
-        <h1 className="text-3xl font-black tracking-tight text-gray-900 dark:text-white">Profile settings</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400">
-          Manage your personal details, budget methodologies, AI preferences, and download financial reports.
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-5" style={{ borderBottom: '0.5px solid rgba(255,255,255,0.1)' }}>
+        <div className="space-y-0.5 text-left">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white">Profile Settings</h1>
+          <p className="text-xs font-semibold" style={{ color: 'rgba(255,255,255,0.4)' }}>
+            Manage your personal details, budget methodologies, AI preferences, and download financial reports.
+          </p>
+        </div>
       </div>
 
       {/* Top Profile Summary Cards */}
       <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
         {/* Net Worth */}
-        <div className="rounded-2xl bg-white p-5 shadow-sm border border-gray-150 dark:bg-[#12131a] dark:border-gray-800 flex items-center justify-between">
-          <div className="space-y-0.5">
-            <span className="text-xs font-semibold text-gray-400 uppercase">Net Worth</span>
-            <p className="text-2xl font-black text-gray-900 dark:text-white">{formatCurrency(netWorth)}</p>
+        <div
+          className="p-5 flex items-center justify-between"
+          style={{
+            background: '#0a0a0a',
+            border: '0.5px solid rgba(255,255,255,0.12)',
+            borderRadius: 16,
+          }}
+        >
+          <div className="space-y-0.5 text-left">
+            <span className="text-[10px] font-semibold text-white/40 uppercase tracking-wider block">Net Worth</span>
+            <p className="text-2xl font-semibold text-white">{formatCurrency(netWorth)}</p>
           </div>
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-50 text-purple-600 dark:bg-purple-950/20 dark:text-purple-400">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 text-white border border-white/10">
             <DollarSign className="h-5 w-5" />
           </div>
         </div>
 
         {/* Monthly Savings */}
-        <div className="rounded-2xl bg-white p-5 shadow-sm border border-gray-150 dark:bg-[#12131a] dark:border-gray-800 flex items-center justify-between">
-          <div className="space-y-0.5">
-            <span className="text-xs font-semibold text-gray-400 uppercase">Savings (This Month)</span>
-            <p className="text-2xl font-black text-emerald-600 dark:text-emerald-400">{formatCurrency(monthlySavings)}</p>
+        <div
+          className="p-5 flex items-center justify-between"
+          style={{
+            background: '#0a0a0a',
+            border: '0.5px solid rgba(255,255,255,0.12)',
+            borderRadius: 16,
+          }}
+        >
+          <div className="space-y-0.5 text-left">
+            <span className="text-[10px] font-semibold text-white/40 uppercase tracking-wider block">Savings (This Month)</span>
+            <p className="text-2xl font-semibold text-emerald-400">{formatCurrency(monthlySavings)}</p>
           </div>
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/20 dark:text-emerald-400">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
             <PiggyBank className="h-5 w-5" />
           </div>
         </div>
 
         {/* Goal Completion */}
-        <div className="rounded-2xl bg-white p-5 shadow-sm border border-gray-150 dark:bg-[#12131a] dark:border-gray-800 flex items-center justify-between">
-          <div className="space-y-0.5">
-            <span className="text-xs font-semibold text-gray-400 uppercase">Avg Goal Completion</span>
-            <p className="text-2xl font-black text-blue-600 dark:text-blue-400">{avgGoalCompletion}%</p>
+        <div
+          className="p-5 flex items-center justify-between"
+          style={{
+            background: '#0a0a0a',
+            border: '0.5px solid rgba(255,255,255,0.12)',
+            borderRadius: 16,
+          }}
+        >
+          <div className="space-y-0.5 text-left">
+            <span className="text-[10px] font-semibold text-white/40 uppercase tracking-wider block">Avg Goal Completion</span>
+            <p className="text-2xl font-semibold text-blue-400">{avgGoalCompletion}%</p>
           </div>
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/20 dark:text-blue-400">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20">
             <CheckCircle className="h-5 w-5" />
           </div>
         </div>
 
         {/* Health Score */}
-        <div className="rounded-2xl bg-white p-5 shadow-sm border border-gray-150 dark:bg-[#12131a] dark:border-gray-800 flex items-center justify-between">
-          <div className="space-y-0.5">
-            <span className="text-xs font-semibold text-gray-400 uppercase">Health Score</span>
-            <p className="text-2xl font-black text-purple-600 dark:text-purple-400">85/100</p>
+        <div
+          className="p-5 flex items-center justify-between"
+          style={{
+            background: '#0a0a0a',
+            border: '0.5px solid rgba(255,255,255,0.12)',
+            borderRadius: 16,
+          }}
+        >
+          <div className="space-y-0.5 text-left">
+            <span className="text-[10px] font-semibold text-white/40 uppercase tracking-wider block">Health Score</span>
+            <p className="text-2xl font-semibold text-purple-400">85/100</p>
           </div>
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-50 text-purple-600 dark:bg-purple-950/20 dark:text-purple-400">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20">
             <Heart className="h-5 w-5" />
           </div>
         </div>
       </div>
 
       {/* Main Grid: Sidebar Menu + Tab content */}
-      <div className="grid gap-6 grid-cols-1 lg:grid-cols-12">
+      <div className="grid gap-6 grid-cols-1 lg:grid-cols-12 pt-2">
         {/* Sidebar Nav */}
-        <div className="lg:col-span-3 space-y-1">
+        <div className="lg:col-span-3 space-y-1.5">
           {[
             { id: 'PROFILE', label: 'Profile Details', icon: UserIcon },
             { id: 'FINANCIAL', label: 'Financial Settings', icon: DollarSign },
-            { id: 'AI', label: 'AI Assistant settings', icon: Sparkles },
+            { id: 'AI', label: 'AI Assistant Settings', icon: Sparkles },
             { id: 'ACCOUNTS', label: 'Manage Accounts', icon: Wallet },
-            { id: 'SECURITY', label: 'Security & login', icon: Shield },
+            { id: 'SECURITY', label: 'Security & Login', icon: Shield },
             { id: 'NOTIFICATIONS', label: 'Notifications', icon: Bell },
             { id: 'REPORTS', label: 'Reports Center', icon: BarChart },
             { id: 'CONNECTED', label: 'Integrations', icon: Share2 },
@@ -271,11 +289,13 @@ export const ProfilePage: React.FC = () => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-3 w-full rounded-xl px-4 py-3 text-sm font-bold transition-all ${
-                  isSelected
-                    ? 'bg-purple-600 text-white shadow-md shadow-purple-500/10'
-                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-900/50'
-                }`}
+                className="flex items-center gap-3 w-full rounded-xl px-4 py-3 text-xs font-semibold transition-all cursor-pointer"
+                style={{
+                  background: isSelected ? 'rgba(255,255,255,0.08)' : 'transparent',
+                  border: '0.5px solid',
+                  borderColor: isSelected ? 'rgba(255,255,255,0.18)' : 'transparent',
+                  color: isSelected ? '#fff' : 'rgba(255,255,255,0.5)',
+                }}
               >
                 <TabIcon className="h-4.5 w-4.5" />
                 <span>{tab.label}</span>
@@ -285,102 +305,127 @@ export const ProfilePage: React.FC = () => {
         </div>
 
         {/* Tab Panel */}
-        <div className="lg:col-span-9 rounded-3xl bg-white border border-gray-150 p-6 dark:bg-[#12131a] dark:border-gray-800">
+        <div
+          className="lg:col-span-9 p-6 text-left"
+          style={{
+            background: '#0a0a0a',
+            border: '0.5px solid rgba(255,255,255,0.12)',
+            borderRadius: 24,
+          }}
+        >
           
           {/* PROFILE TAB */}
           {activeTab === 'PROFILE' && (
             <div className="space-y-6">
               {/* Header profile photo */}
-              <div className="flex items-center gap-5 border-b border-gray-100 pb-6 dark:border-gray-800">
+              <div className="flex items-center gap-5 pb-6 border-b" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
                 <div className="relative group cursor-pointer">
                   {profile?.profileImage ? (
                     <img
                       src={profile.profileImage}
                       alt="Avatar"
-                      className="h-20 w-20 rounded-full object-cover border-2 border-purple-500"
+                      className="h-20 w-20 rounded-full object-cover border-2 border-white/20"
                     />
                   ) : (
-                    <div className="flex h-20 w-20 items-center justify-center rounded-full bg-purple-50 text-purple-600 dark:bg-purple-950/40 dark:text-purple-400 border border-purple-200 text-xl font-bold uppercase">
+                    <div className="flex h-20 w-20 items-center justify-center rounded-full bg-white/5 text-white border border-white/10 text-xl font-bold uppercase">
                       {user?.fullName.charAt(0)}
                     </div>
                   )}
-                  <label className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                  <label className="absolute inset-0 flex items-center justify-center rounded-full bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
                     <Camera className="h-5 w-5" />
                     <input type="file" onChange={handleAvatarUpload} className="hidden" accept="image/*" />
                   </label>
                 </div>
                 <div className="space-y-1">
-                  <h3 className="text-lg font-black text-gray-900 dark:text-white">{profile?.fullName}</h3>
-                  <p className="text-xs text-gray-400 font-semibold">{profile?.email}</p>
+                  <h3 className="text-lg font-bold text-white">{profile?.fullName}</h3>
+                  <p className="text-xs text-white/40 font-semibold">{profile?.email}</p>
                 </div>
               </div>
 
               {/* Form fields */}
               <form onSubmit={handleProfileSave} className="grid gap-6 grid-cols-1 md:grid-cols-2">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-gray-400 uppercase">Full Name</label>
+                  <label className={LABEL_CLS} style={LABEL_STYLE}>Full Name</label>
                   <input
                     type="text"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-900 dark:bg-gray-900/50 dark:border-gray-800 dark:text-white focus:outline-none"
+                    className={INPUT_BASE}
+                    style={INPUT_STYLE}
+                    onFocus={e => (e.currentTarget.style.border = INPUT_FOCUS_STYLE)}
+                    onBlur={e => (e.currentTarget.style.border = INPUT_BLUR_STYLE)}
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-gray-400 uppercase">Preferred Name</label>
+                  <label className={LABEL_CLS} style={LABEL_STYLE}>Preferred Name</label>
                   <input
                     type="text"
                     value={preferredName}
                     onChange={(e) => setPreferredName(e.target.value)}
                     placeholder="e.g. John"
-                    className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-900 dark:bg-gray-900/50 dark:border-gray-800 dark:text-white focus:outline-none"
+                    className={INPUT_BASE}
+                    style={INPUT_STYLE}
+                    onFocus={e => (e.currentTarget.style.border = INPUT_FOCUS_STYLE)}
+                    onBlur={e => (e.currentTarget.style.border = INPUT_BLUR_STYLE)}
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-gray-400 uppercase">Phone Number</label>
+                  <label className={LABEL_CLS} style={LABEL_STYLE}>Phone Number</label>
                   <input
                     type="text"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="e.g. +91 9999999999"
-                    className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-900 dark:bg-gray-900/50 dark:border-gray-800 dark:text-white focus:outline-none"
+                    className={INPUT_BASE}
+                    style={INPUT_STYLE}
+                    onFocus={e => (e.currentTarget.style.border = INPUT_FOCUS_STYLE)}
+                    onBlur={e => (e.currentTarget.style.border = INPUT_BLUR_STYLE)}
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-gray-400 uppercase">Occupation</label>
+                  <label className={LABEL_CLS} style={LABEL_STYLE}>Occupation</label>
                   <input
                     type="text"
                     value={occupation}
                     onChange={(e) => setOccupation(e.target.value)}
                     placeholder="e.g. Software Engineer"
-                    className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-900 dark:bg-gray-900/50 dark:border-gray-800 dark:text-white focus:outline-none"
+                    className={INPUT_BASE}
+                    style={INPUT_STYLE}
+                    onFocus={e => (e.currentTarget.style.border = INPUT_FOCUS_STYLE)}
+                    onBlur={e => (e.currentTarget.style.border = INPUT_BLUR_STYLE)}
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-gray-400 uppercase">Country</label>
+                  <label className={LABEL_CLS} style={LABEL_STYLE}>Country</label>
                   <input
                     type="text"
                     value={country}
                     onChange={(e) => setCountry(e.target.value)}
                     placeholder="e.g. India"
-                    className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-900 dark:bg-gray-900/50 dark:border-gray-800 dark:text-white focus:outline-none"
+                    className={INPUT_BASE}
+                    style={INPUT_STYLE}
+                    onFocus={e => (e.currentTarget.style.border = INPUT_FOCUS_STYLE)}
+                    onBlur={e => (e.currentTarget.style.border = INPUT_BLUR_STYLE)}
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-gray-400 uppercase">Timezone</label>
+                  <label className={LABEL_CLS} style={LABEL_STYLE}>Timezone</label>
                   <input
                     type="text"
                     value={timezone}
                     onChange={(e) => setTimezone(e.target.value)}
                     placeholder="e.g. Asia/Kolkata"
-                    className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-900 dark:bg-gray-900/50 dark:border-gray-800 dark:text-white focus:outline-none"
+                    className={INPUT_BASE}
+                    style={INPUT_STYLE}
+                    onFocus={e => (e.currentTarget.style.border = INPUT_FOCUS_STYLE)}
+                    onBlur={e => (e.currentTarget.style.border = INPUT_BLUR_STYLE)}
                   />
                 </div>
                 
-                <div className="md:col-span-2 pt-4 border-t border-gray-100 dark:border-gray-800 flex justify-end">
+                <div className="md:col-span-2 pt-4 border-t flex justify-end" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
                   <button
                     type="submit"
-                    className="rounded-xl bg-purple-600 px-6 py-2.5 text-sm font-bold text-white shadow-lg hover:bg-purple-700 transition-all active:scale-95"
+                    className="rounded-xl bg-white hover:bg-white/90 active:scale-[0.98] px-6 py-2.5 text-sm font-semibold text-black transition-all cursor-pointer"
                   >
                     Save Changes
                   </button>
@@ -392,69 +437,84 @@ export const ProfilePage: React.FC = () => {
           {/* FINANCIAL PREFERENCES TAB */}
           {activeTab === 'FINANCIAL' && (
             <div className="space-y-6">
-              <h3 className="text-lg font-black text-gray-900 dark:text-white">Financial Preferences</h3>
+              <h3 className="text-lg font-bold text-white uppercase tracking-wider">Financial Preferences</h3>
               
               <form onSubmit={handleFinancialSave} className="grid gap-6 grid-cols-1 md:grid-cols-2">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-gray-400 uppercase">Monthly Income (INR)</label>
+                  <label className={LABEL_CLS} style={LABEL_STYLE}>Monthly Income (INR)</label>
                   <input
                     type="number"
                     value={monthlyIncome}
                     onChange={(e) => setMonthlyIncome(Number(e.target.value))}
-                    className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-900 dark:bg-gray-900/50 dark:border-gray-800 dark:text-white focus:outline-none"
+                    className={INPUT_BASE}
+                    style={INPUT_STYLE}
+                    onFocus={e => (e.currentTarget.style.border = INPUT_FOCUS_STYLE)}
+                    onBlur={e => (e.currentTarget.style.border = INPUT_BLUR_STYLE)}
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-gray-400 uppercase">Income Frequency</label>
+                  <label className={LABEL_CLS} style={LABEL_STYLE}>Income Frequency</label>
                   <select
                     value={incomeFrequency}
                     onChange={(e) => setIncomeFrequency(e.target.value)}
-                    className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-900 dark:bg-gray-900/50 dark:border-gray-800 dark:text-white focus:outline-none"
+                    className={`${INPUT_BASE} appearance-none cursor-pointer`}
+                    style={INPUT_STYLE}
+                    onFocus={e => (e.currentTarget.style.border = INPUT_FOCUS_STYLE)}
+                    onBlur={e => (e.currentTarget.style.border = INPUT_BLUR_STYLE)}
                   >
-                    <option value="WEEKLY">Weekly</option>
-                    <option value="BI_WEEKLY">Bi-Weekly</option>
-                    <option value="MONTHLY">Monthly</option>
-                    <option value="YEARLY">Yearly</option>
+                    <option value="WEEKLY" style={{ background: '#141414' }}>Weekly</option>
+                    <option value="BI_WEEKLY" style={{ background: '#141414' }}>Bi-Weekly</option>
+                    <option value="MONTHLY" style={{ background: '#141414' }}>Monthly</option>
+                    <option value="YEARLY" style={{ background: '#141414' }}>Yearly</option>
                   </select>
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-gray-400 uppercase">Monthly Savings Goal (INR)</label>
+                  <label className={LABEL_CLS} style={LABEL_STYLE}>Monthly Savings Goal (INR)</label>
                   <input
                     type="number"
                     value={monthlySavingsGoal}
                     onChange={(e) => setMonthlySavingsGoal(Number(e.target.value))}
-                    className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-900 dark:bg-gray-900/50 dark:border-gray-800 dark:text-white focus:outline-none"
+                    className={INPUT_BASE}
+                    style={INPUT_STYLE}
+                    onFocus={e => (e.currentTarget.style.border = INPUT_FOCUS_STYLE)}
+                    onBlur={e => (e.currentTarget.style.border = INPUT_BLUR_STYLE)}
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-gray-400 uppercase">Budgeting Strategy</label>
+                  <label className={LABEL_CLS} style={LABEL_STYLE}>Budgeting Strategy</label>
                   <select
                     value={budgetMethod}
                     onChange={(e) => setBudgetMethod(e.target.value)}
-                    className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-900 dark:bg-gray-900/50 dark:border-gray-800 dark:text-white focus:outline-none"
+                    className={`${INPUT_BASE} appearance-none cursor-pointer`}
+                    style={INPUT_STYLE}
+                    onFocus={e => (e.currentTarget.style.border = INPUT_FOCUS_STYLE)}
+                    onBlur={e => (e.currentTarget.style.border = INPUT_BLUR_STYLE)}
                   >
-                    <option value="ZERO_BASED">Zero-Based Budgeting</option>
-                    <option value="FIFTY_THIRTY_TWENTY">50/30/20 Strategy</option>
-                    <option value="ENVELOPE">Envelope System</option>
+                    <option value="ZERO_BASED" style={{ background: '#141414' }}>Zero-Based Budgeting</option>
+                    <option value="FIFTY_THIRTY_TWENTY" style={{ background: '#141414' }}>50/30/20 Strategy</option>
+                    <option value="ENVELOPE" style={{ background: '#141414' }}>Envelope System</option>
                   </select>
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-gray-400 uppercase">Risk Tolerance</label>
+                  <label className={LABEL_CLS} style={LABEL_STYLE}>Risk Tolerance</label>
                   <select
                     value={riskTolerance}
                     onChange={(e) => setRiskTolerance(e.target.value)}
-                    className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-900 dark:bg-gray-900/50 dark:border-gray-800 dark:text-white focus:outline-none"
+                    className={`${INPUT_BASE} appearance-none cursor-pointer`}
+                    style={INPUT_STYLE}
+                    onFocus={e => (e.currentTarget.style.border = INPUT_FOCUS_STYLE)}
+                    onBlur={e => (e.currentTarget.style.border = INPUT_BLUR_STYLE)}
                   >
-                    <option value="CONSERVATIVE">Conservative</option>
-                    <option value="BALANCED">Balanced</option>
-                    <option value="AGGRESSIVE">Aggressive</option>
+                    <option value="CONSERVATIVE" style={{ background: '#141414' }}>Conservative</option>
+                    <option value="BALANCED" style={{ background: '#141414' }}>Balanced</option>
+                    <option value="AGGRESSIVE" style={{ background: '#141414' }}>Aggressive</option>
                   </select>
                 </div>
 
-                <div className="md:col-span-2 pt-4 border-t border-gray-100 dark:border-gray-800 flex justify-end">
+                <div className="md:col-span-2 pt-4 border-t flex justify-end" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
                   <button
                     type="submit"
-                    className="rounded-xl bg-purple-600 px-6 py-2.5 text-sm font-bold text-white shadow-lg hover:bg-purple-700 transition-all active:scale-95"
+                    className="rounded-xl bg-white hover:bg-white/90 active:scale-[0.98] px-6 py-2.5 text-sm font-semibold text-black transition-all cursor-pointer"
                   >
                     Save Preferences
                   </button>
@@ -466,50 +526,59 @@ export const ProfilePage: React.FC = () => {
           {/* AI PREFERENCES TAB */}
           {activeTab === 'AI' && (
             <div className="space-y-6">
-              <h3 className="text-lg font-black text-gray-900 dark:text-white">AI Assistant settings</h3>
+              <h3 className="text-lg font-bold text-white uppercase tracking-wider">AI Assistant Settings</h3>
               
               <form onSubmit={handleAiSave} className="grid gap-6 grid-cols-1 md:grid-cols-2">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-gray-400 uppercase">Communication Tone</label>
+                  <label className={LABEL_CLS} style={LABEL_STYLE}>Communication Tone</label>
                   <select
                     value={aiResponseStyle}
                     onChange={(e) => setAiResponseStyle(e.target.value)}
-                    className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-900 dark:bg-gray-900/50 dark:border-gray-800 dark:text-white focus:outline-none"
+                    className={`${INPUT_BASE} appearance-none cursor-pointer`}
+                    style={INPUT_STYLE}
+                    onFocus={e => (e.currentTarget.style.border = INPUT_FOCUS_STYLE)}
+                    onBlur={e => (e.currentTarget.style.border = INPUT_BLUR_STYLE)}
                   >
-                    <option value="PROFESSIONAL">Professional</option>
-                    <option value="FRIENDLY">Friendly</option>
-                    <option value="BALANCED">Balanced</option>
+                    <option value="PROFESSIONAL" style={{ background: '#141414' }}>Professional</option>
+                    <option value="FRIENDLY" style={{ background: '#141414' }}>Friendly</option>
+                    <option value="BALANCED" style={{ background: '#141414' }}>Balanced</option>
                   </select>
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-gray-400 uppercase">Response Length</label>
+                  <label className={LABEL_CLS} style={LABEL_STYLE}>Response Length</label>
                   <select
                     value={aiResponseLength}
                     onChange={(e) => setAiResponseLength(e.target.value)}
-                    className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-900 dark:bg-gray-900/50 dark:border-gray-800 dark:text-white focus:outline-none"
+                    className={`${INPUT_BASE} appearance-none cursor-pointer`}
+                    style={INPUT_STYLE}
+                    onFocus={e => (e.currentTarget.style.border = INPUT_FOCUS_STYLE)}
+                    onBlur={e => (e.currentTarget.style.border = INPUT_BLUR_STYLE)}
                   >
-                    <option value="SHORT">Short</option>
-                    <option value="MEDIUM">Medium</option>
-                    <option value="DETAILED">Detailed</option>
+                    <option value="SHORT" style={{ background: '#141414' }}>Short</option>
+                    <option value="MEDIUM" style={{ background: '#141414' }}>Medium</option>
+                    <option value="DETAILED" style={{ background: '#141414' }}>Detailed</option>
                   </select>
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-gray-400 uppercase">Coaching style</label>
+                  <label className={LABEL_CLS} style={LABEL_STYLE}>Coaching Style</label>
                   <select
                     value={aiCoachingStyle}
                     onChange={(e) => setAiCoachingStyle(e.target.value)}
-                    className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-900 dark:bg-gray-900/50 dark:border-gray-800 dark:text-white focus:outline-none"
+                    className={`${INPUT_BASE} appearance-none cursor-pointer`}
+                    style={INPUT_STYLE}
+                    onFocus={e => (e.currentTarget.style.border = INPUT_FOCUS_STYLE)}
+                    onBlur={e => (e.currentTarget.style.border = INPUT_BLUR_STYLE)}
                   >
-                    <option value="CONSERVATIVE">Conservative</option>
-                    <option value="BALANCED">Balanced</option>
-                    <option value="AGGRESSIVE">Aggressive</option>
+                    <option value="CONSERVATIVE" style={{ background: '#141414' }}>Conservative</option>
+                    <option value="BALANCED" style={{ background: '#141414' }}>Balanced</option>
+                    <option value="AGGRESSIVE" style={{ background: '#141414' }}>Aggressive</option>
                   </select>
                 </div>
 
-                <div className="md:col-span-2 pt-4 border-t border-gray-100 dark:border-gray-800 flex justify-end">
+                <div className="md:col-span-2 pt-4 border-t flex justify-end" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
                   <button
                     type="submit"
-                    className="rounded-xl bg-purple-600 px-6 py-2.5 text-sm font-bold text-white shadow-lg hover:bg-purple-700 transition-all active:scale-95"
+                    className="rounded-xl bg-white hover:bg-white/90 active:scale-[0.98] px-6 py-2.5 text-sm font-semibold text-black transition-all cursor-pointer"
                   >
                     Save AI Settings
                   </button>
@@ -521,10 +590,10 @@ export const ProfilePage: React.FC = () => {
           {/* ACCOUNTS TAB */}
           {activeTab === 'ACCOUNTS' && (
             <div className="space-y-6">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-black text-gray-900 dark:text-white">Active Accounts ({activeAccounts})</h3>
+              <div className="flex items-center justify-between pb-3 border-b" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
+                <h3 className="text-lg font-bold text-white uppercase tracking-wider">Active Accounts ({activeAccounts})</h3>
                 {archivedAccounts > 0 && (
-                  <span className="text-xs font-bold text-gray-400">Archived Accounts: {archivedAccounts}</span>
+                  <span className="text-xs font-semibold text-white/40 uppercase tracking-wider">Archived Accounts: {archivedAccounts}</span>
                 )}
               </div>
 
@@ -532,13 +601,18 @@ export const ProfilePage: React.FC = () => {
                 {accounts.map((acc) => (
                   <div
                     key={acc.id}
-                    className="p-4 rounded-2xl border border-gray-150 dark:border-gray-800 flex items-center justify-between"
+                    className="p-5 flex items-center justify-between"
+                    style={{
+                      background: '#141414',
+                      border: '0.5px solid rgba(255,255,255,0.08)',
+                      borderRadius: 16,
+                    }}
                   >
                     <div className="space-y-1">
-                      <h4 className="font-bold text-gray-900 dark:text-white">{acc.name}</h4>
-                      <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wide">{acc.type}</p>
+                      <h4 className="font-bold text-white">{acc.name}</h4>
+                      <p className="text-[10px] text-white/40 font-semibold uppercase tracking-wider">{acc.type}</p>
                     </div>
-                    <span className="text-sm font-black text-gray-850 dark:text-gray-100">{formatCurrency(acc.balance)}</span>
+                    <span className="text-sm font-bold text-white">{formatCurrency(acc.balance)}</span>
                   </div>
                 ))}
               </div>
@@ -548,28 +622,42 @@ export const ProfilePage: React.FC = () => {
           {/* SECURITY TAB */}
           {activeTab === 'SECURITY' && (
             <div className="space-y-6">
-              <h3 className="text-lg font-black text-gray-900 dark:text-white">Security Settings</h3>
+              <h3 className="text-lg font-bold text-white uppercase tracking-wider">Security Settings</h3>
               
-              <div className="space-y-4 border-b border-gray-100 pb-6 dark:border-gray-800">
-                <h4 className="text-sm font-bold text-gray-700 dark:text-gray-300">Google Authentication</h4>
-                <div className="flex items-center justify-between p-4 rounded-2xl border border-gray-150 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/10">
-                  <div className="space-y-0.5">
-                    <p className="text-xs font-bold text-gray-850 dark:text-white">Link Google account</p>
-                    <p className="text-[10px] text-gray-400">Allows instant and secure logins via Google OAuth.</p>
+              <div className="space-y-4 pb-6 border-b" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
+                <h4 className="text-xs font-bold text-white/40 uppercase tracking-wider">Google Authentication</h4>
+                <div
+                  className="p-4 flex items-center justify-between"
+                  style={{
+                    background: '#141414',
+                    border: '0.5px solid rgba(255,255,255,0.08)',
+                    borderRadius: 16,
+                  }}
+                >
+                  <div className="space-y-0.5 text-left">
+                    <p className="text-xs font-bold text-white">Link Google account</p>
+                    <p className="text-[10px] text-white/40 font-semibold uppercase tracking-wider">Allows instant and secure logins via Google OAuth.</p>
                   </div>
-                  <span className="text-xs font-bold px-2.5 py-1 bg-emerald-50 text-emerald-600 rounded-lg dark:bg-emerald-950/20 dark:text-emerald-400">Connected</span>
+                  <span className="text-[10px] font-bold px-2.5 py-1 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/25 uppercase tracking-wider">Connected</span>
                 </div>
               </div>
 
               <div className="space-y-4">
-                <h4 className="text-sm font-bold text-gray-700 dark:text-gray-300">Active Sessions</h4>
-                <div className="p-4 rounded-2xl border border-gray-150 dark:border-gray-800 space-y-3">
+                <h4 className="text-xs font-bold text-white/40 uppercase tracking-wider">Active Sessions</h4>
+                <div
+                  className="p-4 space-y-3"
+                  style={{
+                    background: '#141414',
+                    border: '0.5px solid rgba(255,255,255,0.08)',
+                    borderRadius: 16,
+                  }}
+                >
                   <div className="flex items-center justify-between text-xs">
-                    <div>
-                      <p className="font-bold text-gray-800 dark:text-white">Chrome on Windows (Current session)</p>
-                      <p className="text-[10px] text-gray-400">Bengaluru, India • IP: 157.34.8.9</p>
+                    <div className="text-left">
+                      <p className="font-semibold text-white">Chrome on Windows (Current session)</p>
+                      <p className="text-[10px] text-white/40 font-semibold uppercase tracking-wider">Bengaluru, India • IP: 157.34.8.9</p>
                     </div>
-                    <button className="text-[10px] font-bold text-rose-500 hover:text-rose-600">Revoke</button>
+                    <button className="text-[10px] font-semibold uppercase tracking-wider text-rose-450 hover:text-rose-600 cursor-pointer">Revoke</button>
                   </div>
                 </div>
               </div>
@@ -579,36 +667,46 @@ export const ProfilePage: React.FC = () => {
           {/* REPORTS TAB */}
           {activeTab === 'REPORTS' && (
             <div className="space-y-6">
-              <h3 className="text-lg font-black text-gray-900 dark:text-white">Reports Center Settings</h3>
+              <h3 className="text-lg font-bold text-white uppercase tracking-wider">Reports Center Settings</h3>
               
               <form onSubmit={handleSaveReportSettings} className="space-y-6">
-                <div className="flex items-start justify-between p-4 rounded-2xl border border-gray-150 dark:border-gray-800">
-                  <div className="space-y-0.5">
-                    <p className="text-xs font-bold text-gray-900 dark:text-white">Enable Monthly Email Reports</p>
-                    <p className="text-[10px] text-gray-400">Receive a PDF report and AI summary in your email automatically every month.</p>
+                <div
+                  className="flex items-start justify-between p-4"
+                  style={{
+                    background: '#141414',
+                    border: '0.5px solid rgba(255,255,255,0.08)',
+                    borderRadius: 16,
+                  }}
+                >
+                  <div className="space-y-0.5 text-left">
+                    <p className="text-xs font-bold text-white">Enable Monthly Email Reports</p>
+                    <p className="text-[10px] text-white/40 font-semibold uppercase tracking-wider">Receive a PDF report and AI summary in your email automatically every month.</p>
                   </div>
                   <input
                     type="checkbox"
                     checked={monthlyReportEnabled}
                     onChange={(e) => setMonthlyReportEnabled(e.target.checked)}
-                    className="accent-purple-600 h-4.5 w-4.5 rounded-lg border-gray-300"
+                    className="accent-white h-4.5 w-4.5 rounded-lg border-gray-300 cursor-pointer"
                   />
                 </div>
 
-                <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
+                <div className="grid gap-6 grid-cols-1 md:grid-cols-2 text-left">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-gray-400 uppercase">Delivery Email</label>
+                    <label className={LABEL_CLS} style={LABEL_STYLE}>Delivery Email</label>
                     <input
                       type="email"
                       value={monthlyReportEmail}
                       onChange={(e) => setMonthlyReportEmail(e.target.value)}
                       placeholder="e.g. nipun@example.com"
                       disabled={!monthlyReportEnabled}
-                      className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-900 dark:bg-gray-900/50 dark:border-gray-800 dark:text-white focus:outline-none disabled:opacity-50"
+                      className={INPUT_BASE}
+                      style={INPUT_STYLE}
+                      onFocus={e => (e.currentTarget.style.border = INPUT_FOCUS_STYLE)}
+                      onBlur={e => (e.currentTarget.style.border = INPUT_BLUR_STYLE)}
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-gray-400 uppercase">Delivery Day of Month</label>
+                    <label className={LABEL_CLS} style={LABEL_STYLE}>Delivery Day of Month</label>
                     <input
                       type="number"
                       min={1}
@@ -616,41 +714,61 @@ export const ProfilePage: React.FC = () => {
                       value={reportDeliveryDate}
                       onChange={(e) => setReportDeliveryDate(Number(e.target.value))}
                       disabled={!monthlyReportEnabled}
-                      className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-900 dark:bg-gray-900/50 dark:border-gray-800 dark:text-white focus:outline-none disabled:opacity-50"
+                      className={INPUT_BASE}
+                      style={INPUT_STYLE}
+                      onFocus={e => (e.currentTarget.style.border = INPUT_FOCUS_STYLE)}
+                      onBlur={e => (e.currentTarget.style.border = INPUT_BLUR_STYLE)}
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-gray-400 uppercase">Delivery Time</label>
+                    <label className={LABEL_CLS} style={LABEL_STYLE}>Delivery Time</label>
                     <input
                       type="time"
                       value={reportDeliveryTime}
                       onChange={(e) => setReportDeliveryTime(e.target.value)}
                       disabled={!monthlyReportEnabled}
-                      className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-gray-900 dark:bg-gray-900/50 dark:border-gray-800 dark:text-white focus:outline-none disabled:opacity-50"
+                      className={INPUT_BASE}
+                      style={INPUT_STYLE}
+                      onFocus={e => (e.currentTarget.style.border = INPUT_FOCUS_STYLE)}
+                      onBlur={e => (e.currentTarget.style.border = INPUT_BLUR_STYLE)}
                     />
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
+                <div className="pt-4 border-t flex items-center justify-between" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
                   <div className="space-x-2">
                     <button
                       type="button"
                       onClick={() => toast.success('Test email request queued successfully!')}
-                      className="rounded-xl border border-purple-200 text-purple-600 px-4 py-2.5 text-xs font-bold dark:border-purple-900 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950/20"
+                      className="rounded-xl px-4 py-2.5 text-xs font-semibold transition-all cursor-pointer"
+                      style={{
+                        background: 'transparent',
+                        border: '0.5px solid rgba(255,255,255,0.18)',
+                        color: '#fff',
+                      }}
+                      onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.04)')}
+                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                     >
                       Send Test Email
                     </button>
                     <button
                       type="button"
-                      onClick={() => toast.success('Compiling current statement and dispatching immediately...')}
-                      className="rounded-xl border border-blue-200 text-blue-600 px-4 py-2.5 text-xs font-bold dark:border-blue-900 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/20"
+                      onClick={() => toast.success('Compiling statement and dispatching immediately...')}
+                      className="rounded-xl px-4 py-2.5 text-xs font-semibold transition-all cursor-pointer"
+                      style={{
+                        background: 'transparent',
+                        border: '0.5px solid rgba(255,255,255,0.18)',
+                        color: '#fff',
+                      }}
+                      onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.04)')}
+                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                     >
                       Send Report Now
                     </button>
                   </div>
                   <button
                     type="submit"
-                    className="rounded-xl bg-purple-600 px-6 py-2.5 text-sm font-bold text-white shadow-lg hover:bg-purple-700 transition-all active:scale-95"
+                    className="rounded-xl bg-white hover:bg-white/90 active:scale-[0.98] px-6 py-2.5 text-sm font-semibold text-black transition-all cursor-pointer"
                   >
                     Save Settings
                   </button>
@@ -662,7 +780,7 @@ export const ProfilePage: React.FC = () => {
           {/* NOTIFICATIONS TAB */}
           {activeTab === 'NOTIFICATIONS' && (
             <div className="space-y-6">
-              <h3 className="text-lg font-black text-gray-900 dark:text-white">Notification Preferences</h3>
+              <h3 className="text-lg font-bold text-white uppercase tracking-wider">Notification Preferences</h3>
               
               <div className="space-y-4">
                 {[
@@ -671,12 +789,20 @@ export const ProfilePage: React.FC = () => {
                   { label: 'Savings Goal Updates', desc: 'Weekly progress reports on active targets.' },
                   { label: 'System News & Alerts', desc: 'Security updates and major feature logs.' }
                 ].map((item, idx) => (
-                  <div key={idx} className="flex items-start justify-between p-4 rounded-2xl border border-gray-150 dark:border-gray-800">
-                    <div className="space-y-0.5">
-                      <p className="text-xs font-bold text-gray-900 dark:text-white">{item.label}</p>
-                      <p className="text-[10px] text-gray-400">{item.desc}</p>
+                  <div
+                    key={idx}
+                    className="flex items-start justify-between p-4"
+                    style={{
+                      background: '#141414',
+                      border: '0.5px solid rgba(255,255,255,0.08)',
+                      borderRadius: 16,
+                    }}
+                  >
+                    <div className="space-y-0.5 text-left">
+                      <p className="text-xs font-bold text-white">{item.label}</p>
+                      <p className="text-[10px] text-white/40 font-semibold uppercase tracking-wider">{item.desc}</p>
                     </div>
-                    <input type="checkbox" defaultChecked className="accent-purple-600 h-4.5 w-4.5 rounded-lg border-gray-300" />
+                    <input type="checkbox" defaultChecked className="accent-white h-4.5 w-4.5 rounded-lg cursor-pointer" />
                   </div>
                 ))}
               </div>
@@ -686,7 +812,7 @@ export const ProfilePage: React.FC = () => {
           {/* CONNECTED TAB */}
           {activeTab === 'CONNECTED' && (
             <div className="space-y-6">
-              <h3 className="text-lg font-black text-gray-900 dark:text-white">Connected Services</h3>
+              <h3 className="text-lg font-bold text-white uppercase tracking-wider">Connected Services</h3>
               
               <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
                 {[
@@ -696,16 +822,21 @@ export const ProfilePage: React.FC = () => {
                 ].map((item, idx) => (
                   <div
                     key={idx}
-                    className="relative p-5 rounded-2xl border border-gray-150 dark:border-gray-800 overflow-hidden bg-gray-50/20 dark:bg-gray-900/10 flex flex-col justify-between"
+                    className="relative p-5 overflow-hidden flex flex-col justify-between"
+                    style={{
+                      background: '#141414',
+                      border: '0.5px solid rgba(255,255,255,0.08)',
+                      borderRadius: 16,
+                    }}
                   >
-                    <div className="space-y-1">
-                      <h4 className="font-bold text-gray-900 dark:text-white">{item.name}</h4>
-                      <p className="text-[10px] text-gray-400">{item.provider}</p>
+                    <div className="space-y-1 text-left">
+                      <h4 className="font-bold text-white">{item.name}</h4>
+                      <p className="text-[10px] text-white/40 font-semibold uppercase tracking-wider">{item.provider}</p>
                     </div>
                     
                     {/* Coming Soon overlay */}
-                    <div className="absolute inset-0 bg-white/70 backdrop-blur-xs flex items-center justify-center dark:bg-black/60">
-                      <span className="text-[10px] font-black uppercase tracking-wider bg-purple-100 text-purple-700 px-3 py-1 rounded-full dark:bg-purple-950/40 dark:text-purple-400">Coming Soon</span>
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center">
+                      <span className="text-[10px] font-bold uppercase tracking-wider bg-white/10 text-white px-3 py-1 rounded-full border border-white/20">Coming Soon</span>
                     </div>
                   </div>
                 ))}
@@ -716,23 +847,30 @@ export const ProfilePage: React.FC = () => {
           {/* ACTIVITY TAB */}
           {activeTab === 'ACTIVITY' && (
             <div className="space-y-6">
-              <h3 className="text-lg font-black text-gray-900 dark:text-white">Activity Log</h3>
+              <h3 className="text-lg font-bold text-white uppercase tracking-wider">Activity Log</h3>
               
               {isLoadingLogs ? (
-                <p className="text-xs text-gray-400">Loading activities...</p>
+                <p className="text-xs text-white/40 font-semibold uppercase tracking-wider">Loading activities...</p>
               ) : activities.length === 0 ? (
-                <p className="text-xs text-gray-400">No recent activities recorded.</p>
+                <p className="text-xs text-white/40 font-semibold uppercase tracking-wider">No recent activities recorded.</p>
               ) : (
-                <div className="relative border-l border-gray-150 pl-5 space-y-6 dark:border-gray-800">
+                <div className="relative border-l pl-5 space-y-6" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
                   {activities.map((log) => (
                     <div key={log.id} className="relative">
                       {/* Timeline bubble */}
-                      <span className="absolute -left-[27px] top-1.5 flex h-3 w-3 items-center justify-center rounded-full bg-purple-500 ring-4 ring-white dark:ring-[#12131a]" />
+                      <span className="absolute -left-[27px] top-1.5 flex h-3 w-3 items-center justify-center rounded-full bg-white ring-4 ring-black" />
                       
-                      <div className="space-y-1">
-                        <span className="text-[10px] font-bold text-gray-400">{new Date(log.time).toLocaleString()}</span>
-                        <h4 className="text-xs font-bold text-gray-900 dark:text-white">{log.action}</h4>
-                        <span className="inline-flex text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-gray-50 text-gray-500 border border-gray-200/20 dark:bg-gray-900 dark:text-gray-400">
+                      <div className="space-y-1 text-left">
+                        <span className="text-[9px] font-bold text-white/40 uppercase tracking-wider">{new Date(log.time).toLocaleString()}</span>
+                        <h4 className="text-xs font-semibold text-white">{log.action}</h4>
+                        <span
+                          className="inline-flex text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border"
+                          style={{
+                            background: 'rgba(255,255,255,0.04)',
+                            borderColor: 'rgba(255,255,255,0.08)',
+                            color: 'rgba(255,255,255,0.6)',
+                          }}
+                        >
                           {log.module}
                         </span>
                       </div>

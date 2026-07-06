@@ -44,15 +44,19 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
   return (
     <div
       ref={containerRef}
-      className="absolute right-0 mt-3.5 w-80 origin-top-right rounded-3xl bg-white p-4 shadow-xl border border-gray-150 dark:bg-[#12131a] dark:border-gray-800 animate-fade-in z-50 flex flex-col max-h-[420px]"
+      className="absolute right-0 mt-3.5 w-80 origin-top-right rounded-3xl p-4 shadow-xl animate-fade-in z-50 flex flex-col max-h-[420px]"
+      style={{ background: '#0a0a0a', border: '0.5px solid rgba(255,255,255,0.15)' }}
     >
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-gray-100 pb-3 mb-2 dark:border-gray-800">
-        <h3 className="font-extrabold text-gray-900 dark:text-white text-sm">Notifications</h3>
+      <div className="flex items-center justify-between pb-3 mb-2" style={{ borderBottom: '0.5px solid rgba(255,255,255,0.1)' }}>
+        <h3 className="font-semibold text-sm" style={{ color: '#fff' }}>Notifications</h3>
         {notifications.some((n) => !n.read) && (
           <button
             onClick={onMarkAllRead}
-            className="flex items-center gap-1 text-[10px] font-bold text-purple-600 dark:text-purple-400 hover:text-purple-700 transition-colors"
+            className="flex items-center gap-1 text-[10px] font-bold transition-colors"
+            style={{ color: 'rgba(255,255,255,0.5)' }}
+            onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+            onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.5)')}
           >
             <CheckCheck className="h-3.5 w-3.5" />
             <span>Mark all read</span>
@@ -73,10 +77,13 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
 
       {/* Footer */}
       {notifications.length > 0 && (
-        <div className="border-t border-gray-100 pt-3 mt-2 dark:border-gray-800 text-center">
+        <div className="pt-3 mt-2 text-center" style={{ borderTop: '0.5px solid rgba(255,255,255,0.1)' }}>
           <button
             onClick={onClose}
-            className="text-[10px] font-black uppercase text-purple-600 dark:text-purple-400 hover:text-purple-700"
+            className="text-[10px] font-bold uppercase transition-colors"
+            style={{ color: 'rgba(255,255,255,0.5)' }}
+            onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+            onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.5)')}
           >
             Close Panel
           </button>

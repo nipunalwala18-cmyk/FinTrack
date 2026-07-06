@@ -16,28 +16,34 @@ import {
   Loader2
 } from 'lucide-react';
 import { useConversations, useConversation, useChat, useDeleteConversation } from '../../hooks/useAi';
+import { DASHBOARD_AI_CONV_KEY } from '../../components/dashboard/DashboardAIAssistantCard';
 import type { AiMessage } from '../../services/ai.service';
+import { INPUT_BASE, INPUT_STYLE, INPUT_FOCUS_STYLE, INPUT_BLUR_STYLE } from '../../components/accounts/fieldStyles';
+import { ConfirmationDialog } from '../../components/layout/ConfirmationDialog';
 
 const SUGGESTED_PROMPTS = [
-  { text: 'Summarize my finances', icon: Sparkles, color: 'text-purple-500 bg-purple-50 dark:bg-purple-950/20' },
-  { text: 'Add an expense of ₹500 on groceries today', icon: Wallet, color: 'text-rose-500 bg-rose-50 dark:bg-rose-950/20' },
-  { text: 'Create a savings goal named "Car Fund"', icon: PiggyBank, color: 'text-blue-500 bg-blue-50 dark:bg-blue-950/20' },
-  { text: 'Show my current goals', icon: Compass, color: 'text-emerald-500 bg-emerald-50 dark:bg-emerald-950/20' },
-  { text: 'How much did I spend this month?', icon: Calendar, color: 'text-amber-500 bg-amber-50 dark:bg-amber-950/20' },
-  { text: 'Where can I save money?', icon: HelpCircle, color: 'text-cyan-500 bg-cyan-50 dark:bg-cyan-950/20' },
+  { text: 'Summarize my finances', icon: Sparkles, color: 'text-white bg-white/5 border-white/10' },
+  { text: 'Add ₹500 on groceries today', icon: Wallet, color: 'text-white bg-white/5 border-white/10' },
+  { text: 'Create a "Car Fund" goal', icon: PiggyBank, color: 'text-white bg-white/5 border-white/10' },
+  { text: 'Show my current goals', icon: Compass, color: 'text-white bg-white/5 border-white/10' },
+  { text: 'How much spent this month?', icon: Calendar, color: 'text-white bg-white/5 border-white/10' },
+  { text: 'Where can I save money?', icon: HelpCircle, color: 'text-white bg-white/5 border-white/10' },
 ];
 
 export const AiAssistantPage: React.FC = () => {
   const { data: conversations = [], isLoading: isLoadingList } = useConversations();
-  const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
+  const [activeConversationId, setActiveConversationId] = useState<string | null>(() => {
+    return sessionStorage.getItem(DASHBOARD_AI_CONV_KEY);
+  });
 
-  // Fetch active conversation messages
   const { data: activeConversation, isLoading: isLoadingConversation } = useConversation(activeConversationId);
   const [localMessages, setLocalMessages] = useState<AiMessage[]>([]);
 
+  // Confirmation state
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+
   const chatMutation = useChat((data) => {
     setActiveConversationId(data.conversationId);
-    // Append LLM reply to local state if desired, or let useQuery refetch
   });
 
   const deleteMutation = useDeleteConversation(() => {
@@ -45,12 +51,13 @@ export const AiAssistantPage: React.FC = () => {
       setActiveConversationId(null);
       setLocalMessages([]);
     }
+    setDeleteConfirmId(null);
   });
 
   const [inputMsg, setInputMsg] = useState('');
   const chatEndRef = useRef<HTMLDivElement>(null);
 
-  // Sync messages when query updates
+  // Sync messages
   useEffect(() => {
     if (activeConversation?.messages) {
       setLocalMessages(activeConversation.messages);
@@ -59,7 +66,7 @@ export const AiAssistantPage: React.FC = () => {
     }
   }, [activeConversation]);
 
-  // Scroll to bottom on new messages
+  // Scroll to bottom
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [localMessages, chatMutation.isPending]);
@@ -67,7 +74,6 @@ export const AiAssistantPage: React.FC = () => {
   const handleSend = (textToSend: string) => {
     if (!textToSend.trim() || chatMutation.isPending) return;
 
-    // Optimistically add user message to list
     const tempUserMsg: AiMessage = {
       id: Math.random().toString(),
       conversationId: activeConversationId || '',
@@ -93,75 +99,199 @@ export const AiAssistantPage: React.FC = () => {
 
   const handleDelete = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (window.confirm('Are you sure you want to delete this conversation?')) {
-      deleteMutation.mutate(id);
+    setDeleteConfirmId(id);
+  };
+
+  const handleConfirmDelete = () => {
+    if (deleteConfirmId) {
+      deleteMutation.mutate(deleteConfirmId);
     }
   };
 
-  // Safe markdown text parser
-  const renderMarkdown = (text: string) => {
+  const parseMarkdown = (text: string) => {
     const lines = text.split('\n');
-    return lines.map((line, idx) => {
-      let content = line;
-      if (content.startsWith('### ')) {
-        return (
-          <h4 key={idx} className="text-xs font-black text-gray-900 dark:text-white mt-3 mb-1 uppercase tracking-wider">
-            {content.slice(4)}
+    let elements: React.ReactNode[] = [];
+    let listItems: string[] = [];
+    let listType: 'bullet' | 'number' | null = null;
+    let tableHeader: string[] = [];
+    let tableRows: string[][] = [];
+    let isTable = false;
+
+    const flushList = (key: string) => {
+      if (listItems.length > 0) {
+        if (listType === 'bullet') {
+          elements.push(
+            <ul key={key} className="list-disc pl-5 my-2 space-y-1 text-xs text-white/70">
+              {listItems.map((item, idx) => (
+                <li key={idx}>{parseInlineMarkdown(item)}</li>
+              ))}
+            </ul>
+          );
+        } else if (listType === 'number') {
+          elements.push(
+            <ol key={key} className="list-decimal pl-5 my-2 space-y-1 text-xs text-white/70">
+              {listItems.map((item, idx) => (
+                <li key={idx}>{parseInlineMarkdown(item)}</li>
+              ))}
+            </ol>
+          );
+        }
+        listItems = [];
+        listType = null;
+      }
+    };
+
+    const flushTable = (key: string) => {
+      if (isTable && tableHeader.length > 0) {
+        elements.push(
+          <div key={key} className="overflow-x-auto my-3 scrollbar-hidden" style={{ border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: 12 }}>
+            <table className="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr className="border-b bg-white/[0.02]" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
+                  {tableHeader.map((h, i) => (
+                    <th key={i} className="py-2.5 px-4 font-bold text-white/60 uppercase tracking-wider">{h.trim()}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {tableRows.map((row, rowIdx) => (
+                  <tr key={rowIdx} className="border-b" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
+                    {row.map((cell, cellIdx) => (
+                      <td key={cellIdx} className="py-2.5 px-4 text-white/80">{parseInlineMarkdown(cell.trim())}</td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        );
+        tableHeader = [];
+        tableRows = [];
+        isTable = false;
+      }
+    };
+
+    lines.forEach((line, index) => {
+      const trimmed = line.trim();
+      const currentKey = `md-${index}`;
+
+      // Table parsing logic
+      if (trimmed.startsWith('|')) {
+        flushList(currentKey);
+        const parts = trimmed.split('|').map(p => p.trim()).filter((p, i, arr) => i > 0 && i < arr.length - 1);
+        if (trimmed.includes('---')) {
+          // Table separator line, ignore
+        } else if (!isTable && tableHeader.length === 0) {
+          tableHeader = parts;
+          isTable = true;
+        } else {
+          tableRows.push(parts);
+        }
+        return;
+      } else {
+        flushTable(currentKey);
+      }
+
+      // Headings
+      if (trimmed.startsWith('### ')) {
+        flushList(currentKey);
+        elements.push(
+          <h4 key={currentKey} className="text-xs font-bold text-white mt-4 mb-2 uppercase tracking-wider">
+            {parseInlineMarkdown(trimmed.slice(4))}
           </h4>
         );
-      }
-      if (content.startsWith('## ')) {
-        return (
-          <h3 key={idx} className="text-sm font-black text-gray-900 dark:text-white mt-4 mb-1">
-            {content.slice(3)}
+      } else if (trimmed.startsWith('## ')) {
+        flushList(currentKey);
+        elements.push(
+          <h3 key={currentKey} className="text-sm font-bold text-white mt-4 mb-2">
+            {parseInlineMarkdown(trimmed.slice(3))}
           </h3>
         );
-      }
-      if (content.startsWith('# ')) {
-        return (
-          <h2 key={idx} className="text-base font-black text-gray-900 dark:text-white mt-5 mb-2">
-            {content.slice(2)}
+      } else if (trimmed.startsWith('# ')) {
+        flushList(currentKey);
+        elements.push(
+          <h2 key={currentKey} className="text-base font-bold text-white mt-5 mb-3">
+            {parseInlineMarkdown(trimmed.slice(2))}
           </h2>
         );
       }
-      if (content.trim().startsWith('* ') || content.trim().startsWith('- ')) {
-        return (
-          <ul key={idx} className="list-disc pl-5 my-0.5 text-sm text-gray-700 dark:text-gray-300">
-            <li>{parseBoldText(content.trim().slice(2))}</li>
-          </ul>
-        );
+      // Bullet lists
+      else if (trimmed.startsWith('* ') || trimmed.startsWith('- ')) {
+        if (listType !== 'bullet') {
+          flushList(currentKey);
+          listType = 'bullet';
+        }
+        listItems.push(trimmed.slice(2));
       }
-      return (
-        <p key={idx} className="text-sm text-gray-700 dark:text-gray-300 my-1 leading-relaxed">
-          {parseBoldText(content)}
-        </p>
-      );
+      // Numbered lists
+      else if (/^\d+\.\s/.test(trimmed)) {
+        if (listType !== 'number') {
+          flushList(currentKey);
+          listType = 'number';
+        }
+        const textOnly = trimmed.replace(/^\d+\.\s/, '');
+        listItems.push(textOnly);
+      }
+      // Normal paragraphs
+      else {
+        flushList(currentKey);
+        if (trimmed.length > 0) {
+          elements.push(
+            <p key={currentKey} className="text-xs text-white/70 my-2 leading-relaxed">
+              {parseInlineMarkdown(trimmed)}
+            </p>
+          );
+        } else {
+          elements.push(<div key={currentKey} className="h-2" />);
+        }
+      }
     });
+
+    flushList('final-list');
+    flushTable('final-table');
+
+    return elements;
   };
 
-  const parseBoldText = (text: string) => {
-    const parts = text.split(/(\*\*.*?\*\*)/g);
-    return parts.map((part, i) => {
+  const parseInlineMarkdown = (text: string) => {
+    // Basic inline code parse: `code`
+    let parts: React.ReactNode[] = [text];
+
+    // Process Bold: **text**
+    let boldSplit = text.split(/(\*\*.*?\*\*)/g);
+    let boldParsed = boldSplit.map((part, i) => {
       if (part.startsWith('**') && part.endsWith('**')) {
         return (
-          <strong key={i} className="font-bold text-gray-950 dark:text-white">
+          <strong key={`b-${i}`} className="font-bold text-white">
             {part.slice(2, -2)}
           </strong>
         );
       }
       return part;
     });
+
+    return boldParsed;
   };
 
   return (
-    <div className="flex h-[calc(100vh-120px)] w-full rounded-3xl bg-white border border-gray-150 shadow-sm dark:bg-[#12131a] dark:border-gray-800 overflow-hidden animate-fade-in text-left">
+    <div
+      className="flex h-[calc(100vh-140px)] w-full overflow-hidden animate-fade-in text-left"
+      style={{
+        background: '#0a0a0a',
+        border: '0.5px solid rgba(255,255,255,0.12)',
+        borderRadius: 24,
+      }}
+    >
       {/* Sidebar - Conversations list */}
-      <div className="w-80 border-r border-gray-150 dark:border-gray-800 flex flex-col justify-between bg-gray-50/50 dark:bg-gray-900/10 shrink-0">
-        <div className="p-4 border-b border-gray-150 dark:border-gray-800 space-y-3">
-          <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider">AI Assistant</h3>
+      <div
+        className="w-80 flex flex-col justify-between shrink-0"
+        style={{ borderRight: '0.5px solid rgba(255,255,255,0.1)' }}
+      >
+        <div className="p-4 space-y-3 shrink-0" style={{ borderBottom: '0.5px solid rgba(255,255,255,0.08)' }}>
+          <h3 className="text-[10px] font-semibold text-white/40 uppercase tracking-wider">AI Assistant</h3>
           <button
             onClick={handleNewChat}
-            className="flex items-center justify-center gap-2 w-full rounded-xl bg-purple-600 px-4 py-2.5 text-sm font-bold text-white shadow-md shadow-purple-500/10 hover:bg-purple-700 active:scale-[0.98] transition-all"
+            className="flex items-center justify-center gap-2 w-full rounded-xl bg-white hover:bg-white/90 active:scale-[0.98] px-4 py-2.5 text-sm font-semibold text-black transition-all cursor-pointer"
           >
             <Plus className="h-4 w-4" />
             <span>New Chat</span>
@@ -169,14 +299,18 @@ export const AiAssistantPage: React.FC = () => {
         </div>
 
         {/* List */}
-        <div className="flex-1 overflow-y-auto p-2 space-y-1">
+        <div className="flex-grow overflow-y-auto p-2.5 space-y-1.5 scrollbar-hidden">
           {isLoadingList ? (
             [1, 2, 3].map((n) => (
-              <div key={n} className="h-12 rounded-xl bg-gray-100 dark:bg-gray-800 animate-pulse mx-2 my-1" />
+              <div
+                key={n}
+                className="h-11 rounded-xl animate-pulse"
+                style={{ background: 'rgba(255,255,255,0.02)' }}
+              />
             ))
           ) : conversations.length === 0 ? (
-            <div className="p-4 text-center text-xs font-semibold text-gray-400">
-              No conversations yet. Start a new one!
+            <div className="p-4 text-center text-xs font-semibold text-white/40 uppercase tracking-wider">
+              No conversations.
             </div>
           ) : (
             conversations.map((c) => {
@@ -185,19 +319,23 @@ export const AiAssistantPage: React.FC = () => {
                 <div
                   key={c.id}
                   onClick={() => setActiveConversationId(c.id)}
-                  className={`flex items-center justify-between p-3 rounded-xl cursor-pointer group transition-all border ${
-                    isActive
-                      ? 'bg-purple-50 dark:bg-purple-950/20 border-purple-100 dark:border-purple-900/30 text-purple-700 dark:text-purple-400'
-                      : 'border-transparent text-gray-700 dark:text-gray-300 hover:bg-gray-150/40 dark:hover:bg-gray-800/40'
-                  }`}
+                  className="flex items-center justify-between px-3.5 py-2.5 rounded-xl cursor-pointer group transition-all"
+                  style={{
+                    background: isActive ? 'rgba(255,255,255,0.08)' : 'transparent',
+                    border: '0.5px solid',
+                    borderColor: isActive ? 'rgba(255,255,255,0.18)' : 'transparent',
+                  }}
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
-                    <MessageSquare className="h-4 w-4 shrink-0 text-gray-400 group-hover:text-purple-500" />
-                    <span className="text-xs font-bold truncate">{c.title || 'Chat Session'}</span>
+                    <MessageSquare
+                      className="h-4 w-4 shrink-0 transition-colors"
+                      style={{ color: isActive ? '#fff' : 'rgba(255,255,255,0.3)' }}
+                    />
+                    <span className="text-xs font-semibold truncate text-white/80">{c.title || 'Chat Session'}</span>
                   </div>
                   <button
                     onClick={(e) => handleDelete(c.id, e)}
-                    className="opacity-0 group-hover:opacity-100 hover:text-rose-600 dark:hover:text-rose-400 p-1 rounded-lg hover:bg-white dark:hover:bg-gray-850 shadow-xs transition-all shrink-0"
+                    className="opacity-0 group-hover:opacity-100 text-white/40 hover:text-rose-455 p-1 rounded-lg hover:bg-white/5 transition-all shrink-0 cursor-pointer"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
@@ -209,18 +347,21 @@ export const AiAssistantPage: React.FC = () => {
       </div>
 
       {/* Main chat interface */}
-      <div className="flex-1 flex flex-col justify-between overflow-hidden bg-white dark:bg-[#12131a]">
+      <div className="flex-1 flex flex-col justify-between overflow-hidden bg-transparent">
         {/* Messages Feed */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+        <div className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-hidden">
           {localMessages.length === 0 && !chatMutation.isPending ? (
             // Empty State Suggested Prompts
             <div className="max-w-2xl mx-auto py-12 space-y-8 text-center">
               <div className="space-y-3">
-                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl bg-purple-50 text-purple-600 dark:bg-purple-950/20 dark:text-purple-400">
-                  <Bot className="h-8 w-8" />
+                <div
+                  className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl"
+                  style={{ background: 'rgba(255,255,255,0.06)' }}
+                >
+                  <Bot className="h-7 w-7 text-white/60" />
                 </div>
-                <h2 className="text-2xl font-black text-gray-900 dark:text-white">Ask FinTrack AI</h2>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+                <h2 className="text-xl font-bold text-white">Ask FinTrack AI</h2>
+                <p className="text-xs max-w-sm mx-auto" style={{ color: 'rgba(255,255,255,0.45)' }}>
                   Your enterprise personal finance assistant. Check balances, log transactions, track goals, and analyze budgets.
                 </p>
               </div>
@@ -233,12 +374,30 @@ export const AiAssistantPage: React.FC = () => {
                     <button
                       key={idx}
                       onClick={() => handleSend(p.text)}
-                      className="flex items-center gap-3 p-4 rounded-2xl border border-gray-150 bg-gray-50/20 hover:bg-gray-50 hover:shadow-xs transition-all dark:border-gray-800 dark:bg-gray-900/10 dark:hover:bg-gray-900/30 text-left active:scale-[0.99]"
+                      className="flex items-center gap-3 p-4 rounded-xl border text-left active:scale-[0.99] transition-all cursor-pointer"
+                      style={{
+                        background: '#141414',
+                        borderColor: 'rgba(255,255,255,0.08)',
+                      }}
+                      onMouseEnter={e => {
+                        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.18)';
+                        e.currentTarget.style.background = 'rgba(255,255,255,0.02)';
+                      }}
+                      onMouseLeave={e => {
+                        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)';
+                        e.currentTarget.style.background = '#141414';
+                      }}
                     >
-                      <div className={`flex h-8 w-8 items-center justify-center rounded-xl shrink-0 ${p.color}`}>
-                        <PromptIcon className="h-4.5 w-4.5" />
+                      <div
+                        className="flex h-8 w-8 items-center justify-center rounded-lg shrink-0 border"
+                        style={{
+                          background: 'rgba(255,255,255,0.04)',
+                          borderColor: 'rgba(255,255,255,0.08)',
+                        }}
+                      >
+                        <PromptIcon className="h-4 w-4 text-white/80" />
                       </div>
-                      <span className="text-xs font-bold text-gray-700 dark:text-gray-300">{p.text}</span>
+                      <span className="text-xs font-semibold text-white/80">{p.text}</span>
                     </button>
                   );
                 })}
@@ -250,39 +409,53 @@ export const AiAssistantPage: React.FC = () => {
               {localMessages.map((m) => {
                 const isAI = m.role === 'assistant';
                 return (
-                  <div key={m.id} className={`flex gap-4 ${isAI ? 'justify-start' : 'justify-end'}`}>
+                  <div key={m.id} className={`flex gap-3.5 ${isAI ? 'justify-start' : 'justify-end'}`}>
                     {isAI && (
-                      <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-purple-50 text-purple-600 dark:bg-purple-950/20 dark:text-purple-400 shrink-0">
-                        <Bot className="h-5 w-5" />
+                      <div
+                        className="flex h-8 w-8 items-center justify-center rounded-xl shrink-0"
+                        style={{
+                          background: 'rgba(255,255,255,0.06)',
+                          border: '0.5px solid rgba(255,255,255,0.1)',
+                        }}
+                      >
+                        <Bot className="h-4.5 w-4.5 text-white/60" />
                       </div>
                     )}
                     <div
-                      className={`max-w-[80%] rounded-2xl p-4 border text-sm shadow-xs ${
-                        isAI
-                          ? 'bg-gray-50 dark:bg-gray-900/40 border-gray-150 dark:border-gray-800/80 text-gray-850 dark:text-gray-250'
-                          : 'bg-purple-600 border-purple-600 text-white shadow-md shadow-purple-500/10'
-                      }`}
+                      className="max-w-[80%] rounded-2xl p-4 text-xs leading-relaxed"
+                      style={{
+                        background: isAI ? '#141414' : '#fff',
+                        color: isAI ? '#fff' : '#000',
+                        border: isAI ? '0.5px solid rgba(255,255,255,0.08)' : 'none',
+                      }}
                     >
-                      {isAI ? renderMarkdown(m.content) : <p className="leading-relaxed">{m.content}</p>}
+                      {isAI ? parseMarkdown(m.content) : <p className="leading-relaxed font-semibold">{m.content}</p>}
                     </div>
-                    {!isAI && (
-                      <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-purple-600 text-white shrink-0">
-                        <User className="h-5 w-5" />
-                      </div>
-                    )}
                   </div>
                 );
               })}
 
               {/* Typing Indicator */}
               {chatMutation.isPending && (
-                <div className="flex gap-4 justify-start">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-purple-50 text-purple-600 dark:bg-purple-950/20 dark:text-purple-400 shrink-0">
-                    <Bot className="h-5 w-5 animate-pulse" />
+                <div className="flex gap-3.5 justify-start animate-pulse">
+                  <div
+                    className="flex h-8 w-8 items-center justify-center rounded-xl shrink-0"
+                    style={{
+                      background: 'rgba(255,255,255,0.06)',
+                      border: '0.5px solid rgba(255,255,255,0.1)',
+                    }}
+                  >
+                    <Bot className="h-4.5 w-4.5 text-white/60" />
                   </div>
-                  <div className="bg-gray-50 dark:bg-gray-900/40 border border-gray-150 dark:border-gray-800/80 rounded-2xl p-4 flex items-center gap-1">
-                    <Loader2 className="h-4 w-4 animate-spin text-purple-600 dark:text-purple-400" />
-                    <span className="text-xs font-bold text-gray-400">FinTrack AI is thinking...</span>
+                  <div
+                    className="rounded-2xl p-4 flex items-center gap-2"
+                    style={{
+                      background: '#141414',
+                      border: '0.5px solid rgba(255,255,255,0.08)',
+                    }}
+                  >
+                    <Loader2 className="h-3.5 w-3.5 animate-spin text-white/60" />
+                    <span className="text-[11px] font-semibold text-white/40 uppercase tracking-wider">AI is thinking...</span>
                   </div>
                 </div>
               )}
@@ -292,7 +465,13 @@ export const AiAssistantPage: React.FC = () => {
         </div>
 
         {/* Input Bar */}
-        <div className="p-4 border-t border-gray-150 dark:border-gray-800 bg-gray-50/20 dark:bg-[#12131a]">
+        <div
+          className="p-4"
+          style={{
+            borderTop: '0.5px solid rgba(255,255,255,0.1)',
+            background: 'rgba(255,255,255,0.01)',
+          }}
+        >
           <div className="max-w-3xl mx-auto relative flex items-center">
             <input
               type="text"
@@ -302,18 +481,37 @@ export const AiAssistantPage: React.FC = () => {
                 if (e.key === 'Enter') handleSend(inputMsg);
               }}
               placeholder="Ask me to summarize your spending, create budget, log expenses..."
-              className="w-full rounded-2xl border border-gray-200 bg-white pl-5 pr-14 py-3.5 text-sm text-gray-900 dark:bg-gray-900/50 dark:border-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all font-semibold shadow-xs"
+              className={INPUT_BASE}
+              style={INPUT_STYLE}
+              onFocus={e => (e.currentTarget.style.border = INPUT_FOCUS_STYLE)}
+              onBlur={e => (e.currentTarget.style.border = INPUT_BLUR_STYLE)}
             />
             <button
               onClick={() => handleSend(inputMsg)}
               disabled={!inputMsg.trim() || chatMutation.isPending}
-              className="absolute right-2.5 p-2 rounded-xl bg-purple-600 text-white hover:bg-purple-700 active:scale-95 transition-all disabled:opacity-30 disabled:scale-100"
+              className="absolute right-2 top-2 p-2 rounded-xl transition-all cursor-pointer disabled:opacity-30"
+              style={{
+                background: '#fff',
+                color: '#000',
+              }}
             >
-              <Send className="h-4 w-4" />
+              <Send className="h-3.5 w-3.5 font-bold" />
             </button>
           </div>
         </div>
       </div>
+
+      {/* Reusable Delete Dialog */}
+      <ConfirmationDialog
+        isOpen={!!deleteConfirmId}
+        title="Delete Conversation"
+        description="Are you sure you want to delete this conversation? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        isPending={deleteMutation.isPending}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setDeleteConfirmId(null)}
+      />
     </div>
   );
 };

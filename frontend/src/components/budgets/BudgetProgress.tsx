@@ -7,23 +7,25 @@ interface BudgetProgressProps {
 export const BudgetProgress: React.FC<BudgetProgressProps> = ({ percentage }) => {
   const cappedPercentage = Math.min(percentage, 100);
 
-  let barColor = 'bg-emerald-500';
+  let barColor = '#10b981'; // Green (0-60%)
   if (percentage >= 100) {
-    barColor = 'bg-rose-500';
-  } else if (percentage >= 80) {
-    barColor = 'bg-amber-500';
+    barColor = '#ef4444'; // Red (Over Budget)
+  } else if (percentage >= 85) {
+    barColor = '#f97316'; // Orange (85-100%)
+  } else if (percentage >= 60) {
+    barColor = '#f59e0b'; // Yellow/Amber (60-85%)
   }
 
   return (
     <div className="w-full space-y-1.5">
-      <div className="h-2.5 w-full rounded-full bg-gray-150 dark:bg-gray-800 overflow-hidden">
+      <div className="h-2 w-full rounded-full bg-white/5 overflow-hidden">
         <div
-          className={`h-full rounded-full transition-all duration-500 ${barColor}`}
-          style={{ width: `${cappedPercentage}%` }}
+          className="h-full rounded-full transition-all duration-500"
+          style={{ width: `${cappedPercentage}%`, backgroundColor: barColor }}
         />
       </div>
       <div className="flex justify-end">
-        <span className="text-xs font-black text-gray-500 dark:text-gray-400">
+        <span className="text-[10px] font-semibold text-white/40">
           {percentage}%
         </span>
       </div>

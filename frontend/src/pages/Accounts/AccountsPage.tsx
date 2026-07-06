@@ -10,14 +10,14 @@ export const AccountsPage: React.FC = () => {
 
   return (
     <div className="space-y-6 text-left">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-black text-gray-900 dark:text-white">Account Management</h2>
-          <p className="text-sm text-gray-400 font-medium">Manage and view all your active financial accounts</p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-5" style={{ borderBottom: '0.5px solid rgba(255,255,255,0.1)' }}>
+        <div className="space-y-0.5 text-left">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white">Accounts</h1>
+          <p className="text-xs font-semibold" style={{ color: 'rgba(255,255,255,0.4)' }}>Manage and view all your active financial accounts</p>
         </div>
         <button
           onClick={() => setIsAddAccountOpen(true)}
-          className="flex items-center gap-2 rounded-xl bg-purple-600 px-4 py-2.5 text-sm font-bold text-white shadow-md shadow-purple-500/10 hover:bg-purple-700 active:scale-[0.98] transition-all"
+          className="flex items-center justify-center gap-2 rounded-xl bg-white hover:bg-white/90 active:scale-[0.98] px-5 py-2.5 text-sm font-semibold text-black transition-all cursor-pointer self-start sm:self-center focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
         >
           <PlusCircle className="h-4 w-4" />
           <span>Add Account</span>

@@ -180,12 +180,15 @@ export const AccountForm: React.FC<AccountFormProps> = ({ onSuccess, onClose }) 
       className="flex flex-col flex-grow overflow-hidden max-h-inherit"
     >
       {/* 1. Fixed Header */}
-      <div className="px-6 py-5 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between shrink-0">
-        <div className="space-y-1">
-          <h2 className="text-xl font-black text-gray-900 dark:text-white">
+      <div
+        className="px-6 py-5 flex items-center justify-between shrink-0"
+        style={{ borderBottom: '0.5px solid rgba(255,255,255,0.1)' }}
+      >
+        <div className="space-y-1 text-left">
+          <h2 className="text-xl font-medium" style={{ color: '#fff' }}>
             Add New Account
           </h2>
-          <p className="text-sm text-gray-400 font-medium">
+          <p className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.5)' }}>
             Create your financial account with dynamic presets.
           </p>
         </div>
@@ -193,7 +196,10 @@ export const AccountForm: React.FC<AccountFormProps> = ({ onSuccess, onClose }) 
           type="button"
           onClick={handleCloseAttempt}
           disabled={isPending}
-          className="rounded-xl p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-900 transition-all dark:hover:bg-gray-900 dark:hover:text-white disabled:opacity-30 disabled:pointer-events-none"
+          className="rounded-xl p-2 transition-all disabled:opacity-30 disabled:pointer-events-none focus:outline-none focus-visible:ring-1 focus-visible:ring-white"
+          style={{ color: 'rgba(255,255,255,0.6)' }}
+          onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+          onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.6)')}
           aria-label="Close dialog"
         >
           <X className="h-5 w-5" />
@@ -201,25 +207,37 @@ export const AccountForm: React.FC<AccountFormProps> = ({ onSuccess, onClose }) 
       </div>
 
       {/* 2. Scrollable Form Content */}
-      <div className="p-6 overflow-y-auto flex-grow flex flex-col lg:flex-row gap-6 items-start">
+      <div className="p-6 overflow-y-auto flex-grow flex flex-col lg:flex-row gap-6 items-start scrollbar-hidden">
         {/* Form Input fields */}
         <div className="flex-grow space-y-5 w-full">
           {/* Account Type Selector */}
           <div className="space-y-1.5 text-left">
-            <label htmlFor="type" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+            <label
+              htmlFor="type"
+              className="text-xs font-semibold uppercase tracking-wider block"
+              style={{ color: 'rgba(255,255,255,0.6)' }}
+            >
               Account Type
             </label>
             <select
               id="type"
               disabled={isPending}
               {...register('type')}
-              className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20 dark:border-gray-800 dark:bg-gray-900 dark:text-white focus:border-purple-500 transition-all"
+              className="w-full rounded-lg px-4 py-3 text-sm transition-all focus:outline-none appearance-none"
+              style={{
+                background: '#141414',
+                border: '0.5px solid rgba(255,255,255,0.14)',
+                borderRadius: 8,
+                color: '#fff',
+              }}
+              onFocus={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.32)')}
+              onBlur={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.14)')}
             >
-              <option value="BANK">Bank Account</option>
-              <option value="CASH">Cash / Wallet</option>
-              <option value="CREDIT_CARD">Credit Card</option>
-              <option value="INVESTMENT">Investment Portfolio</option>
-              <option value="E_WALLET">E-Wallet</option>
+              <option value="BANK" style={{ background: '#141414' }}>Bank Account</option>
+              <option value="CASH" style={{ background: '#141414' }}>Cash / Wallet</option>
+              <option value="CREDIT_CARD" style={{ background: '#141414' }}>Credit Card</option>
+              <option value="INVESTMENT" style={{ background: '#141414' }}>Investment Portfolio</option>
+              <option value="E_WALLET" style={{ background: '#141414' }}>E-Wallet</option>
             </select>
           </div>
 
@@ -240,19 +258,30 @@ export const AccountForm: React.FC<AccountFormProps> = ({ onSuccess, onClose }) 
       </div>
 
       {/* 3. Fixed Footer */}
-      <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-800 shrink-0 bg-gray-50/50 dark:bg-[#12131a] flex justify-end gap-3">
+      <div
+        className="px-6 py-4 shrink-0 flex justify-end gap-3"
+        style={{ borderTop: '0.5px solid rgba(255,255,255,0.1)' }}
+      >
         <button
           type="button"
           onClick={handleCloseAttempt}
           disabled={isPending}
-          className="rounded-xl border border-gray-200 px-5 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-all dark:border-gray-800 dark:text-gray-300 dark:hover:bg-gray-900 disabled:opacity-40 disabled:pointer-events-none"
+          className="rounded-xl px-5 py-2.5 text-sm font-semibold transition-all disabled:opacity-40 disabled:pointer-events-none focus:outline-none focus-visible:ring-1 focus-visible:ring-white"
+          style={{
+            background: 'transparent',
+            border: '0.5px solid rgba(255,255,255,0.18)',
+            color: '#fff',
+          }}
+          onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.04)')}
+          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
         >
           Cancel
         </button>
         <button
           type="submit"
           disabled={isPending || !isValid}
-          className="flex items-center justify-center gap-2 rounded-xl bg-purple-600 px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-purple-500/20 transition-all hover:bg-purple-700 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none"
+          className="flex items-center justify-center gap-2 rounded-xl px-6 py-2.5 text-sm font-semibold transition-all active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none focus:outline-none focus-visible:ring-2 focus-visible:ring-black"
+          style={{ background: '#fff', color: '#000' }}
         >
           {isPending ? (
             <>

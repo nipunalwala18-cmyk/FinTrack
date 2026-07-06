@@ -49,7 +49,10 @@ export const NotificationBell: React.FC = () => {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative rounded-xl p-2.5 text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-all dark:text-gray-400 dark:hover:bg-gray-900 dark:hover:text-white"
+        className="relative rounded-xl p-2.5 transition-all focus:outline-none focus-visible:ring-1 focus-visible:ring-white"
+        style={{ color: 'rgba(255,255,255,0.55)' }}
+        onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+        onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.55)')}
         aria-label="Notifications"
       >
         <Bell className="h-5 w-5" />

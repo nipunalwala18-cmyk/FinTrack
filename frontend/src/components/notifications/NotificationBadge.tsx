@@ -8,7 +8,14 @@ export const NotificationBadge: React.FC<NotificationBadgeProps> = ({ count }) =
   if (count <= 0) return null;
 
   return (
-    <span className="absolute -top-1 -right-1 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-rose-500 text-[10px] font-black text-white ring-2 ring-white dark:ring-[#12131a] animate-pulse">
+    <span
+      className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full text-[9px] font-bold"
+      style={{
+        background: '#fff',
+        color: '#000',
+        border: '1px solid rgba(0,0,0,0.6)',
+      }}
+    >
       {count > 9 ? '9+' : count}
     </span>
   );

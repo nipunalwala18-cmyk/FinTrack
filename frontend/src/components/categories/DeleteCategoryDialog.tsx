@@ -2,6 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { X, AlertTriangle, Trash2 } from 'lucide-react';
 import { useCategories, useDeleteCategory } from '../../hooks/useCategories';
 import type { Category } from '../../types/category';
+import {
+  LABEL_CLS, LABEL_STYLE, INPUT_BASE, INPUT_STYLE,
+  INPUT_FOCUS_STYLE, INPUT_BLUR_STYLE
+} from '../accounts/fieldStyles';
 
 interface DeleteCategoryDialogProps {
   isOpen: boolean;
@@ -85,10 +89,6 @@ export const DeleteCategoryDialog: React.FC<DeleteCategoryDialogProps> = ({
     }
   };
 
-  // Get eligible reassignment categories:
-  // 1. Same type (INCOME/EXPENSE)
-  // 2. Not the category being deleted
-  // 3. Not a child of the category being deleted (to avoid circular issues if any)
   const eligibleCategories: Category[] = [];
   const addCategoryAndChildren = (cat: Category) => {
     if (cat.id !== categoryToDelete.id) {
@@ -108,86 +108,76 @@ export const DeleteCategoryDialog: React.FC<DeleteCategoryDialogProps> = ({
   return (
     <div
       onClick={handleBackdropClick}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 transition-all duration-300 animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-xs p-4 transition-all duration-300 animate-fade-in"
       aria-modal="true"
       role="dialog"
     >
       <div
         ref={modalRef}
-        className="w-full max-w-md rounded-3xl bg-white shadow-2xl dark:bg-[#12131a] border border-gray-100 dark:border-gray-800 flex flex-col overflow-hidden animate-zoom-in"
+        className="w-[95vw] max-w-md p-6 shadow-2xl text-center space-y-5 animate-zoom-in"
+        style={{
+          background: '#0a0a0a',
+          border: '0.5px solid rgba(255,255,255,0.14)',
+          borderRadius: 16,
+        }}
       >
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 dark:border-gray-800">
-          <h3 className="text-lg font-black text-gray-900 dark:text-white flex items-center gap-2">
-            <Trash2 className="h-5 w-5 text-red-500" />
-            Delete Category
-          </h3>
-          <button
-            onClick={onClose}
-            className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-800 dark:hover:text-white transition-colors"
-          >
-            <X className="h-5 w-5" />
-          </button>
+        {/* Header/Icon */}
+        <div
+          className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl"
+          style={{ background: 'rgba(248,113,113,0.08)' }}
+        >
+          <AlertTriangle className="h-6 w-6" style={{ color: 'rgba(248,113,113,0.8)' }} />
+        </div>
+
+        <div className="space-y-2 text-center">
+          <h3 className="text-lg font-bold text-white">Delete Category?</h3>
+          <p className="text-sm font-semibold leading-relaxed text-white/50">
+            This action cannot be undone. All active transactions in this category must be reallocated first.
+          </p>
         </div>
 
         {/* Content Body */}
-        <div className="p-6 space-y-4 text-left">
+        <div className="text-left">
           {isDefault ? (
             <div className="space-y-4">
-              <div className="flex items-start gap-3 p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/20 text-amber-800 dark:text-amber-400">
-                <AlertTriangle className="h-5 w-5 shrink-0 mt-0.5" />
-                <div className="text-sm font-medium">
-                  Default categories cannot be deleted. These categories are required for basic application usage.
-                </div>
+              <div className="flex items-start gap-3 p-4 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20 text-xs leading-relaxed font-semibold">
+                Default categories cannot be deleted. These categories are required for basic application usage.
               </div>
-              <div className="flex justify-end pt-2">
-                <button
-                  onClick={onClose}
-                  className="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-900 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700 rounded-xl text-sm font-bold transition-colors"
-                >
-                  Close
-                </button>
-              </div>
+              <button
+                onClick={onClose}
+                className="w-full py-3 bg-white text-black hover:bg-white/90 active:scale-[0.98] transition-all rounded-xl text-sm font-semibold cursor-pointer"
+              >
+                Close
+              </button>
             </div>
           ) : hasChildren ? (
             <div className="space-y-4">
-              <div className="flex items-start gap-3 p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/20 text-rose-800 dark:text-rose-400">
-                <AlertTriangle className="h-5 w-5 shrink-0 mt-0.5" />
-                <div className="text-sm font-medium">
-                  This category contains subcategories. You cannot delete it until you remove or reassign all subcategories first.
-                </div>
+              <div className="flex items-start gap-3 p-4 rounded-xl bg-rose-500/10 text-rose-455 border border-rose-500/20 text-xs leading-relaxed font-semibold">
+                This category contains subcategories. You cannot delete it until you remove or reassign all subcategories first.
               </div>
-              <div className="flex justify-end pt-2">
-                <button
-                  onClick={onClose}
-                  className="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-900 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700 rounded-xl text-sm font-bold transition-colors"
-                >
-                  Close
-                </button>
-              </div>
+              <button
+                onClick={onClose}
+                className="w-full py-3 bg-white text-black hover:bg-white/90 active:scale-[0.98] transition-all rounded-xl text-sm font-semibold cursor-pointer"
+              >
+                Close
+              </button>
             </div>
           ) : (
             <form onSubmit={handleDelete} className="space-y-4">
               {!needsReassignment ? (
-                <div className="space-y-2">
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    Are you sure you want to delete <span className="font-extrabold text-gray-900 dark:text-white">"{categoryToDelete.name}"</span>?
-                  </p>
-                  <p className="text-xs text-gray-400">
-                    Note: Deleting will soft delete this category, removing it from your active list.
+                <div className="space-y-1.5 text-center">
+                  <p className="text-sm text-white/70">
+                    Are you sure you want to delete <span className="font-bold text-white">"{categoryToDelete.name}"</span>?
                   </p>
                 </div>
               ) : (
                 <div className="space-y-4">
-                  <div className="flex items-start gap-3 p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/20 text-amber-800 dark:text-amber-400">
-                    <AlertTriangle className="h-5 w-5 shrink-0 mt-0.5" />
-                    <div className="text-sm font-medium">
-                      Category has <span className="font-extrabold">{transactionCount}</span> transactions. Reassign them to another category to prevent them from becoming uncategorized.
-                    </div>
+                  <div className="flex items-start gap-3 p-4 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20 text-xs font-semibold leading-relaxed">
+                    Category has {transactionCount} active transactions. Reassign them to another category to prevent them from becoming uncategorized.
                   </div>
 
                   <div className="space-y-1.5">
-                    <label htmlFor="reassignSelect" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    <label htmlFor="reassignSelect" className={LABEL_CLS} style={LABEL_STYLE}>
                       Reassign transactions to *
                     </label>
                     <select
@@ -195,11 +185,14 @@ export const DeleteCategoryDialog: React.FC<DeleteCategoryDialogProps> = ({
                       required
                       value={reassignToId}
                       onChange={(e) => setReassignToId(e.target.value)}
-                      className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500/20 dark:border-gray-800 dark:bg-gray-900 dark:text-white focus:border-purple-500 transition-all"
+                      className={`${INPUT_BASE} appearance-none cursor-pointer`}
+                      style={INPUT_STYLE}
+                      onFocus={e => (e.currentTarget.style.border = INPUT_FOCUS_STYLE)}
+                      onBlur={e => (e.currentTarget.style.border = INPUT_BLUR_STYLE)}
                     >
-                      <option value="">Select Category</option>
+                      <option value="" style={{ background: '#141414' }}>Select Category</option>
                       {eligibleCategories.map((cat) => (
-                        <option key={cat.id} value={cat.id}>
+                        <option key={cat.id} value={cat.id} style={{ background: '#141414' }}>
                           {cat.name} ({cat.type})
                         </option>
                       ))}
@@ -208,29 +201,36 @@ export const DeleteCategoryDialog: React.FC<DeleteCategoryDialogProps> = ({
                 </div>
               )}
 
-              {errorMessage && <p className="text-xs font-semibold text-red-500">{errorMessage}</p>}
+              {errorMessage && <p className="text-xs font-semibold text-rose-455 text-center">{errorMessage}</p>}
 
               {/* Action Buttons */}
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-800">
+              <div className="flex gap-3 pt-2">
                 <button
                   type="button"
                   onClick={onClose}
                   disabled={deleteMutation.isPending}
-                  className="px-5 py-2.5 rounded-xl text-sm font-bold text-gray-500 hover:bg-gray-50 hover:text-gray-900 transition-colors dark:text-gray-400 dark:hover:bg-gray-900 dark:hover:text-white"
+                  className="flex-grow rounded-xl py-3 text-sm font-semibold transition-all disabled:opacity-40"
+                  style={{
+                    background: 'transparent',
+                    border: '0.5px solid rgba(255,255,255,0.18)',
+                    color: '#fff',
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.04)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={deleteMutation.isPending}
-                  className="px-5 py-2.5 rounded-xl text-sm font-bold bg-red-600 hover:bg-red-700 active:bg-red-800 text-white shadow-lg shadow-red-500/10 transition-colors flex items-center gap-2 dark:bg-red-600 dark:hover:bg-red-700"
+                  className="flex-grow flex items-center justify-center gap-2 rounded-xl bg-rose-600 hover:bg-rose-700 py-3 text-sm font-bold text-white shadow-lg shadow-rose-500/20 transition-all active:scale-[0.98]"
                 >
                   {deleteMutation.isPending ? (
                     <>Deleting...</>
                   ) : needsReassignment ? (
                     <>Reassign & Delete</>
                   ) : (
-                    <>Delete Category</>
+                    <>Delete</>
                   )}
                 </button>
               </div>

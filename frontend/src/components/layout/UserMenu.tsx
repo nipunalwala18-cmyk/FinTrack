@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
-import { User, Settings, LogOut } from 'lucide-react';
+import { User, LogOut } from 'lucide-react';
 
 export const UserMenu: React.FC = () => {
   const { user, logout } = useAuth();
@@ -34,47 +34,109 @@ export const UserMenu: React.FC = () => {
     <div ref={dropdownRef} className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 focus:outline-none"
+        className="flex items-center gap-2 focus:outline-none focus-visible:ring-1 focus-visible:ring-white rounded-full cursor-pointer"
         aria-label="User menu"
       >
         {user.profileImage ? (
           <img
             src={user.profileImage}
             alt={user.fullName}
-            className="h-9 w-9 rounded-full object-cover border-2 border-purple-500/20"
+            className="h-9 w-9 rounded-full object-cover"
+            style={{ border: '1px solid rgba(255,255,255,0.2)' }}
           />
         ) : (
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-purple-50 text-purple-600 dark:bg-purple-950/40 dark:text-purple-400 border border-purple-100 dark:border-purple-900/40 font-bold uppercase">
+          <div
+            className="flex h-9 w-9 items-center justify-center rounded-full font-bold uppercase text-sm"
+            style={{
+              background: '#fff',
+              color: '#000',
+              border: '1px solid rgba(255,255,255,0.15)',
+            }}
+          >
             {user.fullName.charAt(0)}
           </div>
         )}
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2.5 w-52 origin-top-right rounded-2xl bg-white p-2 shadow-xl border border-gray-100 dark:bg-[#12131a] dark:border-gray-800 animate-fade-in text-left z-50">
-          <div className="px-3 py-2 border-b border-gray-50 dark:border-gray-800/60 pb-2.5 mb-1.5">
-            <p className="text-xs font-semibold text-gray-400">Signed in as</p>
-            <p className="text-sm font-bold text-gray-800 dark:text-white truncate">{user.fullName}</p>
+        <div
+          className="absolute right-0 mt-2.5 w-72 origin-top-right rounded-2xl p-2.5 shadow-2xl animate-zoom-in text-left z-50"
+          style={{
+            background: '#0a0a0a',
+            border: '0.5px solid rgba(255,255,255,0.15)',
+          }}
+        >
+          {/* Header section */}
+          <div
+            className="flex items-center gap-3 p-3 pb-3 mb-2"
+            style={{ borderBottom: '0.5px solid rgba(255,255,255,0.1)' }}
+          >
+            {user.profileImage ? (
+              <img
+                src={user.profileImage}
+                alt={user.fullName}
+                className="h-10 w-10 rounded-full object-cover shrink-0"
+                style={{ border: '1px solid rgba(255,255,255,0.2)' }}
+              />
+            ) : (
+              <div
+                className="flex h-10 w-10 items-center justify-center rounded-full font-bold uppercase text-base shrink-0"
+                style={{
+                  background: '#fff',
+                  color: '#000',
+                  border: '1px solid rgba(255,255,255,0.15)',
+                }}
+              >
+                {user.fullName.charAt(0)}
+              </div>
+            )}
+            <div className="min-w-0">
+              <p className="text-sm font-bold truncate text-white leading-tight">
+                {user.fullName}
+              </p>
+              <p className="text-[11px] font-semibold text-white/40 truncate mt-0.5">
+                {user.email}
+              </p>
+            </div>
           </div>
 
-          <Link
-            to="/profile"
-            onClick={() => setIsOpen(false)}
-            className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-900 dark:hover:text-white transition-colors"
-          >
-            <User className="h-4 w-4" />
-            <span>Profile</span>
-          </Link>
+          {/* Links menu items */}
+          <div className="space-y-1">
+            <Link
+              to="/profile"
+              onClick={() => setIsOpen(false)}
+              className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-xs font-semibold transition-all cursor-pointer"
+              style={{ color: 'rgba(255,255,255,0.6)' }}
+              onMouseEnter={e => {
+                e.currentTarget.style.color = '#fff';
+                e.currentTarget.style.background = 'rgba(255,255,255,0.06)';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.color = 'rgba(255,255,255,0.6)';
+                e.currentTarget.style.background = 'transparent';
+              }}
+            >
+              <User className="h-4 w-4" />
+              <span>Profile</span>
+            </Link>
 
-
-
-          <button
-            onClick={handleLogout}
-            className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm text-rose-600 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-950/30 transition-colors"
-          >
-            <LogOut className="h-4 w-4" />
-            <span>Log Out</span>
-          </button>
+            <button
+              onClick={handleLogout}
+              className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-xs font-semibold transition-all cursor-pointer"
+              style={{ color: 'rgba(255,255,255,0.6)' }}
+              onMouseEnter={e => {
+                e.currentTarget.style.color = '#fff';
+                e.currentTarget.style.background = 'rgba(255,255,255,0.06)';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.color = 'rgba(255,255,255,0.6)';
+                e.currentTarget.style.background = 'transparent';
+              }}
+            >
+              <LogOut className="h-4 w-4" />
+              <span>Log Out</span>
+            </button>
+          </div>
         </div>
       )}
     </div>

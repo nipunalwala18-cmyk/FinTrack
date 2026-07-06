@@ -32,13 +32,18 @@ export const AddAccountDialog: React.FC<AddAccountDialogProps> = ({ isOpen, onCl
   return (
     <div
       onClick={handleBackdropClick}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 transition-all duration-300 animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 transition-all duration-300 animate-fade-in"
       aria-modal="true"
       role="dialog"
     >
       <div
         ref={dialogRef}
-        className="w-[95vw] max-w-4xl max-h-[95vh] md:max-h-[90vh] rounded-3xl bg-white shadow-2xl dark:bg-[#12131a] border border-gray-100 dark:border-gray-800 flex flex-col overflow-hidden animate-zoom-in"
+        className="w-[95vw] max-w-4xl max-h-[95vh] md:max-h-[90vh] flex flex-col overflow-hidden animate-zoom-in"
+        style={{
+          background: '#0a0a0a',
+          border: '0.5px solid rgba(255,255,255,0.14)',
+          borderRadius: 16,
+        }}
       >
         {/* AccountForm will render the Header, Content, and Footer self-contained */}
         <AccountForm onSuccess={onClose} onClose={onClose} />

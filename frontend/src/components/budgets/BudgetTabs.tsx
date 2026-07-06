@@ -14,16 +14,23 @@ export const BudgetTabs: React.FC<BudgetTabsProps> = ({ activePeriod, onChange }
   ];
 
   return (
-    <div className="flex rounded-2xl bg-gray-100 p-1 dark:bg-gray-900 w-full max-w-sm">
+    <div
+      className="flex p-1 w-full max-w-xs"
+      style={{
+        background: '#0a0a0a',
+        border: '0.5px solid rgba(255,255,255,0.12)',
+        borderRadius: 12,
+      }}
+    >
       {periods.map((p) => (
         <button
           key={p.value}
           onClick={() => onChange(p.value)}
-          className={`flex flex-1 items-center justify-center rounded-xl py-2 text-xs sm:text-sm font-bold transition-all duration-200 cursor-pointer ${
-            activePeriod === p.value
-              ? 'bg-white text-gray-900 shadow-xs dark:bg-[#1c1d24] dark:text-white'
-              : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
-          }`}
+          className="flex flex-1 items-center justify-center rounded-lg py-2 text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer"
+          style={{
+            background: activePeriod === p.value ? '#fff' : 'transparent',
+            color: activePeriod === p.value ? '#000' : 'rgba(255,255,255,0.5)',
+          }}
         >
           {p.label}
         </button>

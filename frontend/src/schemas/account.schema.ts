@@ -7,7 +7,7 @@ export const createAccountSchema = z
       .min(2, 'Name must be at least 2 characters')
       .max(40, 'Name must be at most 40 characters'),
     type: z.enum(['BANK', 'CASH', 'CREDIT_CARD', 'INVESTMENT', 'E_WALLET'] as const),
-    balance: z.number({ invalid_type_error: 'Balance/Investment must be a number' }).min(0, 'Balance/Investment must be greater than or equal to 0'),
+    balance: z.number({ message: 'Balance/Investment must be a number' }).min(0, 'Balance/Investment must be greater than or equal to 0'),
     currency: z.string().default('INR'),
     color: z.string().default('#2563EB'),
     icon: z.string().default('landmark'),
@@ -28,6 +28,7 @@ export const createAccountSchema = z
 
     notes: z.string().optional().nullable(),
     includeInNetWorth: z.boolean().default(true),
+    isArchived: z.boolean().default(false),
     displayOrder: z.number().int().optional().nullable(),
   })
   .refine(

@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const createTransactionSchema = z
   .object({
-    amount: z.number({ invalid_type_error: 'Amount must be a number' }).positive('Amount must be positive'),
+    amount: z.number({ message: 'Amount must be a number' }).positive('Amount must be positive'),
     type: z.enum(['INCOME', 'EXPENSE', 'TRANSFER'] as const),
     description: z.string().max(100, 'Description must be at most 100 characters').optional().nullable(),
     notes: z.string().max(500, 'Notes must be at most 500 characters').optional().nullable(),

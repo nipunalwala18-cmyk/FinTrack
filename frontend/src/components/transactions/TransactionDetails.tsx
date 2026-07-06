@@ -69,7 +69,7 @@ export const TransactionDetails: React.FC<TransactionDetailsProps> = ({
               tx.type === 'INCOME'
                 ? 'text-emerald-600 dark:text-emerald-400'
                 : tx.type === 'EXPENSE'
-                ? 'text-rose-600 dark:text-rose-450'
+                ? 'text-rose-600 dark:text-rose-400'
                 : 'text-purple-600 dark:text-purple-400'
             }`}
           >

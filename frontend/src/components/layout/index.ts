@@ -6,4 +6,4 @@ export { NavItem } from './NavItem';
 export { UserMenu } from './UserMenu';
 export { Breadcrumb } from './Breadcrumb';
 export { ThemeToggle } from './ThemeToggle';
-export default AppLayout;
+export { default } from './AppLayout';

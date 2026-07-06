@@ -13,6 +13,9 @@ export const useCreateTransaction = (onSuccess?: () => void) => {
       queryClient.invalidateQueries({ queryKey: ['dashboard'] });
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
       queryClient.invalidateQueries({ queryKey: ['accounts'] });
+      queryClient.invalidateQueries({ queryKey: ['categories'] });
+      queryClient.invalidateQueries({ queryKey: ['budget-dashboard'] });
+      queryClient.invalidateQueries({ queryKey: ['budgets'] });
       if (onSuccess) onSuccess();
     },
     onError: (err: any) => {

@@ -43,7 +43,7 @@ export const AccountPreview: React.FC<AccountPreviewProps> = ({
         {/* Color Filled Icon Container */}
         <div
           className="h-14 w-14 rounded-2xl flex items-center justify-center shadow-lg transition-colors duration-300"
-          style={{ backgroundColor: color, shadowColor: color }}
+          style={{ backgroundColor: color }}
         >
           {getIcon()}
         </div>

@@ -52,7 +52,7 @@ export const DeleteTransactionDialog: React.FC<DeleteTransactionDialogProps> = (
         ref={dialogRef}
         className="w-[95vw] max-w-md rounded-3xl bg-white p-6 shadow-2xl dark:bg-[#12131a] border border-gray-100 dark:border-gray-800 text-center space-y-5 animate-zoom-in"
       >
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-rose-50 text-rose-600 dark:bg-rose-950/20 dark:text-rose-450">
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-rose-50 text-rose-600 dark:bg-rose-950/20 dark:text-rose-400">
           <AlertTriangle className="h-6 w-6" />
         </div>
 

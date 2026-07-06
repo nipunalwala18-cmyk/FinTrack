@@ -1,11 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
-import { CategoriesService } from './categories.service.js';
+import { BudgetService } from './budget.service.js';
 import { AuthenticatedRequest } from '../../middlewares/auth.middleware.js';
+import { BudgetPeriod } from '@prisma/client';
 
-const categoriesService = new CategoriesService();
+const budgetService = new BudgetService();
 
-export class CategoriesController {
-  public async getCategories(
+export class BudgetController {
+  public async getBudgets(
     req: Request,
     res: Response,
     next: NextFunction
@@ -18,14 +19,14 @@ export class CategoriesController {
         return;
       }
 
-      const categories = await categoriesService.getCategories(userId);
-      res.status(200).json({ success: true, data: categories });
+      const budgets = await budgetService.getBudgets(userId);
+      res.status(200).json({ success: true, data: budgets });
     } catch (error) {
       next(error);
     }
   }
 
-  public async createCategory(
+  public async getBudgetById(
     req: Request,
     res: Response,
     next: NextFunction
@@ -38,18 +39,39 @@ export class CategoriesController {
         return;
       }
 
-      const category = await categoriesService.createCategory(userId, req.body);
+      const { id } = req.params;
+      const budget = await budgetService.getBudgetById(id, userId);
+      res.status(200).json({ success: true, data: budget });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async createBudget(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const authReq = req as AuthenticatedRequest;
+      const userId = authReq.user?.id;
+      if (!userId) {
+        res.status(401).json({ success: false, message: 'Unauthorized' });
+        return;
+      }
+
+      const budget = await budgetService.createBudget(userId, req.body);
       res.status(201).json({
         success: true,
-        message: 'Category created successfully',
-        data: category,
+        message: 'Budget created successfully',
+        data: budget,
       });
     } catch (error) {
       next(error);
     }
   }
 
-  public async updateCategory(
+  public async updateBudget(
     req: Request,
     res: Response,
     next: NextFunction
@@ -63,18 +85,18 @@ export class CategoriesController {
       }
 
       const { id } = req.params;
-      const category = await categoriesService.updateCategory(userId, id, req.body);
+      const budget = await budgetService.updateBudget(userId, id, req.body);
       res.status(200).json({
         success: true,
-        message: 'Category updated successfully',
-        data: category,
+        message: 'Budget updated successfully',
+        data: budget,
       });
     } catch (error) {
       next(error);
     }
   }
 
-  public async deleteCategory(
+  public async deleteBudget(
     req: Request,
     res: Response,
     next: NextFunction
@@ -88,30 +110,17 @@ export class CategoriesController {
       }
 
       const { id } = req.params;
-      const { reassignToId } = req.body; // optionally passed in body to reassign transactions
-
-      const result = await categoriesService.deleteCategory(userId, id, reassignToId);
-      
-      if ((result as any).requireReassignment) {
-        res.status(200).json({
-          success: true,
-          requireReassignment: true,
-          transactionCount: (result as any).transactionCount,
-          message: result.message,
-        });
-        return;
-      }
-
+      await budgetService.deleteBudget(userId, id);
       res.status(200).json({
         success: true,
-        message: 'Category deleted successfully',
+        message: 'Budget deleted successfully',
       });
     } catch (error) {
       next(error);
     }
   }
 
-  public async reorderCategories(
+  public async getBudgetDashboardData(
     req: Request,
     res: Response,
     next: NextFunction
@@ -124,14 +133,16 @@ export class CategoriesController {
         return;
       }
 
-      await categoriesService.reorderCategories(userId, req.body.categories);
-      res.status(200).json({
-        success: true,
-        message: 'Categories reordered successfully',
-      });
+      const { period } = req.query;
+      const data = await budgetService.getBudgetDashboardData(
+        userId,
+        period ? (period as BudgetPeriod) : undefined
+      );
+
+      res.status(200).json({ success: true, data });
     } catch (error) {
       next(error);
     }
   }
 }
-export default CategoriesController;
+export default BudgetController;

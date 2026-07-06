@@ -23,7 +23,7 @@ export const TransactionTable: React.FC<TransactionTableProps> = ({
       return <span className="font-bold text-emerald-600 dark:text-emerald-400">+{formatted}</span>;
     }
     if (tx.type === 'EXPENSE') {
-      return <span className="font-bold text-rose-600 dark:text-rose-450">-{formatted}</span>;
+      return <span className="font-bold text-rose-600 dark:text-rose-400">-{formatted}</span>;
     }
     return <span className="font-bold text-purple-600 dark:text-purple-400">{formatted}</span>;
   };
@@ -140,7 +140,7 @@ export const TransactionTable: React.FC<TransactionTableProps> = ({
                   </button>
                   <button
                     onClick={() => onDelete(tx)}
-                    className="rounded-lg p-1.5 text-gray-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/30 dark:hover:text-rose-455 transition-all"
+                    className="rounded-lg p-1.5 text-gray-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/30 dark:hover:text-rose-400 transition-all"
                     title="Delete transaction"
                   >
                     <Trash2 className="h-4.5 w-4.5" />

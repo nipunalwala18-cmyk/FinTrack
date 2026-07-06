@@ -42,7 +42,7 @@ export const AccountForm: React.FC<AccountFormProps> = ({ onSuccess, onClose }) 
     setValue,
     setError,
     formState: { errors, isValid },
-  } = useForm<CreateAccountInput>({
+  } = useForm<any>({
     resolver: zodResolver(createAccountSchema),
     mode: 'onChange',
     defaultValues: {
@@ -72,14 +72,14 @@ export const AccountForm: React.FC<AccountFormProps> = ({ onSuccess, onClose }) 
   // Update dynamic defaults (name, icon, balance fields) when Type switches
   useEffect(() => {
     // 1. Assign Icon
-    const assignedIcon = ACCOUNT_ICONS[watchType] || 'landmark';
+    const assignedIcon = ACCOUNT_ICONS[watchType as keyof typeof ACCOUNT_ICONS] || 'landmark';
     setValue('icon', assignedIcon);
 
     // 2. Assign default Preset Name if current name is empty or matches a preset name
     const currentName = watchName?.trim();
     const isNamePreset = Object.values(PRESET_NAMES).includes(currentName) || !currentName;
     if (isNamePreset) {
-      setValue('name', PRESET_NAMES[watchType]);
+      setValue('name', PRESET_NAMES[watchType as keyof typeof PRESET_NAMES]);
     }
 
     // 3. Setup balance overrides (outstanding balance for cards, initial investment for portfolios)
@@ -99,7 +99,7 @@ export const AccountForm: React.FC<AccountFormProps> = ({ onSuccess, onClose }) 
   // Handle outstanding Balance updates for Credit Cards
   const watchOutstanding = watch('outstandingBalance');
   useEffect(() => {
-    if (watchType === 'CREDIT_CARD' && watchOutstanding !== undefined) {
+    if (watchType === 'CREDIT_CARD' && watchOutstanding !== undefined && watchOutstanding !== null) {
       setValue('balance', -watchOutstanding);
     }
   }, [watchOutstanding, watchType, setValue]);

@@ -156,7 +156,14 @@ export class AiService {
 
     // 6. Fetch user context & build prompt
     const context = await contextService.getFinancialContext(userId);
-    const systemPrompt = PromptBuilder.buildSystemPrompt(context, memory);
+    const userPrefs = await prisma.userPreferences.findUnique({
+      where: { userId },
+    });
+    const enrichedContext = {
+      ...context,
+      preferences: userPrefs,
+    };
+    const systemPrompt = PromptBuilder.buildSystemPrompt(enrichedContext, memory);
 
     // 7. Call LLM
     const provider = ProviderFactory.getProvider();

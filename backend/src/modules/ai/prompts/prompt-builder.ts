@@ -4,6 +4,19 @@ export class PromptBuilder {
   public static buildSystemPrompt(context: any, conversationState?: any): string {
     let prompt = DEFAULT_SYSTEM_INSTRUCTIONS;
 
+    if (context.preferences) {
+      const prefs = context.preferences;
+      prompt += `\n\n### USER PERSONALIZATION SETTINGS`;
+      if (prefs.preferredName) prompt += `\n- **Preferred Name**: Always greet and refer to the user as "${prefs.preferredName}".`;
+      if (prefs.currency) prompt += `\n- **Preferred Currency**: Format monetary values in ${prefs.currency}.`;
+      if (prefs.language) prompt += `\n- **Preferred Language**: Respond in ${prefs.language}.`;
+      if (prefs.riskTolerance) prompt += `\n- **Risk Tolerance**: User's risk tolerance is ${prefs.riskTolerance}.`;
+      if (prefs.budgetMethod) prompt += `\n- **Budget Method**: The user prefers the ${prefs.budgetMethod} budgeting strategy.`;
+      if (prefs.aiResponseStyle) prompt += `\n- **AI Response Style**: Adopt a ${prefs.aiResponseStyle.toLowerCase()} tone.`;
+      if (prefs.aiResponseLength) prompt += `\n- **AI Response Length**: Keep response length ${prefs.aiResponseLength.toLowerCase()}.`;
+      if (prefs.aiCoachingStyle) prompt += `\n- **AI Coaching Tone**: Use a ${prefs.aiCoachingStyle.toLowerCase()} coaching style.`;
+    }
+
     // Append current financial context
     prompt += `\n\n### CURRENT FINANCIAL CONTEXT (TODAY IS ${context.currentDate})`;
     prompt += `\n- **Accounts & Balances**: ${

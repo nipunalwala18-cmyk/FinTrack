@@ -14,6 +14,10 @@ async function bootstrap() {
       console.log(`🚀 Server is running in ${env.NODE_ENV} mode on port ${env.PORT}`);
     });
 
+    // Start Monthly Email Report Scheduler
+    const { initMonthlyReportScheduler } = await import('./modules/scheduler/monthly-report.scheduler.js');
+    initMonthlyReportScheduler();
+
     // Graceful Shutdown handling
     const gracefulShutdown = async (signal: string) => {
       console.log(`\n🔄 Received ${signal}. Shutting down gracefully...`);

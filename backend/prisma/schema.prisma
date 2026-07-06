@@ -38,6 +38,8 @@ model User {
   aiConversations     AiConversation[]
   aiInsights          AiInsight[]
   aiRecommendations   AiRecommendation[]
+  preferences         UserPreferences?
+  reports             Report[]
 }
 
 enum AccountType {
@@ -295,6 +297,57 @@ model AiRecommendation {
   confidence     Float
   status         String   @default("ACTIVE")
   createdAt      DateTime @default(now())
+
+  @@index([userId])
+}
+
+model UserPreferences {
+  id                     String    @id @default(uuid())
+  userId                 String    @unique
+  user                   User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  preferredName          String?
+  profileImage           String?
+  phone                  String?
+  occupation             String?
+  country                String?
+  timezone               String?
+  currency               String?   @default("INR")
+  language               String?   @default("en")
+  monthlyIncome          Float?
+  incomeFrequency        String?   @default("MONTHLY")
+  financialExperience    String?
+  riskTolerance          String?   @default("BALANCED")
+  budgetMethod           String?   @default("ZERO_BASED")
+  monthlySavingsGoal     Float?
+  preferredGoal          String?
+  notificationPreference Json?
+  monthlyReportEnabled   Boolean   @default(true)
+  monthlyReportEmail     String?
+  reportDeliveryDate     Int?      @default(1)
+  reportDeliveryTime     String?   @default("09:00")
+  aiResponseStyle        String?   @default("BALANCED")
+  aiResponseLength       String?   @default("MEDIUM")
+  aiCoachingStyle        String?   @default("BALANCED")
+  theme                  String?   @default("DARK")
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+}
+
+model Report {
+  id           String    @id @default(uuid())
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type         String
+  month        Int
+  year         Int
+  fileName     String
+  format       String
+  storagePath  String
+  generatedAt  DateTime  @default(now())
+  generatedBy  String    @default("SYSTEM")
+  emailed      Boolean   @default(false)
+  emailedAt    DateTime?
+  createdAt    DateTime  @default(now())
 
   @@index([userId])
 }

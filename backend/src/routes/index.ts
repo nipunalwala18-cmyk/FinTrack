@@ -8,6 +8,8 @@ import categoriesRouter from '../modules/categories/categories.routes.js';
 import budgetsRouter from '../modules/budgets/budget.routes.js';
 import goalsRouter from '../modules/goals/goal.routes.js';
 import aiRouter from '../modules/ai/ai.routes.js';
+import profileRouter from '../modules/profile/profile.routes.js';
+import reportsRouter from '../modules/reports/reports.routes.js';
 
 const router = Router();
 
@@ -21,4 +23,6 @@ router.use('/categories', categoriesRouter);
 router.use('/budgets', budgetsRouter);
 router.use('/goals', goalsRouter);
 router.use('/ai', aiRouter);
+router.use('/profile', profileRouter);
+router.use('/reports', reportsRouter);
 export default router;

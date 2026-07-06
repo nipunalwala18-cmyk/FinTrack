@@ -57,9 +57,4 @@ export const NAVIGATION_ITEMS: NavItemType[] = [
     href: '/ai-assistant',
     icon: Sparkles,
   },
-  {
-    title: 'Settings',
-    href: '/settings',
-    icon: Settings,
-  },
 ];

@@ -18,8 +18,8 @@ const CategoriesPage = lazy(() => import('../pages/Categories/CategoriesPage').t
 const BudgetsPage = lazy(() => import('../pages/Budgets/BudgetsPage').then(m => ({ default: m.BudgetsPage })));
 const GoalsPage = lazy(() => import('../pages/Goals/GoalsPage').then(m => ({ default: m.GoalsPage })));
 const ReportsPage = lazy(() => import('../pages/Reports/ReportsPage').then(m => ({ default: m.ReportsPage })));
-const SettingsPage = lazy(() => import('../pages/Settings/SettingsPage').then(m => ({ default: m.SettingsPage })));
 const AiAssistantPage = lazy(() => import('../pages/AiAssistant/AiAssistantPage').then(m => ({ default: m.AiAssistantPage })));
+const ProfilePage = lazy(() => import('../pages/Profile/ProfilePage').then(m => ({ default: m.ProfilePage })));
 
 export const AppRoutes: React.FC = () => {
   const { isAuthenticated } = useAuth();
@@ -57,7 +57,7 @@ export const AppRoutes: React.FC = () => {
             <Route path="/budgets" element={<BudgetsPage />} />
             <Route path="/goals" element={<GoalsPage />} />
             <Route path="/reports" element={<ReportsPage />} />
-            <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
             <Route path="/ai-assistant" element={<AiAssistantPage />} />
           </Route>
         </Route>

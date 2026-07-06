@@ -58,7 +58,7 @@ export const UserMenu: React.FC = () => {
           </div>
 
           <Link
-            to="/settings"
+            to="/profile"
             onClick={() => setIsOpen(false)}
             className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-900 dark:hover:text-white transition-colors"
           >
@@ -66,14 +66,7 @@ export const UserMenu: React.FC = () => {
             <span>Profile</span>
           </Link>
 
-          <Link
-            to="/settings"
-            onClick={() => setIsOpen(false)}
-            className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-900 dark:hover:text-white transition-colors"
-          >
-            <Settings className="h-4 w-4" />
-            <span>Settings</span>
-          </Link>
+
 
           <button
             onClick={handleLogout}

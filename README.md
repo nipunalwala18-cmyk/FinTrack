@@ -371,7 +371,6 @@ Capabilities include:
 - OCR receipt scanning
 - Bank account integration
 - Multi-currency support
-- Expense forecasting
 - Voice-enabled AI assistant
 - Advanced financial analytics
 
